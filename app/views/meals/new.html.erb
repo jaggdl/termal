@@ -1,0 +1,8 @@
+<%= form_with(model: @meal, local: true) do |form| %>
+  <div>
+    <%= form.label :file %>
+    <%= form.file_field :file %>
+  </div>
+
+  <%= form.submit %>
+<% end %>
