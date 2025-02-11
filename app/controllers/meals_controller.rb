@@ -1,6 +1,10 @@
 class MealsController < ApplicationController
+  before_action :set_meal, only: [ :show, :update ]
+
   def index
-    @meals = Meal.all
+    @meals_by_day = Meal.all.order(consumed_at: :desc).group_by do |meal|
+      meal.consumed_at.in_time_zone(@timezone).to_date
+    end
   end
 
   def new
@@ -8,7 +12,16 @@ class MealsController < ApplicationController
   end
 
   def show
-    @meal = Meal.find(params[:id])
+  end
+
+  def update
+    if @meal.update(meal_params)
+      respond_to do |format|
+        format.html { redirect_to meals_path, notice: "Meal updated successfully." }
+      end
+    else
+      render :show, status: :unprocessable_entity
+    end
   end
 
   def destroy
@@ -25,7 +38,7 @@ class MealsController < ApplicationController
       redirect_to new_meal_path, alert: "No file uploaded." and return
     end
 
-    meal_data = process_meal_image(params[:meal][:file])
+    meal_data = process_meal_image(params[:meal][:file], params[:meal][:prompt])
 
     unless meal_data
       redirect_to new_meal_path, alert: "Failed to extract meal information." and return
@@ -43,13 +56,21 @@ class MealsController < ApplicationController
 
   private
 
-  def process_meal_image(file)
+  def set_meal
+    @meal = Meal.find(params[:id])
+  end
+
+  def meal_params
+    params.require(:meal).permit(:meal_name, :calories, :fats, :proteins, :carbs, :fiber, :sodium, :sugar, :cholesterol, :consumed_at)
+  end
+
+  def process_meal_image(file, prompt)
     image_data = file.read
     webp_image = convert_image_to_webp(image_data)
 
     base64_image = Base64.strict_encode64(webp_image)
     openai_service = OpenAiService.new
-    openai_service.analyze_meal_image(base64_image)
+    openai_service.analyze_meal_image(base64_image, prompt)
   end
 
   def convert_image_to_webp(image_data)

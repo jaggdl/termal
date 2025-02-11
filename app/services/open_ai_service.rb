@@ -6,7 +6,7 @@ class OpenAiService
     )
   end
 
-  def analyze_meal_image(base64_image)
+  def analyze_meal_image(base64_image, prompt = nil)
     messages = [
       {
         role: "user",
@@ -25,9 +25,13 @@ class OpenAiService
       }
     ]
 
+    if prompt
+      messages.first[:content].unshift({ type: "text", text: prompt })
+    end
+
     response = @client.chat(
       parameters: {
-        model: "gpt-4o",
+        model: "o1",
         messages: messages,
         tools: [
           {

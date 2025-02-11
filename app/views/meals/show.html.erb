@@ -1,0 +1,30 @@
+<div class="max-w-xl mx-auto bg-white shadow-md rounded-lg p-6">
+  <h1 class="text-2xl font-bold text-gray-800 mb-4"><%= @meal.meal_name %></h1>
+
+  <%= form_with model: @meal, url: meal_path(@meal), method: :patch, class: "space-y-4" do |f| %>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="col-span-2 flex items-center justify-between">
+        <span class="font-semibold text-gray-700">Consumed At:</span>
+        <%= f.datetime_field :consumed_at, value: @meal.consumed_at_in_timezone(@timezone), class: "border border-gray-300 p-1 rounded w-full", placeholder: "Select date and time" %>
+      </div>
+
+      <% ["calories", "fats", "proteins", "carbs", "fiber", "sodium", "sugar", "cholesterol"].each do |attr| %>
+        <div class="flex items-center justify-between">
+          <span class="font-semibold text-gray-700"><%= attr.humanize %>:</span>
+          <%= f.text_field attr, class: "border border-gray-300 p-1 rounded w-16 text-center" %>
+        </div>
+      <% end %>
+
+    </div>
+
+    <div class="mt-6 flex justify-between">
+      <%= link_to "Back", meals_path, class: "text-blue-600 hover:underline" %>
+      <%= f.submit "Save Changes", class: "bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700" %>
+    </div>
+
+    <div class="flex gap-2">
+      <%= link_to 'Destroy', meal_path(@meal), class: 'btn btn-sm btn-outline-danger', data: { turbo_method: "delete", turbo_confirm: "Are you sure?" } %>
+    </div>
+
+  <% end %>
+</div>

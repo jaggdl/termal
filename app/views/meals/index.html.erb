@@ -1,52 +1,51 @@
-<h1 class="mb-4">Meals</h1>
+<div class="flex flex-col w-full space-y-6">
 
-<table class="table table-striped table-bordered">
-  <thead class="thead-dark">
-    <tr>
-      <th>Image</th>
-      <th>Name</th>
-      <th>Consumed At</th>
-      <th>Calories</th>
-      <th>Fats</th>
-      <th>Proteins</th>
-      <th>Carbs</th> <!-- New -->
-      <th>Fiber</th> <!-- New -->
-      <th>Sodium</th> <!-- New -->
-      <th>Sugar</th> <!-- New -->
-      <th>Cholesterol</th> <!-- New -->
-      <th>Actions</th>
-    </tr>
-  </thead>
+  <div class="w-full flex justify-between">
+    <h1 class="font-bold text-xl">Meals</h1>
 
-  <tbody>
-    <% @meals.each do |meal| %>
-      <tr>
-        <td class="text-center">
-          <% if meal.image.attached? %>
-            <%= image_tag meal.image.variant(resize_to_limit: [80, 80]), class: "rounded img-thumbnail" %>
-          <% else %>
-            <span class="text-muted">No Image</span>
+    <%= link_to 'New Meal', new_meal_path, class: 'btn btn-primary' %>
+  </div>
+
+  <div class="flex w-full flex-col space-y-8">
+    <% @meals_by_day.each do |date, meals| %>
+      <div class="w-full">
+
+        <div class="flex justify-between items-end">
+          <h2 class="mb-4 font-semibold"><%= date.strftime("%B %d, %Y") %></h2>
+
+          <div class="flex space-x-4">
+            <%= render partial: 'shared/nutrient_meter', locals: { meals: meals, unit: 'calories', base_number: 3000 } %>
+            <%= render partial: 'shared/nutrient_meter', locals: { meals: meals, unit: 'proteins', base_number: 100 } %>
+          </div>
+        </div>
+
+        <ul>
+          <% meals.each do |meal| %>
+            <li class="flex justify-between items-center">
+              <div class="flex items-center gap-x-4">
+                <% if meal.image.attached? %>
+                  <%= image_tag meal.image.variant(resize_to_limit: [320, 320]), class: "round w-32 h-32 object-cover" %>
+                <% else %>
+                  <span class="text-muted">No Image</span>
+                <% end %>
+                <div class="flex flex-col">
+                  <%= link_to meal.meal_name, meal_path(meal), class: 'text-lg' %>
+                  <span class="text-sm"><%= meal.consumed_at_in_timezone(@timezone).strftime("%I:%M %p") %></span>
+                </div>
+              </div>
+              <div class="flex space-x-2">
+                <% nutrient_keys = ['calories', 'fats', 'proteins', 'carbs'] %>
+                <% nutrient_keys.each do |key| %>
+                  <div class="text-sm flex flex-col w-10 text-right">
+                    <span class="font-semibold"><%= meal[key] %></span>
+                    <span class="text-gray-500"><%= key[0, 3] %></span>
+                  </div>
+                <% end %>
+              </div>
+            </li>
           <% end %>
-        </td>
-        <td><%= meal.meal_name %></td>
-        <td><%= meal.consumed_at.strftime("%B %d, %Y at %I:%M %p") %></td>
-        <td><%= meal.calories %> kcal</td>
-        <td><%= meal.fats %> g</td>
-        <td><%= meal.proteins %> g</td>
-        <td><%= meal.carbs %> g</td> <!-- New -->
-        <td><%= meal.fiber %> g</td> <!-- New -->
-        <td><%= meal.sodium %> mg</td> <!-- New -->
-        <td><%= meal.sugar %> g</td> <!-- New -->
-        <td><%= meal.cholesterol %> mg</td> <!-- New -->
-        <td class="d-flex gap-2">
-          <%= link_to 'Show', meal_path(meal), class: 'btn btn-sm btn-outline-info' %>
-          <%= button_to 'Destroy', meal_path(meal), method: :delete, class: 'btn btn-sm btn-outline-danger', data: { confirm: "Are you sure?" } %>
-        </td>
-      </tr>
+        </ul>
+      </div>
     <% end %>
-  </tbody>
-</table>
-
-<div class="mt-3">
-  <%= link_to 'New Meal', new_meal_path, class: 'btn btn-primary' %>
+  </div>
 </div>

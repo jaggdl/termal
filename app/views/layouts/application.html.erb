@@ -10,20 +10,23 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        document.cookie = `timezone=${timezone}; path=/`;
+      });
+    </script>
   </head>
 
   <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+    <main class="container mx-auto mt-28 px-5 flex font-mono">
+      <%= render "shared/flash_messages" %>
       <%= yield %>
     </main>
   </body>
