@@ -24,7 +24,7 @@ class OpenAiService
           {
             type: "image_url",
             image_url: {
-              url: "data:image/webp;base64,#{base64_image}"
+              url: base64_image
             }
           }
         ]

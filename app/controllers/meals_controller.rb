@@ -36,11 +36,11 @@ class MealsController < ApplicationController
   end
 
   def create
-    unless params[:meal][:file]
-      redirect_to new_meal_path, alert: "No file uploaded." and return
+    unless params[:meal][:base_64_image_url].present?
+      redirect_to new_meal_path, alert: "No image data provided." and return
     end
 
-    meal_data = process_meal_image(params[:meal][:file], params[:meal][:prompt])
+    meal_data = process_meal_image(params[:meal][:base_64_image_url], params[:meal][:prompt])
 
     unless meal_data
       redirect_to new_meal_path, alert: "Failed to extract meal information." and return
@@ -66,27 +66,9 @@ class MealsController < ApplicationController
     params.require(:meal).permit(:meal_name, :calories, :fats, :proteins, :carbs, :fiber, :sodium, :sugar, :cholesterol, :consumed_at)
   end
 
-  def process_meal_image(file, prompt)
-    image_data = file.read
-    webp_image = convert_image_to_webp(image_data)
-
-    base64_image = Base64.strict_encode64(webp_image)
+  def process_meal_image(base64_image, prompt)
     openai_service = OpenAiService.new
     openai_service.analyze_meal_image(base64_image, prompt)
-  end
-
-  def convert_image_to_webp(image_data)
-    tempfile = Tempfile.new([ "meal_image", ".jpg" ])
-    tempfile.binmode
-    tempfile.write(image_data)
-    tempfile.rewind
-
-    webp_image = ImageProcessing::MiniMagick.source(tempfile).convert("webp").call
-
-    webp_image.read
-  ensure
-    tempfile.close
-    tempfile.unlink
   end
 
   def create_meal_from_data(meal_data)

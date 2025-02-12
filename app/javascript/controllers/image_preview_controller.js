@@ -1,51 +1,75 @@
-// app/javascript/controllers/image_preview_controller.js
 import { Controller } from "@hotwired/stimulus";
 import heic2any from "heic2any";
 
 export default class extends Controller {
-  static targets = ["input", "preview", "previewImage"];
+  static targets = ["input", "previewCanvas", "imageUrlInput"];
 
   async previewImage(event) {
     const file = event.target.files[0];
+    const ctx = this.previewCanvasTarget.getContext("2d");
 
-    if (file) {
-      let imageFile = file;
+    this.clearCanvas(ctx);
 
-      // Check if the file is a HEIC image
-      if (
-        file.type === "image/heic" ||
-        file.name.toLowerCase().endsWith(".heic")
-      ) {
-        try {
-          // Convert HEIC to JPEG using heic2any
-          imageFile = await heic2any({
-            blob: file,
-            toType: "image/jpeg",
-            quality: 0.8, // Adjust quality as needed
-          });
-        } catch (error) {
-          console.error("Error converting HEIC image:", error);
-          alert(
-            "Failed to process HEIC image. Please upload a different format.",
-          );
-          return;
-        }
+    if (!file) {
+      return;
+    }
+
+    let imageFile = file;
+
+    if (
+      file.type === "image/heic" ||
+      file.name.toLowerCase().endsWith(".heic")
+    ) {
+      try {
+        imageFile = await heic2any({
+          blob: file,
+          toType: "image/jpeg",
+          quality: 0.8, // Adjust quality as needed
+        });
+      } catch (error) {
+        console.error("Error converting HEIC image:", error);
+        alert(
+          "Failed to process HEIC image. Please upload a different format.",
+        );
+        return;
       }
+    }
 
-      const reader = new FileReader();
+    const reader = new FileReader();
 
-      reader.onload = (e) => {
-        // Update the image source
-        this.previewImageTarget.src = e.target.result;
+    reader.onload = async (e) => {
+      const img = new Image();
 
-        // Show the preview container
-        this.previewTarget.classList.remove("hidden");
+      img.onload = () => {
+        const scale = Math.min(1000 / img.width, 1000 / img.height);
+        const x = (1000 - img.width * scale) / 2;
+        const y = (1000 - img.height * scale) / 2;
+
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+
+        const base64Image = this.previewCanvasTarget.toDataURL(
+          "image/jpeg",
+          0.8,
+        );
+        this.imageUrlInputTarget.value = base64Image;
+      };
+      img.onerror = () => {
+        console.error("Failed to load image");
+        this.clearCanvas(ctx);
       };
 
-      reader.readAsDataURL(imageFile);
-    } else {
-      // Hide the preview container if no file is selected
-      this.previewTarget.classList.add("hidden");
-    }
+      img.src = e.target.result;
+    };
+
+    reader.readAsDataURL(imageFile);
+  }
+
+  clearCanvas(ctx) {
+    ctx.clearRect(
+      0,
+      0,
+      this.previewCanvasTarget.width,
+      this.previewCanvasTarget.height,
+    );
   }
 }
