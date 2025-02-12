@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_12_064950) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_12_075225) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -49,10 +49,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_12_064950) do
 
   create_table "meals", force: :cascade do |t|
     t.datetime "consumed_at", null: false
-    t.string "meal_name", null: false
-    t.integer "calories", null: false
-    t.float "fats", null: false
-    t.float "proteins", null: false
+    t.string "meal_name"
+    t.integer "calories"
+    t.float "fats"
+    t.float "proteins"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.float "carbs"

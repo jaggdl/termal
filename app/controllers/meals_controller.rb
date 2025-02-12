@@ -2,7 +2,7 @@ class MealsController < ApplicationController
   include ApiKeyCheck
 
   before_action :set_meal, only: [ :show, :update, :destroy ]
-  before_action :check_api_key, only: [ :new ]
+  before_action :check_api_key, only: [ :new, :create ]
 
   def index
     @meals_by_day = Current.user.meals.all.order(consumed_at: :desc).group_by do |meal|
@@ -40,16 +40,14 @@ class MealsController < ApplicationController
       redirect_to new_meal_path, alert: "No image data provided." and return
     end
 
-    meal_data = process_meal_image(params[:meal][:base_64_image_url], params[:meal][:prompt])
-
-    unless meal_data
-      redirect_to new_meal_path, alert: "Failed to extract meal information." and return
-    end
-
-    @meal = create_meal_from_data(meal_data)
+    @meal = Current.user.meals.new(
+      consumed_at: Time.now,
+      meal_name: "New meal"
+    )
     @meal.image.attach(params[:meal][:file])
 
     if @meal.save
+      ProcessMealImageJob.perform_later(@meal.id, params[:meal][:base_64_image_url], params[:meal][:prompt])
       redirect_to meals_path, notice: "Meal was successfully created."
     else
       render :new, status: :unprocessable_entity
@@ -64,25 +62,5 @@ class MealsController < ApplicationController
 
   def meal_params
     params.require(:meal).permit(:meal_name, :calories, :fats, :proteins, :carbs, :fiber, :sodium, :sugar, :cholesterol, :consumed_at)
-  end
-
-  def process_meal_image(base64_image, prompt)
-    openai_service = OpenAiService.new
-    openai_service.analyze_meal_image(base64_image, prompt)
-  end
-
-  def create_meal_from_data(meal_data)
-    Current.user.meals.new(
-      meal_name: meal_data[:meal_name],
-      consumed_at: Time.now,
-      calories: meal_data[:calories],
-      fats: meal_data[:fats],
-      proteins: meal_data[:proteins],
-      carbs: meal_data[:carbs],
-      fiber: meal_data[:fiber],
-      sodium: meal_data[:sodium],
-      sugar: meal_data[:sugar],
-      cholesterol: meal_data[:cholesterol],
-    )
   end
 end
