@@ -1,4 +1,6 @@
 class MealsController < ApplicationController
+  include ApiKeyCheck
+
   before_action :set_meal, only: [ :show, :update ]
 
   def index
@@ -55,6 +57,10 @@ class MealsController < ApplicationController
   end
 
   private
+
+  def api_key_check_actions
+    [ :new ]  # The actions where the check should be applied
+  end
 
   def set_meal
     @meal = Meal.find(params[:id])

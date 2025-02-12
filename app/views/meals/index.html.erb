@@ -11,11 +11,25 @@
       <div class="w-full">
 
         <div class="flex justify-between items-end">
-          <h2 class="mb-4 font-semibold"><%= date.strftime("%B %d, %Y") %></h2>
+          <h2 class="mb-4 font-semibold">
+            <% 
+              today = Date.today
+              yesterday = today - 1.day
+              date_string = case date
+              when today
+                "Today"
+              when yesterday
+                "Yesterday"
+              else
+                date.strftime("%B %d, %Y")
+              end
+            %>
+            <%= date_string %>
+          </h2>
 
           <div class="flex space-x-4">
             <%= render partial: 'shared/nutrient_meter', locals: { meals: meals, unit: 'calories', base_number: 3000 } %>
-            <%= render partial: 'shared/nutrient_meter', locals: { meals: meals, unit: 'proteins', base_number: 100 } %>
+            <%= render partial: 'shared/nutrient_meter', locals: { meals: meals, unit: 'proteins', base_number: 136 } %>
           </div>
         </div>
 
@@ -23,10 +37,12 @@
           <% meals.each do |meal| %>
             <li class="flex justify-between items-center">
               <div class="flex items-center gap-x-4">
-                <% if meal.image.attached? %>
-                  <%= image_tag meal.image.variant(resize_to_limit: [320, 320]), class: "round w-32 h-32 object-cover" %>
-                <% else %>
-                  <span class="text-muted">No Image</span>
+                <%= link_to meal_path(meal) do %>
+                  <% if meal.image.attached? %>
+                    <%= image_tag meal.image.variant(resize_to_limit: [320, 320]), class: "round w-32 h-32 object-cover" %>
+                  <% else %>
+                    <span class="text-muted">No Image</span>
+                  <% end %>
                 <% end %>
                 <div class="flex flex-col">
                   <%= link_to meal.meal_name, meal_path(meal), class: 'text-lg' %>

@@ -1,7 +1,13 @@
 class OpenAiService
   def initialize
+    @openai_api_key = GlobalSetting.get("openai_api_key")
+
+    unless @openai_api_key
+      raise StandardError, "OpenAI API key is not set. Please set it in the global settings."
+    end
+
     @client = OpenAI::Client.new(
-      access_token: ENV["OPENAI_API_KEY"],
+      access_token: @openai_api_key,
       log_errors: true
     )
   end

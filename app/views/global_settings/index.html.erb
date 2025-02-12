@@ -1,0 +1,13 @@
+<h1>Global Settings</h1>
+
+<%= form_with(url: update_global_settings_path, method: :patch, local: true) do |form| %>
+  <% GlobalSetting::SETTING_KEYS.each do |key| %>
+    <div class="field">
+      <%= form.label key %>
+      <%= form.text_field "global_settings[#{key}]", value: GlobalSetting.get(key) %>
+    </div>
+  <% end %>
+  <div class="actions">
+    <%= form.submit 'Update Settings' %>
+  </div>
+<% end %>
