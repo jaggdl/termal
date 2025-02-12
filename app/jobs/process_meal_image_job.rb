@@ -16,6 +16,7 @@ class ProcessMealImageJob < ApplicationJob
         sugar: meal_data[:sugar],
         cholesterol: meal_data[:cholesterol],
       )
+      meal.broadcast_meal
     else
       Rails.logger.error("Failed to process meal image for meal ID: #{meal_id}")
     end

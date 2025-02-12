@@ -1,0 +1,16 @@
+<div id="meal-<%= meal.id %>" class="flex justify-between w-full">
+  <div class="flex flex-col">
+    <%= link_to meal.meal_name, meal_path(meal), class: 'text-lg' %>
+    <span class="text-sm"><%= meal.consumed_at_in_timezone(@timezone).strftime("%I:%M %p") %></span>
+  </div>
+
+  <div class="flex space-x-2">
+    <% nutrient_keys = ['calories', 'fats', 'proteins', 'carbs'] %>
+    <% nutrient_keys.each do |key| %>
+      <div class="text-sm flex flex-col w-10 text-right">
+        <span class="font-semibold"><%= meal[key] %></span>
+        <span class="text-gray-500"><%= key[0, 3] %></span>
+      </div>
+    <% end %>
+  </div>
+</div>
