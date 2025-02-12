@@ -1,4 +1,5 @@
 class Meal < ApplicationRecord
+  belongs_to :user
   has_one_attached :image
 
   def consumed_at_in_timezone(timezone)

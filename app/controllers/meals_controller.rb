@@ -1,11 +1,11 @@
 class MealsController < ApplicationController
   include ApiKeyCheck
 
-  before_action :set_meal, only: [ :show, :update ]
+  before_action :set_meal, only: [ :show, :update, :destroy ]
   before_action :check_api_key, only: [ :new ]
 
   def index
-    @meals_by_day = Meal.all.order(consumed_at: :desc).group_by do |meal|
+    @meals_by_day = Current.user.meals.all.order(consumed_at: :desc).group_by do |meal|
       meal.consumed_at.in_time_zone(@timezone).to_date
     end
   end
@@ -28,7 +28,6 @@ class MealsController < ApplicationController
   end
 
   def destroy
-    @meal = Meal.find(params[:id])
     if @meal.destroy
       redirect_to meals_path, notice: "Meal was successfully deleted."
     else
@@ -60,7 +59,7 @@ class MealsController < ApplicationController
   private
 
   def set_meal
-    @meal = Meal.find(params[:id])
+    @meal = Current.user.meals.find(params[:id])
   end
 
   def meal_params
@@ -91,7 +90,7 @@ class MealsController < ApplicationController
   end
 
   def create_meal_from_data(meal_data)
-    Meal.new(
+    Current.user.meals.new(
       meal_name: meal_data[:meal_name],
       consumed_at: Time.now,
       calories: meal_data[:calories],
