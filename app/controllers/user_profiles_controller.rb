@@ -7,10 +7,10 @@ class UserProfilesController < ApplicationController
 
   def update
     unless @profile
+      create_user_profile
       redirect_to profile_path, notice: 'Profile was successfully updated.'
       return
     end
-
 
     if @profile.update(profile_params)
       redirect_to profile_path, notice: 'Profile was successfully updated.'
@@ -26,8 +26,9 @@ class UserProfilesController < ApplicationController
   end
 
   def create_user_profile
-    @profile = UserProfile.new(profile_params)
-    @profile.user = Current.user
+    profile = UserProfile.new(profile_params)
+    profile.user = Current.user
+    profile.save
   end
 
   def profile_params
