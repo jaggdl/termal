@@ -9,7 +9,7 @@
     <% @meals_by_day.each do |date, meals| %>
       <div class="w-full">
 
-        <div class="flex justify-between items-end">
+        <div class="flex md:flex-row flex-col justify-between items-center md:items-end">
           <h2 class="mb-4 font-semibold">
             <% 
               today = Date.today
