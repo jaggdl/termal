@@ -1,10 +1,12 @@
-<div class="mb-4">
+<div class="mb-4 w-24 md:w-32">
   <% total_value = meals.sum { |meal| meal.send(unit) || 0 } %>
   <% nutrient_percentage = (total_value.to_f / base_number) * 100 %>
   <% meter_color = nutrient_percentage > 100 ? "bg-red-500" : "bg-green-500" %>
 
   <div class="text-center mb-1">
-    <span class="text-sm"><%= total_value %> / <%= base_number %> <%= unit.humanize %></span>
+    <span class="text-sm">
+      <span class="hidden md:block"><%= total_value %> / <%= base_number %></span> <%= unit.humanize %>
+    </span>
   </div>
   <div class="w-full bg-gray-200 rounded-full h-2.5">
     <div class="h-2.5 rounded-full <%= meter_color %>" style="width: <%= [nutrient_percentage, 100].min %>%"></div>
