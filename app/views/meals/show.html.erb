@@ -1,5 +1,5 @@
 <div class="max-w-xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-6">
-  <%= link_to "Back", meals_path, class: "text-blue-600 hover:underline" %>
+  <%= link_to "Back", root_path, class: "text-blue-600 hover:underline" %>
   <% if @meal.image.attached? %>
     <%= image_tag @meal.image.variant(resize_to_limit: [1200, 1200]), class: "round w-full object-cover" %>
   <% else %>

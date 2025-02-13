@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_12_075225) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_13_060620) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -73,6 +73,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_12_075225) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "user_profiles", force: :cascade do |t|
+    t.integer "age"
+    t.string "sex"
+    t.float "weight"
+    t.float "height"
+    t.string "physical_activity"
+    t.string "weight_goals"
+    t.string "muscle_building"
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_user_profiles_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email_address", null: false
     t.string "password_digest", null: false
@@ -85,4 +99,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_12_075225) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "meals", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "user_profiles", "users"
 end

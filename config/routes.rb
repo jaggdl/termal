@@ -13,7 +13,11 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "meals#index"
+  
   resources :meals
+
   get "/global_settings", to: "global_settings#index", as: :global_settings
   patch "/global_settings", to: "global_settings#update", as: :update_global_settings
+
+  resource :profile, controller: 'user_profiles'
 end

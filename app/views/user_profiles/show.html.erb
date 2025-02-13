@@ -1,0 +1,65 @@
+<div class="max-w-xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-6">
+  <h1 class="text-2xl font-bold text-gray-800"><%= Current.user.email_address %></h1>
+
+  <%= form_with model: @profile, url: profile_path(@profile), method: :patch, class: "space-y-4" do |f| %>
+    <div class="grid grid-cols-2 gap-4 items-center">
+      <span class="font-semibold text-gray-700">Age:</span>
+      <%= f.number_field :age, class: "border border-gray-300 p-1 rounded w-16 text-center" %>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 items-start">
+      <span class="font-semibold text-gray-700">Sex:</span>
+      <div class="flex flex-col space-y-2">
+        <%= f.label :sex_male, 'Male', class: 'text-gray-700' %>
+        <%= f.radio_button :sex, 'male', checked: (@profile.sex == 'male') %>
+        
+        <%= f.label :sex_female, 'Female', class: 'text-gray-700' %>
+        <%= f.radio_button :sex, 'female', checked: (@profile.sex == 'female') %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 items-center">
+      <span class="font-semibold text-gray-700">Weight (kg):</span>
+      <%= f.number_field :weight, step: :any, class: "border border-gray-300 p-1 rounded w-16 text-center" %>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 items-center">
+      <span class="font-semibold text-gray-700">Height (cm):</span>
+      <%= f.number_field :height, step: :any, class: "border border-gray-300 p-1 rounded w-16 text-center" %>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 items-start">
+      <span class="font-semibold text-gray-700">Physical Activity:</span>
+      <div class="flex flex-col space-y-2">
+        <% ['Sedentary', 'Lightly Active', 'Moderately Active', 'Very Active', 'Extremely Active'].each do |activity| %>
+          <%= f.radio_button :physical_activity, activity.downcase.gsub(' ', '_'), checked: (@profile.physical_activity == activity.downcase.gsub(' ', '_')) %>
+          <%= f.label :"physical_activity_#{activity.downcase.gsub(' ', '_')}", activity %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 items-start">
+      <span class="font-semibold text-gray-700">Weight Goals:</span>
+      <div class="flex flex-col space-y-2">
+        <% ['Lose Weight', 'Maintain', 'Gain Weight'].each do |goal| %>
+          <%= f.radio_button :weight_goals, goal.downcase.gsub(' ', '_'), checked: (@profile.weight_goals == goal.downcase.gsub(' ', '_')) %>
+          <%= f.label :"weight_goals_#{goal.downcase.gsub(' ', '_')}", goal %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 items-start">
+      <span class="font-semibold text-gray-700">Muscle Building/Maintenance:</span>
+      <div class="flex flex-col space-y-2">
+        <% ['Build Muscle', 'Maintain Muscle'].each do |muscle| %>
+          <%= f.radio_button :muscle_building, muscle.downcase.gsub(' ', '_'), checked: (@profile.muscle_building == muscle.downcase.gsub(' ', '_')) %>
+          <%= f.label :"muscle_building_#{muscle.downcase.gsub(' ', '_')}", muscle %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-between">
+      <%= f.submit "Save Changes", class: "bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700" %>
+    </div>
+  <% end %>
+</div>
