@@ -1,6 +1,8 @@
 class GlobalSettingsController < ApplicationController
   include ApiKeyCheck
 
+  before_action :check_if_user_is_owner
+
   def index
     @settings = GlobalSetting.all
   end
@@ -18,5 +20,11 @@ class GlobalSettingsController < ApplicationController
 
   def settings_params
     params.fetch("global_settings", {}).permit(GlobalSetting::SETTING_KEYS)
+  end
+
+  def check_if_user_is_owner
+    unless Current.user.email_address == "ja125garcia@gmail.com"
+      redirect_to root_path, alert: "You are not allowed here"
+    end
   end
 end
