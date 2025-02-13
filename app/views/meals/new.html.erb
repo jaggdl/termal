@@ -1,3 +1,5 @@
+<%= javascript_import_module_tag 'heic2any' %>
+
 <%= form_with(model: @meal, local: true, class: "space-y-6", data: { controller: "image-preview" }) do |form| %>
   <!-- File Upload Field -->
   <div class="space-y-2">
