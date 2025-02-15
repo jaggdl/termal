@@ -69,4 +69,4 @@ gem "tailwindcss-ruby", "~> 4.0"
 
 gem "tailwindcss-rails", "~> 4.0"
 
-gem "image_processing", "~> 1.13"
+gem "image_processing", "~> 1.14"
