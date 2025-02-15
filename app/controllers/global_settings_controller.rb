@@ -23,7 +23,7 @@ class GlobalSettingsController < ApplicationController
   end
 
   def check_if_user_is_owner
-    unless Current.user.email_address == "ja125garcia@gmail.com"
+    unless Current.user.email_address == User.first.email_address
       redirect_to root_path, alert: "You are not allowed here"
     end
   end

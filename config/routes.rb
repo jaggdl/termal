@@ -20,4 +20,5 @@ Rails.application.routes.draw do
   patch "/global_settings", to: "global_settings#update", as: :update_global_settings
 
   resource :profile, controller: 'user_profiles'
+  resource :onboarding, controller: 'onboarding'
 end

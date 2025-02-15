@@ -1,24 +1,28 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Run in Ubuntu server
 
-Things you may want to cover:
+1. Install Docker
 
-* Ruby version
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+```
 
-* System dependencies
+2. Check if Docker is installed
 
-* Configuration
+```bash
+sudo docker --version
+```
 
-* Database creation
+3. Generate secret key
+```bash
+echo "SECRET_KEY_BASE=$(openssl rand -hex 64)" > .env
+```
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+4. Run the container using the .env file
+```bash
+sudo docker run -d -p 3000:3000 \
+  --env-file .env \
+  --name calories-counter jaggdl/calories-counter
+```

@@ -4,7 +4,15 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   before_action :set_timezone
-  # allow_unauthenticated_access
+  before_action :authenticate_and_redirect
+
+  private
+
+  def authenticate_and_redirect
+    if !authenticated? && User.count.zero?
+      redirect_to onboarding_path
+    end
+  end
 
   def set_timezone
     @timezone = cookies[:timezone] || "UTC"
