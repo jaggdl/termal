@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus";
 import heic2any from "heic2any";
 
 export default class extends Controller {
-  static targets = ["input", "previewCanvas", "imageUrlInput"];
+  static targets = ["input", "previewCanvas"];
 
   async previewImage(event) {
     const file = event.target.files[0];
@@ -46,12 +46,6 @@ export default class extends Controller {
         const y = (1000 - img.height * scale) / 2;
 
         ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-
-        const base64Image = this.previewCanvasTarget.toDataURL(
-          "image/jpeg",
-          0.8,
-        );
-        this.imageUrlInputTarget.value = base64Image;
       };
       img.onerror = () => {
         console.error("Failed to load image");

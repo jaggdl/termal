@@ -1,8 +1,8 @@
 class MealsController < ApplicationController
   include ApiKeyCheck
 
-  before_action :set_meal, only: [ :show, :update, :destroy ]
-  before_action :check_api_key, only: [ :new, :create ]
+  before_action :set_meal, only: [:show, :update, :destroy]
+  before_action :check_api_key, only: [:new, :create]
 
   def index
     @meals_by_day = Current.user.meals.all.order(consumed_at: :desc).group_by do |meal|
@@ -36,7 +36,7 @@ class MealsController < ApplicationController
   end
 
   def create
-    unless params[:meal][:base_64_image_url].present?
+    unless params[:meal][:file].present?
       redirect_to new_meal_path, alert: "No image data provided." and return
     end
 
@@ -44,10 +44,16 @@ class MealsController < ApplicationController
       consumed_at: Time.now,
       meal_name: "New meal"
     )
-    @meal.image.attach(params[:meal][:file])
+
+    if params[:meal][:file].present?
+      image = params[:meal][:file]
+      resized_image = resize_and_convert_image(image)
+      base64_image = convert_to_base64_with_mime(resized_image)
+      @meal.image.attach(params[:meal][:file])
+    end
 
     if @meal.save
-      ProcessMealImageJob.perform_later(@meal.id, params[:meal][:base_64_image_url], params[:meal][:prompt])
+      ProcessMealImageJob.perform_later(@meal.id, base64_image, params[:meal][:prompt])
       redirect_to meals_path, notice: "Meal was successfully created."
     else
       render :new, status: :unprocessable_entity
@@ -62,5 +68,18 @@ class MealsController < ApplicationController
 
   def meal_params
     params.require(:meal).permit(:meal_name, :calories, :fats, :proteins, :carbs, :fiber, :sodium, :sugar, :cholesterol, :consumed_at)
+  end
+
+  def resize_and_convert_image(image)
+    ImageProcessing::Vips
+      .source(image)
+      .resize_to_limit(1000, 1000)
+      .convert('png')  # Converts to PNG
+      .call
+  end
+
+  def convert_to_base64_with_mime(image)
+    encoded_image = Base64.strict_encode64(File.read(image.path))
+    "data:image/png;base64,#{encoded_image}"
   end
 end
