@@ -39,24 +39,27 @@ class MealsController < ApplicationController
     unless params[:meal][:file].present?
       redirect_to new_meal_path, alert: "No image data provided." and return
     end
-
+  
     @meal = Current.user.meals.new(
       consumed_at: Time.now,
       meal_name: "New meal"
     )
-
-    if params[:meal][:file].present?
-      image = params[:meal][:file]
-      resized_image = resize_and_convert_image(image)
-      base64_image = convert_to_base64_with_mime(resized_image)
-      @meal.image.attach(params[:meal][:file])
-    end
-
-    if @meal.save
-      ProcessMealImageJob.perform_later(@meal.id, base64_image, params[:meal][:prompt])
-      redirect_to meals_path, notice: "Meal was successfully created."
-    else
-      render :new, status: :unprocessable_entity
+  
+    begin
+      if params[:meal][:file].present?
+        @meal.image.attach(params[:meal][:file])
+      end
+  
+      if @meal.save
+        ProcessMealImageJob.perform_later(@meal.id, params[:meal][:prompt])
+        redirect_to meals_path, notice: "Meal was successfully created."
+      else
+        render :new, alert: "Something went wrong :( ..."
+      end
+    rescue => e
+      Rails.logger.error("Error in MealsController#create: #{e.message}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      render :new, alert: "An unexpected error occurred. Please try again."
     end
   end
 
