@@ -31,10 +31,12 @@ class MealsController < ApplicationController
   end
 
   def search
-    search_term = "%#{params[:q].downcase}%"
-
-    @meals = Current.user.meals.where("LOWER(meal_name) LIKE ?", search_term).limit(5)
-
+    if params[:q].present?
+      search_term = "%#{params[:q].downcase}%"
+      @meals = Current.user.meals.where("LOWER(meal_name) LIKE ?", search_term).limit(5)
+    else
+      @meals = []
+    end
     render partial: 'meals/search_results', locals: { meals: @meals }
   end
 

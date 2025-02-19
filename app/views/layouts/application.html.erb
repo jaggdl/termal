@@ -26,16 +26,38 @@
 
   <body>
     <main class="container mx-auto md:mt-28 mt-12 px-5 flex flex-col font-mono max-w-4xl">
-      <nav class="flex space-x-8 text-gray-600 items-end">
+      <nav class="flex space-x-8 text-gray-600 items-end mb-4">
         <%= link_to 'Meals', root_path, class: "#{request.path.start_with?('/user_meals') || current_page?(root_path) ? 'font-bold text-xl text-black' : ''}" %>
         <%= link_to 'Profile', profile_path, class: "#{current_page?(profile_path) ? 'font-bold text-xl text-black' : ''}" %>
+        <div class="w-full flex justify-end">
+          <%= link_to 'New Meal', new_user_meal_path %>
+        </div>
       </nav>
-      <div class="relative" data-controller="search">
+      <div class="relative mb-4" data-controller="search">
         <form action="/meals/search" method="get" data-turbo-frame="search_results" data-search-target="form">
-          <input type="text" name="q" placeholder="Search meals..." data-action="input->search#search">
+          <div class="grid grid-cols-1 w-full">
+            <input 
+              type="text" 
+              name="q" 
+              placeholder="Search meals..." 
+              data-search-target="input" 
+              data-action="input->search#search input->search#toggleClearButton focus->search#showResults blur->search#hideResults"
+              class="col-start-1 row-start-1 block w-full rounded-md bg-white py-1.5 pl-10 pr-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:pl-9 sm:text-sm/6" 
+            >
+            <svg class="pointer-events-none col-start-1 row-start-1 ml-3 size-5 self-center text-gray-400 sm:size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+          </div>
+          <button 
+            class="absolute right-4 top-1"
+            type="button" 
+            data-search-target="clearButton" 
+            data-action="click->search#clear" 
+            style="display: none;">
+            Clear
+          </button>
         </form>
-      
-        <turbo-frame id="search_results">
+        <turbo-frame id="search_results" data-search-target="results">
           <!-- Search results will appear here -->
         </turbo-frame>
       </div>
