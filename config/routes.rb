@@ -14,7 +14,12 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "user_meals#index"
   
-  resources :meals
+  resources :meals, only: [:index, :show] do
+    collection do
+      get :search
+    end
+  end
+
   resources :user_meals
 
   get "/global_settings", to: "global_settings#index", as: :global_settings

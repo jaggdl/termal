@@ -6,7 +6,7 @@ class UserMealsController < ApplicationController
 
   def index
     @meals_by_day = Current.user_meals.all.order(consumed_at: :desc).group_by do |meal|
-      meal.consumed_at.in_time_zone(Current.user_profile.timezone).to_date
+      meal.consumed_at_in_timezone.to_date
     end
   end
 
@@ -36,6 +36,8 @@ class UserMealsController < ApplicationController
   end
 
   def create
+    return create_from_meal_id if params[:meal_id]
+
     unless params[:user_meal][:file].present?
       redirect_to new_meal_path, alert: "No image data provided." and return
     end
@@ -80,5 +82,25 @@ class UserMealsController < ApplicationController
   def convert_to_base64_with_mime(image)
     encoded_image = Base64.strict_encode64(File.read(image.path))
     "data:image/png;base64,#{encoded_image}"
+  end
+
+  def create_from_meal_id
+    meal_id = params[:meal_id]
+    @user_meal = Current.user_meals.new(meal_id: meal_id, consumed_at: Time.now)
+
+    if @user_meal.save
+      date = @user_meal.consumed_at_in_timezone.to_date
+
+      render turbo_stream: turbo_stream.prepend(
+        "user-meals-#{date.to_s}",
+        partial: 'user_meals/user_meal',
+        locals: { user_meal: @user_meal }
+      )
+    else
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.replace('new_user_meal_form', partial: 'form', locals: { user_meal: @user_meal }) }
+        format.html { render :new, status: :unprocessable_entity }
+      end
+    end
   end
 end

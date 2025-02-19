@@ -28,7 +28,7 @@
           <%= render partial: 'shared/nutrient_meters', locals: { user_meals: user_meals, date: date } %>
         </div>
 
-        <ul>
+        <ul id="user-meals-<%= date.to_s %>">
           <% user_meals.each do |user_meal| %>
             <%= render user_meal %>
           <% end %>

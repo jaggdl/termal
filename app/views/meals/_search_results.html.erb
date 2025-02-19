@@ -1,0 +1,19 @@
+<turbo-frame id="search_results">
+  <ul class="absolute top-10 shadow-lg bg-white/80 z-10 backdrop-blur-lg w-full p-2">
+    <% meals.each do |meal| %>
+      <li class="flex gap-x-4 items-center w-full justify-between">
+        <div class="flex gap-x-2 items-center">
+          <%= link_to meal_path(meal) do %>
+            <%= image_tag meal.image.variant(resize_to_limit: [256, 256]), 
+              class: "md:max-w-16 md:max-h-16 md:min-w-16 md:min-h-16 min-w-16 min-h-16 max-w-16 max-h-16 object-cover" %>
+          <% end %>
+          <div class="flex flex-col">
+            <span><%= meal.meal_name %></span> 
+            <%= render partial: 'meals/nutrients_table', locals: { meal: meal } %>
+          </div>
+        </div>
+        <%= button_to "Add", user_meals_path, params: { meal_id: meal.id }, method: :post, data: { turbo: true } %>
+      </li>
+    <% end %>
+  </ul>
+</turbo-frame>

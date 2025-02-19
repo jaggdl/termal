@@ -30,6 +30,15 @@
         <%= link_to 'Meals', root_path, class: "#{request.path.start_with?('/user_meals') || current_page?(root_path) ? 'font-bold text-xl text-black' : ''}" %>
         <%= link_to 'Profile', profile_path, class: "#{current_page?(profile_path) ? 'font-bold text-xl text-black' : ''}" %>
       </nav>
+      <div class="relative" data-controller="search">
+        <form action="/meals/search" method="get" data-turbo-frame="search_results" data-search-target="form">
+          <input type="text" name="q" placeholder="Search meals..." data-action="input->search#search">
+        </form>
+      
+        <turbo-frame id="search_results">
+          <!-- Search results will appear here -->
+        </turbo-frame>
+      </div>
       <%= render "shared/flash_messages" %>
       <%= yield %>
     </main>
