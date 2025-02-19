@@ -1,5 +1,5 @@
 <div class="mb-4 w-36">
-  <% total_value = meals.sum { |meal| meal.send(unit) || 0 } %>
+  <% total_value = user_meals.sum { |user_meal| user_meal.meal.send(unit) || 0 } %>
   <% nutrient_percentage = (total_value.to_f / base_number) * 100 %>
   <% meter_color = nutrient_percentage > 100 ? "bg-gradient-to-r from-red-300 to-red-500 shadow-red-400/40" : "bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/40" %>
 

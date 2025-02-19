@@ -12,9 +12,10 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "meals#index"
+  root "user_meals#index"
   
   resources :meals
+  resources :user_meals
 
   get "/global_settings", to: "global_settings#index", as: :global_settings
   patch "/global_settings", to: "global_settings#update", as: :update_global_settings

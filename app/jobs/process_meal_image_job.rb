@@ -1,8 +1,9 @@
 class ProcessMealImageJob < ApplicationJob
   queue_as :default
 
-  def perform(meal_id, prompt)
-    meal = Meal.find(meal_id)
+  def perform(user_meal_id, prompt)
+    user_meal = UserMeal.find(user_meal_id)
+    meal = user_meal.meal
     base64_image_url = process_image(meal.image)
     meal_data = analyze_meal_image(base64_image_url, prompt)
     if meal_data
@@ -17,7 +18,7 @@ class ProcessMealImageJob < ApplicationJob
         sugar: meal_data[:sugar],
         cholesterol: meal_data[:cholesterol],
       )
-      meal.broadcast_meal
+      user_meal.broadcast_user_meal
     else
       Rails.logger.error("No image attached to meal ID: #{meal_id}")
     end

@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  meal: one
+  consumed_at: 2025-02-19 00:06:34
+
+two:
+  user: two
+  meal: two
+  consumed_at: 2025-02-19 00:06:34

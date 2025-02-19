@@ -1,4 +1,4 @@
-class MealsController < ApplicationController
+class UserMealsController < ApplicationController
   include ApiKeyCheck
 
   before_action :set_meal, only: [:show, :update, :destroy]
@@ -11,16 +11,16 @@ class MealsController < ApplicationController
   end
 
   def new
-    @meal = Meal.new
+    @user_meal = UserMeal.new
   end
 
   def show
   end
 
   def update
-    if @meal.update(meal_params)
+    if @user_meal.update(user_meal_params)
       respond_to do |format|
-        format.html { redirect_to meals_path, notice: "Meal updated successfully." }
+        format.html { redirect_to root_path, notice: "Meal updated successfully." }
       end
     else
       render :show, status: :unprocessable_entity
@@ -28,31 +28,27 @@ class MealsController < ApplicationController
   end
 
   def destroy
-    if @meal.destroy
-      redirect_to meals_path, notice: "Meal was successfully deleted."
+    if @user_meal.destroy
+      redirect_to root_path, notice: "Meal was successfully removed."
     else
-      redirect_to meals_path, alert: "Failed to delete meal."
+      redirect_to user_meal_path(@user_meal), alert: "Failed to remove meal."
     end
   end
 
   def create
-    unless params[:meal][:file].present?
+    unless params[:user_meal][:file].present?
       redirect_to new_meal_path, alert: "No image data provided." and return
     end
   
-    @meal = Current.user.meals.new(
-      consumed_at: Time.now,
-      meal_name: "New meal"
-    )
+    @user_meal = Current.user.user_meals.build(consumed_at: Time.now)
+    @meal = @user_meal.build_meal(meal_name: "New meal")
+
+    @meal.image.attach(params[:user_meal][:file])
   
     begin
-      if params[:meal][:file].present?
-        @meal.image.attach(params[:meal][:file])
-      end
-  
-      if @meal.save
-        ProcessMealImageJob.perform_later(@meal.id, params[:meal][:prompt])
-        redirect_to meals_path, notice: "Meal was successfully created."
+      if @user_meal.save
+        ProcessMealImageJob.perform_later(@user_meal.id, params[:user_meal][:prompt])
+        redirect_to root_path, notice: "Meal was successfully created."
       else
         render :new, alert: "Something went wrong :( ..."
       end
@@ -66,11 +62,11 @@ class MealsController < ApplicationController
   private
 
   def set_meal
-    @meal = Current.user.meals.find(params[:id])
+    @user_meal = Current.user_meals.find(params[:id])
   end
 
-  def meal_params
-    params.require(:meal).permit(:meal_name, :calories, :fats, :proteins, :carbs, :fiber, :sodium, :sugar, :cholesterol, :consumed_at)
+  def user_meal_params
+    params.require(:user_meal).permit(:consumed_at)
   end
 
   def resize_and_convert_image(image)

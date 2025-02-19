@@ -1,0 +1,39 @@
+<%= turbo_stream_from Current.user, "user_meals" %>
+
+<div class="flex flex-col w-full space-y-6">
+  <div class="w-full flex justify-end">
+    <%= link_to 'New Meal', new_user_meal_path, class: 'btn btn-primary' %>
+  </div>
+
+  <div class="flex w-full flex-col space-y-8">
+    <% @meals_by_day.each do |date, user_meals| %>
+      <div class="w-full">
+
+        <div class="flex md:flex-row flex-col justify-between items-center md:items-end">
+          <h2 class="mb-4 font-semibold">
+            <% 
+              today = Date.today
+              yesterday = today - 1.day
+              date_string = case date
+              when today
+                "Today"
+              when yesterday
+                "Yesterday"
+              else
+                date.strftime("%B %d, %Y")
+              end
+            %>
+            <%= date_string %>
+          </h2>
+          <%= render partial: 'shared/nutrient_meters', locals: { user_meals: user_meals, date: date } %>
+        </div>
+
+        <ul>
+          <% user_meals.each do |user_meal| %>
+            <%= render user_meal %>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+</div>

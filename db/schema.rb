@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_18_063514) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_19_061301) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -48,7 +48,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_18_063514) do
   end
 
   create_table "meals", force: :cascade do |t|
-    t.datetime "consumed_at", null: false
     t.string "meal_name"
     t.integer "calories"
     t.float "fats"
@@ -60,8 +59,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_18_063514) do
     t.integer "sodium"
     t.float "sugar"
     t.integer "cholesterol"
-    t.integer "user_id", default: 298486374, null: false
-    t.index ["user_id"], name: "index_meals_on_user_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -71,6 +68,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_18_063514) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "user_meals", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "meal_id", null: false
+    t.datetime "consumed_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["meal_id"], name: "index_user_meals_on_meal_id"
+    t.index ["user_id"], name: "index_user_meals_on_user_id"
   end
 
   create_table "user_profiles", force: :cascade do |t|
@@ -98,7 +105,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_18_063514) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "meals", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "user_meals", "meals"
+  add_foreign_key "user_meals", "users"
   add_foreign_key "user_profiles", "users"
 end
