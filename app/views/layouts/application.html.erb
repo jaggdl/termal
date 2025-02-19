@@ -27,7 +27,7 @@
   <body>
     <main class="container mx-auto md:mt-28 mt-12 px-5 flex flex-col font-mono max-w-4xl">
       <nav class="flex space-x-8 text-gray-600 items-end">
-        <%= link_to 'Meals', root_path, class: "#{request.path.start_with?('/meals') || current_page?(root_path) ? 'font-bold text-xl text-black' : ''}" %>
+        <%= link_to 'Meals', root_path, class: "#{request.path.start_with?('/user_meals') || current_page?(root_path) ? 'font-bold text-xl text-black' : ''}" %>
         <%= link_to 'Profile', profile_path, class: "#{current_page?(profile_path) ? 'font-bold text-xl text-black' : ''}" %>
       </nav>
       <%= render "shared/flash_messages" %>

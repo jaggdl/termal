@@ -7,7 +7,7 @@ class UserMeal < ApplicationRecord
   # after_commit :broadcast_user_meal
 
   def consumed_at_in_timezone
-    consumed_at.in_time_zone(user.user_profile.timezone)
+    consumed_at.in_time_zone(Current.user_profile.timezone)
   end
 
   def broadcast_user_meal

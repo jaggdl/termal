@@ -1,0 +1,8 @@
+<li class="flex gap-x-4 items-center">
+    <%= link_to meal_path(meal) do %>
+      <%= image_tag meal.image.variant(resize_to_limit: [256, 256]), 
+        class: "md:max-w-32 md:max-h-32 md:min-w-32 md:min-h-32 min-w-24 min-h-24 max-w-24 max-h-24 object-cover" %>
+    <% end %>
+
+  <%= render partial: 'meals/meal_info', locals: { meal: meal } %>
+</li>
