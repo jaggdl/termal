@@ -8,11 +8,17 @@
 
   <h1 class="text-2xl font-bold text-gray-800"><%= @meal.meal_name %></h1>
 
-  <%= form_with model: @meal, url: meal_path(@meal), method: :patch, class: "space-y-4" do |f| %>
+  <%= form_with model: @meal, url: meal_path(@meal), method: :patch, class: "space-y-4", data: { controller: "datetime-sync", "datetime-sync-timezone": Current.user_profile.timezone } do |f| %>
     <div class="grid grid-cols-2 gap-4">
       <div class="col-span-2 flex items-center justify-between">
         <span class="font-semibold text-gray-700">Consumed At:</span>
-        <%= f.datetime_field :consumed_at, value: @meal.consumed_at_in_timezone(@timezone), class: "border border-gray-300 p-1 rounded w-full", placeholder: "Select date and time" %>
+        <%= f.datetime_local_field :consumed_at_local, 
+            value: @meal.consumed_at_in_timezone.strftime("%Y-%m-%dT%H:%M"),
+            class: "border border-gray-300 p-1 rounded w-full", 
+            placeholder: "Select date and time",
+            data: { "datetime-sync-target": "localInput", action: "input->datetime-sync#localChanged" } %>
+        <%= f.hidden_field :consumed_at,
+            data: { "datetime-sync-target": "utcInput" } %> 
       </div>
 
       <% ["calories", "fats", "proteins", "carbs", "fiber", "sodium", "sugar", "cholesterol"].each do |attr| %>

@@ -11,6 +11,10 @@ class OnboardingController < ApplicationController
       return
     end
     
+    user.user_profile = UserProfile.new(
+      timezone: cookies[:timezone]
+    )
+
     if user.save
       start_new_session_for user
       redirect_to after_authentication_url

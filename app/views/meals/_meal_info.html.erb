@@ -1,7 +1,7 @@
 <div id="meal-<%= meal.id %>" class="flex md:flex-row flex-col justify-between w-full">
   <div class="flex flex-col">
     <%= link_to meal.meal_name, meal_path(meal), class: 'md:text-lg' %>
-    <span class="text-sm"><%= meal.consumed_at_in_timezone(@timezone).strftime("%I:%M %p") %></span>
+    <span class="text-sm"><%= meal.consumed_at_in_timezone.strftime("%I:%M %p") %></span>
   </div>
 
   <div class="flex md:justify-start justify-end space-x-2">

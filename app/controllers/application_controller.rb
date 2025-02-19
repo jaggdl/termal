@@ -3,7 +3,6 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
-  before_action :set_timezone
   before_action :authenticate_and_redirect
 
   private
@@ -12,9 +11,5 @@ class ApplicationController < ActionController::Base
     if !authenticated? && User.count.zero?
       redirect_to onboarding_path
     end
-  end
-
-  def set_timezone
-    @timezone = cookies[:timezone] || "UTC"
   end
 end

@@ -6,7 +6,7 @@ class MealsController < ApplicationController
 
   def index
     @meals_by_day = Current.user.meals.all.order(consumed_at: :desc).group_by do |meal|
-      meal.consumed_at.in_time_zone(@timezone).to_date
+      meal.consumed_at_in_timezone.to_date
     end
   end
 

@@ -3,6 +3,7 @@ class UserProfilesController < ApplicationController
 
   def show
     @profile = Current.user_profile || UserProfile.new
+    @profile.timezone ||= cookies[:timezone]
   end
 
   def update
@@ -32,6 +33,6 @@ class UserProfilesController < ApplicationController
   end
 
   def profile_params
-    params.require(:user_profile).permit(:age, :sex, :weight, :height, :physical_activity, :weight_goals, :muscle_building)
+    params.require(:user_profile).permit(:age, :sex, :weight, :height, :physical_activity, :weight_goals, :muscle_building, :timezone)
   end
 end
