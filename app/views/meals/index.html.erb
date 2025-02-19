@@ -25,11 +25,7 @@
             %>
             <%= date_string %>
           </h2>
-
-          <div class="flex space-x-4">
-            <%= render partial: 'shared/nutrient_meter', locals: { meals: meals, unit: 'calories', base_number: 3000 } %>
-            <%= render partial: 'shared/nutrient_meter', locals: { meals: meals, unit: 'proteins', base_number: 136 } %>
-          </div>
+          <%= render partial: 'shared/nutrient_meters', locals: { meals: meals, date: date } %>
         </div>
 
         <ul>
