@@ -1,16 +1,15 @@
 <div id="user-meal-<%= user_meal.id %>" class="flex md:flex-row flex-col justify-between w-full">
   <div class="flex flex-col">
-    <%= link_to user_meal.meal.meal_name, user_meal_path(user_meal), class: 'md:text-lg' %>
+    <%= link_to (user_meal.meal&.meal_name || ""), user_meal_path(user_meal), class: 'md:text-lg' %>
     <span class="text-sm text-gray-500"><%= user_meal.consumed_at_in_timezone.strftime("%I:%M %p") %></span>
   </div>
 
-  <div class="flex md:justify-start justify-end space-x-2">
-    <% nutrient_keys = ['calories', 'fats', 'proteins', 'carbs'] %>
-    <% nutrient_keys.each do |key| %>
-      <div class="text-sm flex flex-col w-10 text-right">
-        <span class="font-semibold"><%= user_meal.meal[key] %></span>
-        <span class="text-gray-500"><%= key[0, 3] %></span>
-      </div>
-    <% end %>
-  </div>
+  <% if user_meal.meal&.meal_name.present? %>
+    <%= render partial: 'meals/nutrients_table', locals: { meal: user_meal.meal } %>
+  <% else %>
+    <div class="flex items-center space-x-2 text-gray-500">
+      <div class="w-4 h-4 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin"></div>
+      <span>Processing...</span>
+    </div>
+  <% end %>
 </div>

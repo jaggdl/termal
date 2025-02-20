@@ -58,7 +58,7 @@ class UserMealsController < ApplicationController
     end
   
     @user_meal = Current.user.user_meals.build(consumed_at: Time.now)
-    @meal = @user_meal.build_meal(meal_name: "New meal")
+    @meal = @user_meal.build_meal()
 
     @meal.image.attach(params[:user_meal][:file])
   

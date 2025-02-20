@@ -48,6 +48,8 @@ class NutritionCalculator
       carbs: carbs.round,
       fats: fats.round
     }
+  rescue
+    nil
   end
 
   def calculate_bmr
