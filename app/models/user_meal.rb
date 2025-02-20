@@ -4,10 +4,8 @@ class UserMeal < ApplicationRecord
 
   validates :consumed_at, presence: true
 
-  # after_commit :broadcast_user_meal
-
   def consumed_at_in_timezone
-    consumed_at.in_time_zone(Current.user_profile.timezone)
+    consumed_at.in_time_zone(user.user_profile.timezone)
   end
 
   def broadcast_user_meal
@@ -15,7 +13,7 @@ class UserMeal < ApplicationRecord
 
     broadcast_replace_to(
       [user, "user_meals"],
-      target: "meal-#{meal.id}",
+      target: "user-meal-#{id}",
       partial: "user_meals/meal_info",
       locals: { user_meal: self }
     )
