@@ -20,3 +20,17 @@
   border-radius: 9999px;
   pointer-events: none;
 }
+
+.animate-fill {
+  animation: fill-meter 0.6s ease-in-out forwards;
+}
+
+@keyframes fill-meter {
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: var(--final-width);
+  }
+}
