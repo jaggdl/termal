@@ -21,6 +21,10 @@
   pointer-events: none;
 }
 
+.vintage-link:hover {
+  background: repeating-linear-gradient(0deg, #F8F8F8, #F8F8F8 3px, #eee 1px, #eee 5px);
+}
+
 .animate-fill {
   animation: fill-meter 0.6s ease-in-out forwards;
 }
