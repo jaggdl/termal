@@ -4,23 +4,26 @@ class UserMealsController < ApplicationController
   before_action :set_meal, only: [:show, :update, :destroy]
   before_action :check_api_key, only: [:new, :create]
 
-  def index
-    user_timezone = Current.user_profile.timezone
-    tz = ActiveSupport::TimeZone[user_timezone]
+def index
+  user_timezone = Current.user_profile.timezone
+  tz = ActiveSupport::TimeZone[user_timezone]
   
-    if params[:date]
-      @date = Date.parse(params[:date])
-    else
-      local_now = Time.current.in_time_zone(tz)
-      @date = local_now.to_date
-    end
+  local_now = Time.current.in_time_zone(tz)
+  @today = local_now.to_date
+  @yesterday = @today - 1.day
   
-    local_start = tz.local(@date.year, @date.month, @date.day, 0, 0, 0)
-    local_end = tz.local(@date.year, @date.month, @date.day, 23, 59, 59)
-  
-    @meals = Current.user_meals.where(consumed_at: local_start..local_end).order(consumed_at: :desc)
-    @meals_by_day = { @date => @meals }
+  if params[:date]
+    @date = Date.parse(params[:date])
+  else
+    @date = @today
   end
+  
+  local_start = tz.local(@date.year, @date.month, @date.day, 0, 0, 0)
+  local_end = tz.local(@date.year, @date.month, @date.day, 23, 59, 59)
+  
+  @meals = Current.user_meals.where(consumed_at: local_start..local_end).order(consumed_at: :desc)
+  @meals_by_day = { @date => @meals }
+end
 
   def new
     @user_meal = UserMeal.new

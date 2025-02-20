@@ -11,22 +11,18 @@
         <% end %>
 
         <h2 class="font-semibold w-24 text-center">
-          <% 
-            today = Date.today
-            yesterday = today - 1.day
-            date_string = case @date
-            when today
-              "Today"
-            when yesterday
-              "Yesterday"
-            else
-              @date.strftime("%B %d, %Y")
-            end
-          %>
+          <% date_string = case @date
+          when @today
+            "Today"
+          when @yesterday
+            "Yesterday"
+          else
+            @date.strftime("%B %d, %Y")
+          end %>
           <%= date_string %>
         </h2>
 
-        <% if @date < Date.today %>
+        <% if @date < @today %>
           <%= link_to user_meals_path(date: (@date + 1).to_s), class: "relative inline-flex items-center justify-center w-10 h-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2", title: "Next day" do %>
             <span class="aqua-reflection flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md hover:from-sky-400 hover:to-sky-600 text-xl">›</span>
           <% end %>
