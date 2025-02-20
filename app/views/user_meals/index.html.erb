@@ -5,8 +5,11 @@
 <div class="flex flex-col w-full space-y-6">
   <div class="flex w-full flex-col space-y-4">
     <div class="flex space-x-4 justify-between">
-      <div class="flex justify-between items-center space-x-4">
-        <%= link_to "<", user_meals_path(date: (@date - 1).to_s), class: "aqua-reflection relative inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md hover:from-sky-400 hover:to-sky-600 text-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2", title: "Previous day" %>
+      <div class="flex justify-between items-center space-x-2">
+        <%= link_to user_meals_path(date: (@date - 1).to_s), class: "relative inline-flex items-center justify-center w-10 h-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2", title: "Previous day" do %>
+          <span class="aqua-reflection flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md hover:from-sky-400 hover:to-sky-600 text-xl">‹</span>
+        <% end %>
+
         <h2 class="font-semibold w-24 text-center">
           <% 
             today = Date.today
@@ -22,10 +25,15 @@
           %>
           <%= date_string %>
         </h2>
+
         <% if @date < Date.today %>
-          <%= link_to ">", user_meals_path(date: (@date + 1).to_s), class: "aqua-reflection relative inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md hover:from-sky-400 hover:to-sky-600 text-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2", title: "Next day" %>
+          <%= link_to user_meals_path(date: (@date + 1).to_s), class: "relative inline-flex items-center justify-center w-10 h-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2", title: "Next day" do %>
+            <span class="aqua-reflection flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md hover:from-sky-400 hover:to-sky-600 text-xl">›</span>
+          <% end %>
         <% else %>
-          <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-gray-400 cursor-not-allowed text-xl" title="Next day (unavailable)">></span>
+          <span class="relative inline-flex items-center justify-center w-10 h-10 cursor-not-allowed">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 text-gray-400 text-xl">›</span>
+          </span>
         <% end %>
       </div>
       <%= render partial: 'shared/nutrient_meters', locals: { user_meals: @meals_by_day[@date], date: @date } %>
