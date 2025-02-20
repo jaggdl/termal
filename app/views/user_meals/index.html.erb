@@ -1,36 +1,46 @@
 <%= turbo_stream_from Current.user, "user_meals" %>
 
+<%= render "shared/search_bar" %>
+
 <div class="flex flex-col w-full space-y-6">
+  <div class="flex w-full flex-col space-y-4">
+    <div class="flex space-x-4 justify-between">
+      <div class="flex justify-between items-center space-x-4">
+        <%= link_to "<", user_meals_path(date: (@date - 1).to_s), class: "aqua-reflection relative inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md hover:from-sky-400 hover:to-sky-600 text-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2", title: "Previous day" %>
+        <h2 class="font-semibold w-24 text-center">
+          <% 
+            today = Date.today
+            yesterday = today - 1.day
+            date_string = case @date
+            when today
+              "Today"
+            when yesterday
+              "Yesterday"
+            else
+              @date.strftime("%B %d, %Y")
+            end
+          %>
+          <%= date_string %>
+        </h2>
+        <% if @date < Date.today %>
+          <%= link_to ">", user_meals_path(date: (@date + 1).to_s), class: "aqua-reflection relative inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md hover:from-sky-400 hover:to-sky-600 text-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2", title: "Next day" %>
+        <% else %>
+          <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-gray-400 cursor-not-allowed text-xl" title="Next day (unavailable)">></span>
+        <% end %>
+      </div>
+      <%= render partial: 'shared/nutrient_meters', locals: { user_meals: @meals_by_day[@date], date: @date } %>
+    </div>
 
-  <div class="flex w-full flex-col space-y-8">
-    <% @meals_by_day.each do |date, user_meals| %>
+    <% if @meals_by_day[@date].any? %>
       <div class="w-full">
-
-        <div class="flex md:flex-row flex-col justify-between items-center md:items-end">
-          <h2 class="mb-4 font-semibold">
-            <% 
-              today = Date.today
-              yesterday = today - 1.day
-              date_string = case date
-              when today
-                "Today"
-              when yesterday
-                "Yesterday"
-              else
-                date.strftime("%B %d, %Y")
-              end
-            %>
-            <%= date_string %>
-          </h2>
-          <%= render partial: 'shared/nutrient_meters', locals: { user_meals: user_meals, date: date } %>
-        </div>
-
-        <ul id="user-meals-<%= date.to_s %>">
-          <% user_meals.each do |user_meal| %>
+        <ul id="user-meals-<%= @date.to_s %>">
+          <% @meals_by_day[@date].each do |user_meal| %>
             <%= render user_meal %>
           <% end %>
         </ul>
       </div>
+    <% else %>
+      <p>No meals for this day.</p>
     <% end %>
   </div>
 </div>

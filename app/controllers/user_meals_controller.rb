@@ -5,9 +5,9 @@ class UserMealsController < ApplicationController
   before_action :check_api_key, only: [:new, :create]
 
   def index
-    @meals_by_day = Current.user_meals.all.order(consumed_at: :desc).group_by do |meal|
-      meal.consumed_at_in_timezone.to_date
-    end
+    @date = params[:date] ? Date.parse(params[:date]) : Date.today
+    @meals = Current.user_meals.where(consumed_at: @date.all_day).order(consumed_at: :desc)
+    @meals_by_day = { @date => @meals }
   end
 
   def new
