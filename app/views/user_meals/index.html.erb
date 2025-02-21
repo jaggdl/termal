@@ -44,7 +44,10 @@
         </ul>
       </div>
     <% else %>
-      <p>No meals for this day.</p>
+      <div class="w-full flex items-center justify-center pt-12 flex-col gap-6">
+        <p>No meals for this day</p>
+        <%= render partial: 'shared/aqua_button', locals: { text: 'New Meal', path: new_user_meal_path } %>
+      </div>
     <% end %>
   </div>
 </div>
