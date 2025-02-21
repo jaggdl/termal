@@ -1,0 +1,6 @@
+<% arrow = direction == 'left' ? '‹' : '›' %>
+<% if disabled %>
+  <span class="flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 text-gray-400 text-xl"><%= arrow %></span>
+<% else %>
+  <span class="aqua-reflection flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md group-hover:from-sky-400 group-hover:to-sky-600 text-xl"><%= arrow %></span>
+<% end %>

@@ -1,42 +1,47 @@
-<div class="max-w-xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-6">
-  <%= link_to "Back", root_path, class: "text-blue-600 hover:underline" %>
-  <% if @user_meal.meal.image.attached? %>
-    <%= image_tag @user_meal.meal.image.variant(resize_to_limit: [1056, 1056]), class: "round w-full object-cover" %>
-  <% else %>
-    <span class="text-muted">No Image</span>
+<div class="space-y-6">
+  <%= link_to request.referer || root_path, class: "flex gap-2 group p-2 relative" do %>
+    <%= render partial: "shared/arrow_button", locals: { direction: "left", disabled: false } %>
+    <span>Back</span>
   <% end %>
 
-  <h1 class="text-2xl font-bold text-gray-800"><%= @user_meal.meal.meal_name %></h1>
+  <div class="flex gap-6 flex-col md:flex-row items-center md:items-start">
+    <%= image_tag @user_meal.meal.image.variant(resize_to_limit: [576, 576]), class: "round w-72 min-w-72 max-w-72 bg-gray-200 object-cover" %>
 
-  <%= form_with model: @user_meal, url: user_meal_path(@user_meal), method: :patch, class: "space-y-4", data: { controller: "datetime-sync", "datetime-sync-timezone": Current.user_profile.timezone } do |f| %>
-    <div class="grid grid-cols-2 gap-4">
-      <div class="col-span-2 flex items-center justify-between">
-        <span class="font-semibold text-gray-700">Consumed At:</span>
-        <%= f.datetime_local_field :consumed_at_local, 
-            value: @user_meal.consumed_at_in_timezone.strftime("%Y-%m-%dT%H:%M"),
-            class: "border border-gray-300 p-1 rounded w-full", 
-            placeholder: "Select date and time",
-            data: { "datetime-sync-target": "localInput", action: "input->datetime-sync#localChanged" } %>
-        <%= f.hidden_field :consumed_at,
-            data: { "datetime-sync-target": "utcInput" } %> 
-      </div>
+    <div class="w-full">
+      <h1 class="text-2xl font-bold text-gray-800 mb-6"><%= @user_meal.meal.meal_name %></h1>
 
-      <% ["calories", "fats", "proteins", "carbs", "fiber", "sodium", "sugar", "cholesterol"].each do |attr| %>
-        <div class="flex items-center justify-between">
-          <span class="font-semibold text-gray-700"><%= attr.humanize %>:</span>
-          <span><%= @user_meal.meal[attr] %></span>
+      <%= form_with model: @user_meal, url: user_meal_path(@user_meal), method: :patch, class: "space-y-4", data: { controller: "datetime-sync", "datetime-sync-timezone": Current.user_profile.timezone } do |f| %>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="col-span-2 flex items-center justify-between">
+            <span class="font-semibold text-gray-700">Consumed:</span>
+            <%= f.datetime_local_field :consumed_at_local, 
+                value: @user_meal.consumed_at_in_timezone.strftime("%Y-%m-%dT%H:%M"),
+                class: "border border-gray-300 p-1 rounded w-full", 
+                placeholder: "Select date and time",
+                data: { "datetime-sync-target": "localInput", action: "input->datetime-sync#localChanged" } %>
+            <%= f.hidden_field :consumed_at,
+                data: { "datetime-sync-target": "utcInput" } %> 
+          </div>
+
+          <% ["calories", "fats", "proteins", "carbs", "fiber", "sodium", "sugar", "cholesterol"].each do |attr| %>
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-gray-700"><%= attr.humanize %>:</span>
+              <span><%= @user_meal.meal[attr] %></span>
+            </div>
+          <% end %>
+
         </div>
+
+        <div class="mt-6 flex justify-between">
+          <%= f.submit "Save Changes", class: "bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700" %>
+        </div>
+
+        <div class="flex gap-2">
+          <%= link_to 'Remove', user_meal_path(@user_meal), class: 'btn btn-sm btn-outline-danger', data: { turbo_method: "delete", turbo_confirm: "Are you sure?" } %>
+        </div>
+
       <% end %>
-
     </div>
+  </div>
 
-    <div class="mt-6 flex justify-between">
-      <%= f.submit "Save Changes", class: "bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700" %>
-    </div>
-
-    <div class="flex gap-2">
-      <%= link_to 'Remove', user_meal_path(@user_meal), class: 'btn btn-sm btn-outline-danger', data: { turbo_method: "delete", turbo_confirm: "Are you sure?" } %>
-    </div>
-
-  <% end %>
 </div>
