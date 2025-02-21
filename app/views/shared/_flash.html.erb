@@ -1,13 +1,13 @@
-<div class="absolute top-0 right-0 p-4 space-y-2">
+<div id="flash" class="p-4 m-auto max-w-4xl flex justify-end w-full space-y-2">
   <% flash.each do |key, message| %>
     <div class="flex justify-between items-center mb-2 p-4 rounded-lg text-white
-                <%= 'bg-green-500' if key == 'notice' %>
-                <%= 'bg-red-500' if key == 'alert' %>
-                <%= 'bg-yellow-500' if key == 'warning' %>"
+                <%= 'bg-green-500' if key.to_s == 'notice' %>
+                <%= 'bg-red-500' if key.to_s == 'alert' %>
+                <%= 'bg-yellow-500' if key.to_s == 'warning' %>"
          data-controller="flash" data-flash-key="<%= key %>">
       <span><%= message %></span>
       <button type="button" class="text-white" data-action="click->flash#close">
-        <span aria-hidden="true">&times;</span>
+        <span aria-hidden="true">×</span>
       </button>
     </div>
   <% end %>

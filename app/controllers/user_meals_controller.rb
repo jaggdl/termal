@@ -54,7 +54,16 @@ class UserMealsController < ApplicationController
     return create_from_meal_id if params[:meal_id]
 
     unless params[:user_meal][:file].present?
-      redirect_to new_meal_path, alert: "No image data provided." and return
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            "flash",
+            partial: "shared/flash",
+            locals: { flash: { alert: "No image data provided." } }
+          )
+        end
+        format.html { redirect_to new_user_meal_path, alert: "No image data provided." }
+      end and return
     end
   
     @user_meal = Current.user.user_meals.build(consumed_at: Time.now)
@@ -72,7 +81,16 @@ class UserMealsController < ApplicationController
     rescue => e
       Rails.logger.error("Error in MealsController#create: #{e.message}")
       Rails.logger.error(e.backtrace.join("\n"))
-      render :new, alert: "An unexpected error occurred. Please try again."
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            "flash",
+            partial: "shared/flash",
+            locals: { flash: { alert: "An unexpected error occurred. Please try again." } }
+          )
+        end
+        format.html { render :new, alert: "An unexpected error occurred. Please try again." }
+      end
     end
   end
 
