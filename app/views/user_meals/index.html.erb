@@ -35,16 +35,15 @@
       <%= render partial: "shared/nutrient_meters", locals: { user_meals: @meals_by_day[@date], date: @date, user_profile: Current.user_profile } %>
     </div>
 
-    <% if @meals_by_day[@date].any? %>
-      <div class="w-full">
-        <ul id="user-meals-<%= @date.to_s %>">
-          <% @meals_by_day[@date].each do |user_meal| %>
-            <%= render user_meal %>
-          <% end %>
-        </ul>
-      </div>
-    <% else %>
-      <div class="w-full flex items-center justify-center pt-12 flex-col gap-6">
+    <div class="w-full">
+      <ul id="user-meals-<%= @date.to_s %>">
+        <% @meals_by_day[@date].each do |user_meal| %>
+          <%= render user_meal %>
+        <% end %>
+      </ul>
+    </div>
+    <% if @meals_by_day[@date].none? %>
+      <div id="no-meals-message" class="w-full flex items-center justify-center pt-12 flex-col gap-6">
         <p>No meals for this day</p>
         <%= render partial: 'shared/aqua_button', locals: { text: 'New Meal', path: new_user_meal_path } %>
       </div>

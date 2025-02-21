@@ -120,15 +120,18 @@ class UserMealsController < ApplicationController
   def create_from_meal_id
     meal_id = params[:meal_id]
     @user_meal = Current.user_meals.new(meal_id: meal_id, consumed_at: Time.now)
-
+  
     if @user_meal.save
       date = @user_meal.consumed_at_in_timezone.to_date
-
-      render turbo_stream: turbo_stream.prepend(
-        "user-meals-#{date.to_s}",
-        partial: 'user_meals/user_meal',
-        locals: { user_meal: @user_meal }
-      )
+  
+      render turbo_stream: [
+        turbo_stream.prepend(
+          "user-meals-#{date.to_s}",
+          partial: 'user_meals/user_meal',
+          locals: { user_meal: @user_meal }
+        ),
+        turbo_stream.remove("no-meals-message")
+      ]
     else
       respond_to do |format|
         format.turbo_stream { render turbo_stream: turbo_stream.replace('new_user_meal_form', partial: 'form', locals: { user_meal: @user_meal }) }
