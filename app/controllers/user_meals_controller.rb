@@ -130,11 +130,22 @@ class UserMealsController < ApplicationController
           partial: 'user_meals/user_meal',
           locals: { user_meal: @user_meal }
         ),
-        turbo_stream.remove("no-meals-message")
+        turbo_stream.remove("no-meals-message"),
+        turbo_stream.replace(
+          "flash",
+          partial: "shared/flash",
+          locals: { flash: { notice: "Meal successfully added" } }
+        )
       ]
     else
       respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.replace('new_user_meal_form', partial: 'form', locals: { user_meal: @user_meal }) }
+        format.turbo_stream { 
+          render turbo_stream: turbo_stream.replace(
+            "flash",
+            partial: "shared/flash",
+            locals: { flash: { alert: "Something went wrong. Please try again" } }
+          )
+        }
         format.html { render :new, status: :unprocessable_entity }
       end
     end
