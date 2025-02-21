@@ -44,7 +44,7 @@ class NutritionCalculator
     # Return rounded results
     {
       calories: calories.round,
-      protein: protein.round,
+      proteins: protein.round,
       carbs: carbs.round,
       fats: fats.round
     }

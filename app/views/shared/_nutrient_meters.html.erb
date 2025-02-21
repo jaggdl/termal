@@ -1,6 +1,14 @@
-<div id="nutrient-meters-<%= date.to_s %>" class="flex space-x-4">
-  <%= render partial: 'shared/nutrient_meter', 
-            locals: { user_meals: user_meals, unit: 'calories', base_number: user_profile.daily_targets[:calories] } %>
-  <%= render partial: 'shared/nutrient_meter', 
-            locals: { user_meals: user_meals, unit: 'proteins', base_number: user_profile.daily_targets[:protein] } %>
+<div id="nutrient-meters-<%= date.to_s %>" class="flex lg:space-x-4 flex-col lg:flex-row">
+  <div class="flex space-x-4">
+    <%= render partial: 'shared/nutrient_meter', 
+              locals: { user_meals: user_meals, unit: 'calories', daily_targets: user_profile.daily_targets } %>
+    <%= render partial: 'shared/nutrient_meter', 
+              locals: { user_meals: user_meals, unit: 'fats', daily_targets: user_profile.daily_targets } %>
+  </div>
+  <div class="flex space-x-4">
+    <%= render partial: 'shared/nutrient_meter', 
+              locals: { user_meals: user_meals, unit: 'proteins', daily_targets: user_profile.daily_targets } %>
+    <%= render partial: 'shared/nutrient_meter', 
+              locals: { user_meals: user_meals, unit: 'carbs', daily_targets: user_profile.daily_targets } %>
+  </div>
 </div>
