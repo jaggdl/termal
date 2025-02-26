@@ -14,6 +14,25 @@ class NutritionCalculator
     "maintain_muscle" => 1.2
   }.freeze
 
+  # Default values for average person
+  DEFAULT_TARGETS = {
+    calories: 2000,
+    proteins: 50,
+    carbs: 250,
+    fats: 70
+  }.freeze
+
+  # Default values to use in calculations if profile data is missing
+  DEFAULT_VALUES = {
+    sex: "male",
+    weight: 70, # kg
+    height: 170, # cm
+    age: 30,
+    physical_activity: "moderately_active",
+    weight_goals: "maintain",
+    muscle_building: "maintain_muscle"
+  }.freeze
+
   def initialize(user_profile)
     @user_profile = user_profile
   end
@@ -27,7 +46,8 @@ class NutritionCalculator
   def calculate_daily_targets
     # Calculate BMR and TDEE
     bmr = calculate_bmr
-    tdee = bmr * ACTIVITY_FACTORS[@user_profile.physical_activity]
+    activity = @user_profile.physical_activity || DEFAULT_VALUES[:physical_activity]
+    tdee = bmr * ACTIVITY_FACTORS[activity]
 
     # Adjust calories based on weight goals
     calories = adjust_calories(tdee)
@@ -49,19 +69,27 @@ class NutritionCalculator
       fats: fats.round
     }
   rescue
-    nil
+    # Return default targets if calculation fails
+    DEFAULT_TARGETS
   end
 
   def calculate_bmr
-    if @user_profile.sex == "male"
-      (10 * @user_profile.weight) + (6.25 * @user_profile.height) - (5 * @user_profile.age) + 5
+    sex = @user_profile.sex || DEFAULT_VALUES[:sex]
+    weight = @user_profile.weight || DEFAULT_VALUES[:weight]
+    height = @user_profile.height || DEFAULT_VALUES[:height]
+    age = @user_profile.age || DEFAULT_VALUES[:age]
+
+    if sex == "male"
+      (10 * weight) + (6.25 * height) - (5 * age) + 5
     else
-      (10 * @user_profile.weight) + (6.25 * @user_profile.height) - (5 * @user_profile.age) - 161
+      (10 * weight) + (6.25 * height) - (5 * age) - 161
     end
   end
 
   def adjust_calories(tdee)
-    case @user_profile.weight_goals
+    weight_goals = @user_profile.weight_goals || DEFAULT_VALUES[:weight_goals]
+
+    case weight_goals
     when "lose_weight"
       tdee - 500
     when "gain_weight"
@@ -72,7 +100,10 @@ class NutritionCalculator
   end
 
   def calculate_protein
-    multiplier = PROTEIN_MULTIPLIERS[@user_profile.muscle_building]
-    @user_profile.weight * multiplier
+    muscle_building = @user_profile.muscle_building || DEFAULT_VALUES[:muscle_building]
+    weight = @user_profile.weight || DEFAULT_VALUES[:weight]
+
+    multiplier = PROTEIN_MULTIPLIERS[muscle_building]
+    weight * multiplier
   end
 end
