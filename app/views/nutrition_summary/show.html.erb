@@ -6,6 +6,9 @@
      data-nutrition-charts-carbs-value="<%= @summary[:carbs].to_json %>"
      data-nutrition-charts-fats-value="<%= @summary[:fats].to_json %>"
      data-nutrition-charts-calories-target-value="<%= @summary[:daily_targets][:calories] %>"
+     data-nutrition-charts-proteins-target-value="<%= @summary[:daily_targets][:proteins] %>"
+     data-nutrition-charts-carbs-target-value="<%= @summary[:daily_targets][:carbs] %>"
+     data-nutrition-charts-fats-target-value="<%= @summary[:daily_targets][:fats] %>"
      data-nutrition-charts-period-value="<%= @period %>">
   
   <h1 class="text-2xl font-bold text-center mb-6">Nutrition Summary</h1>
@@ -20,7 +23,7 @@
   <!-- Summary cards -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
     <!-- Calories card -->
-    <div class="bg-white rounded-lg shadow-md p-4">
+    <div data-nutrition-charts-target="card" data-type="calories" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer">
       <h3 class="text-lg font-semibold text-center mb-2">Calories</h3>
       <div class="text-3xl font-bold text-center mb-2"><%= @summary[:averages][:calories].round %></div>
       <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
@@ -33,7 +36,7 @@
     </div>
 
     <!-- Proteins card -->
-    <div class="bg-white rounded-lg shadow-md p-4">
+    <div data-nutrition-charts-target="card" data-type="proteins" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer">
       <h3 class="text-lg font-semibold text-center mb-2">Proteins</h3>
       <div class="text-3xl font-bold text-center mb-2"><%= @summary[:averages][:proteins].round(1) %>g</div>
       <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
@@ -46,7 +49,7 @@
     </div>
 
     <!-- Carbs card -->
-    <div class="bg-white rounded-lg shadow-md p-4">
+    <div data-nutrition-charts-target="card" data-type="carbs" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer">
       <h3 class="text-lg font-semibold text-center mb-2">Carbs</h3>
       <div class="text-3xl font-bold text-center mb-2"><%= @summary[:averages][:carbs].round(1) %>g</div>
       <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
@@ -59,7 +62,7 @@
     </div>
 
     <!-- Fats card -->
-    <div class="bg-white rounded-lg shadow-md p-4">
+    <div data-nutrition-charts-target="card" data-type="fats" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer">
       <h3 class="text-lg font-semibold text-center mb-2">Fats</h3>
       <div class="text-3xl font-bold text-center mb-2"><%= @summary[:averages][:fats].round(1) %>g</div>
       <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
@@ -72,18 +75,12 @@
     </div>
   </div>
 
-  <!-- Charts -->
-  <div class="space-y-8">
-    <!-- Calories Chart -->
-    <div class="bg-white rounded-lg shadow-md p-4">
-      <h3 class="text-lg font-semibold mb-4">Calories Over Time</h3>
-      <canvas data-nutrition-charts-target="caloriesChart" height="250"></canvas>
-    </div>
-    
-    <!-- Macronutrients Chart -->
-    <div class="bg-white rounded-lg shadow-md p-4">
-      <h3 class="text-lg font-semibold mb-4">Macronutrients Over Time</h3>
-      <canvas data-nutrition-charts-target="macroChart" height="250"></canvas>
+  <!-- Single Dynamic Chart -->
+  <div class="bg-white rounded-lg shadow-md p-4">
+    <h3 class="text-lg font-semibold mb-4">Nutrient Over Time</h3>
+    <p class="text-sm text-gray-500 mb-4">Click on a card above to view different nutrients</p>
+    <div class="max-h-[560px]">
+      <canvas data-nutrition-charts-target="chart" height="400"></canvas>
     </div>
   </div>
 </div>

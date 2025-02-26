@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="nutrition-charts"
 export default class extends Controller {
-  static targets = ["caloriesChart", "macroChart"]
+  static targets = ["chart", "card"]
   static values = { 
     dates: Array,
     calories: Array,
@@ -10,18 +10,29 @@ export default class extends Controller {
     carbs: Array,
     fats: Array,
     caloriesTarget: Number,
-    period: Number
+    proteinsTarget: Number,
+    carbsTarget: Number,
+    fatsTarget: Number,
+    period: Number,
+    activeType: { type: String, default: "calories" }
   }
 
   connect() {
     if (typeof Chart === 'undefined') {
       // Load Chart.js if not available yet
       this.loadChartJs().then(() => {
-        this.initializeCharts()
+        this.initializeChart()
       })
     } else {
-      this.initializeCharts()
+      this.initializeChart()
     }
+    
+    // Add active class to the calories card by default
+    this.cardTargets.forEach(card => {
+      if (card.dataset.type === "calories") {
+        card.classList.add("ring-2", "ring-sky-400")
+      }
+    })
   }
 
   loadChartJs() {
@@ -33,29 +44,86 @@ export default class extends Controller {
     })
   }
 
-  initializeCharts() {
-    this.createCaloriesChart()
-    this.createMacroChart()
+  initializeChart() {
+    // Store the chart context since we'll recreate it
+    this.chartCtx = this.chartTarget.getContext('2d')
+    
+    // Create initial calories chart
+    this.createChart("calories")
+  }
+  
+  showNutrient(event) {
+    const type = event.currentTarget.dataset.type
+    
+    // Update active card styling
+    this.cardTargets.forEach(card => {
+      if (card.dataset.type === type) {
+        card.classList.add("ring-2", "ring-sky-400")
+      } else {
+        card.classList.remove("ring-2", "ring-sky-400")
+      }
+    })
+    
+    // Update chart
+    this.activeTypeValue = type
+    this.createChart(type)
   }
 
-  createCaloriesChart() {
-    const ctx = this.caloriesChartTarget.getContext('2d')
+  createChart(type) {
+    // Destroy existing chart if there is one
+    if (this.chart) {
+      this.chart.destroy()
+    }
     
-    new Chart(ctx, {
+    // Prepare data based on nutrient type
+    let data, target, color, unit, title
+    
+    switch(type) {
+      case "proteins":
+        data = this.proteinsValue
+        target = this.proteinsTargetValue
+        color = "rgba(244, 63, 94, 1)"
+        unit = "g"
+        title = "Proteins (g)"
+        break
+      case "carbs":
+        data = this.carbsValue
+        target = this.carbsTargetValue
+        color = "rgba(16, 185, 129, 1)"
+        unit = "g"
+        title = "Carbs (g)"
+        break
+      case "fats":
+        data = this.fatsValue
+        target = this.fatsTargetValue
+        color = "rgba(251, 191, 36, 1)"
+        unit = "g"
+        title = "Fats (g)"
+        break
+      default: // calories
+        data = this.caloriesValue
+        target = this.caloriesTargetValue
+        color = "rgba(56, 189, 248, 1)"
+        unit = ""
+        title = "Calories"
+    }
+    
+    // Create new chart
+    this.chart = new Chart(this.chartCtx, {
       type: 'line',
       data: {
         labels: this.datesValue,
         datasets: [{
-          label: 'Calories',
-          data: this.caloriesValue,
-          backgroundColor: 'rgba(56, 189, 248, 0.2)',
-          borderColor: 'rgba(56, 189, 248, 1)',
+          label: title,
+          data: data,
+          backgroundColor: color.replace("1)", "0.2)"),
+          borderColor: color,
           borderWidth: 2,
           tension: 0.3,
           fill: true
         }, {
           label: 'Target',
-          data: Array(this.periodValue).fill(this.caloriesTargetValue),
+          data: Array(this.periodValue).fill(target),
           borderColor: 'rgba(220, 38, 38, 0.7)',
           borderWidth: 1,
           borderDash: [5, 5],
@@ -65,6 +133,7 @@ export default class extends Controller {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: {
             position: 'top',
@@ -72,6 +141,18 @@ export default class extends Controller {
           tooltip: {
             mode: 'index',
             intersect: false,
+            callbacks: {
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                if (context.parsed.y !== null) {
+                  label += context.parsed.y + (unit ? unit : '');
+                }
+                return label;
+              }
+            }
           }
         },
         scales: {
@@ -79,66 +160,7 @@ export default class extends Controller {
             beginAtZero: true,
             title: {
               display: true,
-              text: 'Calories'
-            }
-          },
-          x: {
-            grid: {
-              display: false
-            }
-          }
-        }
-      }
-    })
-  }
-
-  createMacroChart() {
-    const ctx = this.macroChartTarget.getContext('2d')
-    
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: this.datesValue,
-        datasets: [{
-          label: 'Proteins (g)',
-          data: this.proteinsValue,
-          backgroundColor: 'rgba(244, 63, 94, 0.2)',
-          borderColor: 'rgba(244, 63, 94, 1)',
-          borderWidth: 2,
-          tension: 0.3
-        }, {
-          label: 'Carbs (g)',
-          data: this.carbsValue,
-          backgroundColor: 'rgba(16, 185, 129, 0.2)',
-          borderColor: 'rgba(16, 185, 129, 1)',
-          borderWidth: 2,
-          tension: 0.3
-        }, {
-          label: 'Fats (g)',
-          data: this.fatsValue,
-          backgroundColor: 'rgba(251, 191, 36, 0.2)',
-          borderColor: 'rgba(251, 191, 36, 1)',
-          borderWidth: 2,
-          tension: 0.3
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'top',
-          },
-          tooltip: {
-            mode: 'index',
-            intersect: false,
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Grams'
+              text: title
             }
           },
           x: {
