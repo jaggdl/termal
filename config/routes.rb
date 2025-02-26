@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   end
 
   resources :user_meals
+  get "nutrition_summary", to: "nutrition_summary#show", as: :nutrition_summary
 
   get "/global_settings", to: "global_settings#index", as: :global_settings
   patch "/global_settings", to: "global_settings#update", as: :update_global_settings

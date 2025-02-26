@@ -1,0 +1,85 @@
+<div class="mx-auto py-6 w-full"
+     data-controller="nutrition-charts"
+     data-nutrition-charts-dates-value="<%= @dates.to_json %>"
+     data-nutrition-charts-calories-value="<%= @calories.to_json %>"
+     data-nutrition-charts-proteins-value="<%= @proteins.to_json %>"
+     data-nutrition-charts-carbs-value="<%= @carbs.to_json %>"
+     data-nutrition-charts-fats-value="<%= @fats.to_json %>"
+     data-nutrition-charts-calories-target-value="<%= @daily_targets[:calories] %>"
+     data-nutrition-charts-period-value="<%= @period %>">
+  
+  <h1 class="text-2xl font-bold text-center mb-6">Nutrition Summary</h1>
+  
+  <!-- Period selector -->
+  <div class="mb-8 flex justify-center space-x-4">
+    <%= link_to "Last 7 Days", nutrition_summary_path(period: 7), class: "#{@period == 7 ? 'aqua-reflection bg-gradient-to-b from-sky-300 to-sky-500' : 'bg-gray-200'} px-4 py-2 rounded-full text-sm #{@period == 7 ? 'text-white' : 'text-gray-700'}" %>
+    <%= link_to "Last 14 Days", nutrition_summary_path(period: 14), class: "#{@period == 14 ? 'aqua-reflection bg-gradient-to-b from-sky-300 to-sky-500' : 'bg-gray-200'} px-4 py-2 rounded-full text-sm #{@period == 14 ? 'text-white' : 'text-gray-700'}" %>
+    <%= link_to "Last 28 Days", nutrition_summary_path(period: 28), class: "#{@period == 28 ? 'aqua-reflection bg-gradient-to-b from-sky-300 to-sky-500' : 'bg-gray-200'} px-4 py-2 rounded-full text-sm #{@period == 28 ? 'text-white' : 'text-gray-700'}" %>
+  </div>
+
+  <!-- Summary cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <!-- Calories card -->
+    <div class="bg-white rounded-lg shadow-md p-4">
+      <h3 class="text-lg font-semibold text-center mb-2">Calories</h3>
+      <div class="text-3xl font-bold text-center mb-2"><%= @avg_calories.round %></div>
+      <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
+      
+      <% status_color = @avg_calories_pct > 110 ? "text-red-500" : (@avg_calories_pct < 90 ? "text-amber-500" : "text-green-500") %>
+      <div class="text-center <%= status_color %>">
+        <%= @avg_calories_pct %>% of target
+      </div>
+    </div>
+
+    <!-- Proteins card -->
+    <div class="bg-white rounded-lg shadow-md p-4">
+      <h3 class="text-lg font-semibold text-center mb-2">Proteins</h3>
+      <div class="text-3xl font-bold text-center mb-2"><%= @avg_proteins.round(1) %>g</div>
+      <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
+      
+      <% status_color = @avg_proteins_pct > 110 ? "text-green-500" : (@avg_proteins_pct < 90 ? "text-amber-500" : "text-green-500") %>
+      <div class="text-center <%= status_color %>">
+        <%= @avg_proteins_pct %>% of target
+      </div>
+    </div>
+
+    <!-- Carbs card -->
+    <div class="bg-white rounded-lg shadow-md p-4">
+      <h3 class="text-lg font-semibold text-center mb-2">Carbs</h3>
+      <div class="text-3xl font-bold text-center mb-2"><%= @avg_carbs.round(1) %>g</div>
+      <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
+      
+      <% status_color = @avg_carbs_pct > 110 ? "text-red-500" : (@avg_carbs_pct < 90 ? "text-amber-500" : "text-green-500") %>
+      <div class="text-center <%= status_color %>">
+        <%= @avg_carbs_pct %>% of target
+      </div>
+    </div>
+
+    <!-- Fats card -->
+    <div class="bg-white rounded-lg shadow-md p-4">
+      <h3 class="text-lg font-semibold text-center mb-2">Fats</h3>
+      <div class="text-3xl font-bold text-center mb-2"><%= @avg_fats.round(1) %>g</div>
+      <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
+      
+      <% status_color = @avg_fats_pct > 110 ? "text-red-500" : (@avg_fats_pct < 90 ? "text-amber-500" : "text-green-500") %>
+      <div class="text-center <%= status_color %>">
+        <%= @avg_fats_pct %>% of target
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="space-y-8">
+    <!-- Calories Chart -->
+    <div class="bg-white rounded-lg shadow-md p-4">
+      <h3 class="text-lg font-semibold mb-4">Calories Over Time</h3>
+      <canvas data-nutrition-charts-target="caloriesChart" height="250"></canvas>
+    </div>
+    
+    <!-- Macronutrients Chart -->
+    <div class="bg-white rounded-lg shadow-md p-4">
+      <h3 class="text-lg font-semibold mb-4">Macronutrients Over Time</h3>
+      <canvas data-nutrition-charts-target="macroChart" height="250"></canvas>
+    </div>
+  </div>
+</div>
