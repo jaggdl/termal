@@ -26,7 +26,8 @@
 
   <body>
     <main class="container mx-auto md:mt-20 mt-6 px-5 flex flex-col font-mono max-w-4xl">
-      <nav class="flex space-x-8 text-gray-600 items-end mb-4">
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex space-x-8 text-gray-600 items-end mb-4">
         <%= link_to 'Meals', root_path, class: "#{current_page?(root_path) || request.path.start_with?('/user_meals') ? 'font-bold text-xl text-black' : ''}" %>
         <%= link_to 'Summary', nutrition_summary_path, class: "#{current_page?(nutrition_summary_path) ? 'font-bold text-xl text-black' : ''}" %>
         <div class="w-full flex justify-end items-center space-x-8">
@@ -34,6 +35,19 @@
           <%= render partial: 'shared/aqua_button', locals: { text: 'New Meal', path: new_user_meal_path } %>
         </div>
       </nav>
+      
+      <!-- Mobile Navigation -->
+      <nav class="md:hidden flex justify-between items-center mb-4">
+        <div class="flex items-center">
+          <%= link_to 'Meals', root_path, class: "mr-4 #{current_page?(root_path) || request.path.start_with?('/user_meals') ? 'font-bold text-black' : 'text-gray-600'}" %>
+          <%= link_to 'Summary', nutrition_summary_path, class: "#{current_page?(nutrition_summary_path) ? 'font-bold text-black' : 'text-gray-600'}" %>
+        </div>
+        <div class="flex items-center">
+          <%= link_to 'Profile', profile_path, class: "mr-2 #{current_page?(profile_path) ? 'font-bold text-black' : 'text-gray-600'}" %>
+          <%= link_to '+', new_user_meal_path, class: "bg-gradient-to-r from-cyan-400 to-blue-500 text-white px-3 py-1 rounded-lg font-bold" %>
+        </div>
+      </nav>
+      
       <div class="fixed z-10 top-0 left-0 right-0">
         <%= render "shared/flash", flash: flash %>
       </div>
