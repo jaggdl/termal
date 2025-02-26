@@ -1,11 +1,11 @@
 <div class="mx-auto py-6 w-full"
      data-controller="nutrition-charts"
-     data-nutrition-charts-dates-value="<%= @dates.to_json %>"
-     data-nutrition-charts-calories-value="<%= @calories.to_json %>"
-     data-nutrition-charts-proteins-value="<%= @proteins.to_json %>"
-     data-nutrition-charts-carbs-value="<%= @carbs.to_json %>"
-     data-nutrition-charts-fats-value="<%= @fats.to_json %>"
-     data-nutrition-charts-calories-target-value="<%= @daily_targets[:calories] %>"
+     data-nutrition-charts-dates-value="<%= @summary[:dates].to_json %>"
+     data-nutrition-charts-calories-value="<%= @summary[:calories].to_json %>"
+     data-nutrition-charts-proteins-value="<%= @summary[:proteins].to_json %>"
+     data-nutrition-charts-carbs-value="<%= @summary[:carbs].to_json %>"
+     data-nutrition-charts-fats-value="<%= @summary[:fats].to_json %>"
+     data-nutrition-charts-calories-target-value="<%= @summary[:daily_targets][:calories] %>"
      data-nutrition-charts-period-value="<%= @period %>">
   
   <h1 class="text-2xl font-bold text-center mb-6">Nutrition Summary</h1>
@@ -22,48 +22,52 @@
     <!-- Calories card -->
     <div class="bg-white rounded-lg shadow-md p-4">
       <h3 class="text-lg font-semibold text-center mb-2">Calories</h3>
-      <div class="text-3xl font-bold text-center mb-2"><%= @avg_calories.round %></div>
+      <div class="text-3xl font-bold text-center mb-2"><%= @summary[:averages][:calories].round %></div>
       <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
       
-      <% status_color = @avg_calories_pct > 110 ? "text-red-500" : (@avg_calories_pct < 90 ? "text-amber-500" : "text-green-500") %>
+      <% calories_pct = @summary[:percentages][:calories] %>
+      <% status_color = calories_pct > 110 ? "text-red-500" : (calories_pct < 90 ? "text-amber-500" : "text-green-500") %>
       <div class="text-center <%= status_color %>">
-        <%= @avg_calories_pct %>% of target
+        <%= calories_pct %>% of target
       </div>
     </div>
 
     <!-- Proteins card -->
     <div class="bg-white rounded-lg shadow-md p-4">
       <h3 class="text-lg font-semibold text-center mb-2">Proteins</h3>
-      <div class="text-3xl font-bold text-center mb-2"><%= @avg_proteins.round(1) %>g</div>
+      <div class="text-3xl font-bold text-center mb-2"><%= @summary[:averages][:proteins].round(1) %>g</div>
       <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
       
-      <% status_color = @avg_proteins_pct > 110 ? "text-green-500" : (@avg_proteins_pct < 90 ? "text-amber-500" : "text-green-500") %>
+      <% proteins_pct = @summary[:percentages][:proteins] %>
+      <% status_color = proteins_pct > 110 ? "text-green-500" : (proteins_pct < 90 ? "text-amber-500" : "text-green-500") %>
       <div class="text-center <%= status_color %>">
-        <%= @avg_proteins_pct %>% of target
+        <%= proteins_pct %>% of target
       </div>
     </div>
 
     <!-- Carbs card -->
     <div class="bg-white rounded-lg shadow-md p-4">
       <h3 class="text-lg font-semibold text-center mb-2">Carbs</h3>
-      <div class="text-3xl font-bold text-center mb-2"><%= @avg_carbs.round(1) %>g</div>
+      <div class="text-3xl font-bold text-center mb-2"><%= @summary[:averages][:carbs].round(1) %>g</div>
       <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
       
-      <% status_color = @avg_carbs_pct > 110 ? "text-red-500" : (@avg_carbs_pct < 90 ? "text-amber-500" : "text-green-500") %>
+      <% carbs_pct = @summary[:percentages][:carbs] %>
+      <% status_color = carbs_pct > 110 ? "text-red-500" : (carbs_pct < 90 ? "text-amber-500" : "text-green-500") %>
       <div class="text-center <%= status_color %>">
-        <%= @avg_carbs_pct %>% of target
+        <%= carbs_pct %>% of target
       </div>
     </div>
 
     <!-- Fats card -->
     <div class="bg-white rounded-lg shadow-md p-4">
       <h3 class="text-lg font-semibold text-center mb-2">Fats</h3>
-      <div class="text-3xl font-bold text-center mb-2"><%= @avg_fats.round(1) %>g</div>
+      <div class="text-3xl font-bold text-center mb-2"><%= @summary[:averages][:fats].round(1) %>g</div>
       <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
       
-      <% status_color = @avg_fats_pct > 110 ? "text-red-500" : (@avg_fats_pct < 90 ? "text-amber-500" : "text-green-500") %>
+      <% fats_pct = @summary[:percentages][:fats] %>
+      <% status_color = fats_pct > 110 ? "text-red-500" : (fats_pct < 90 ? "text-amber-500" : "text-green-500") %>
       <div class="text-center <%= status_color %>">
-        <%= @avg_fats_pct %>% of target
+        <%= fats_pct %>% of target
       </div>
     </div>
   </div>
