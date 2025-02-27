@@ -13,13 +13,15 @@ class OpenAiService
   end
 
   def analyze_meal_image(base64_image, prompt = nil)
+    instruction_text = "Analyze this meal image and provide brief information including nutritional content, meal name, and a very concise description of the meal (max 15 words). Only include the most essential information about the primary ingredients."
+
     messages = [
       {
         role: "user",
         content: [
           {
             type: "text",
-            text: "Analyze this meal image and provide nutritional information including the meal name."
+            text: instruction_text
           },
           {
             type: "image_url",
@@ -32,33 +34,35 @@ class OpenAiService
     ]
 
     if prompt
-      messages.first[:content].unshift({ type: "text", text: prompt })
+      # Add the user's prompt before our instructions
+      instruction_with_prompt = "User description: #{prompt}\n\n#{instruction_text}"
+      messages.first[:content][0] = { type: "text", text: instruction_with_prompt }
     end
 
     response = @client.chat(
       parameters: {
         model: "o1",
         messages: messages,
-        tools: [meal_extraction_tool],
+        tools: [ meal_extraction_tool ],
         tool_choice: "required"
       }
     )
 
     extract_meal_data(response)
   end
-  
-  # New method to analyze meals based on text prompt only
+
+  # Analyze meals based on text prompt only
   def analyze_meal_text(prompt)
     # Default to generic meal if no prompt is provided
     prompt ||= "A basic meal"
-    
+
     messages = [
       {
         role: "user",
         content: [
           {
             type: "text",
-            text: "Analyze this meal description and provide estimated nutritional information: #{prompt}"
+            text: "Analyze this meal description and provide brief information including nutritional content: #{prompt}\n\nPlease make sure to include a very concise description of the meal (max 15 words), mentioning only the most essential information about primary ingredients."
           }
         ]
       }
@@ -68,7 +72,7 @@ class OpenAiService
       parameters: {
         model: "o1",
         messages: messages,
-        tools: [meal_extraction_tool],
+        tools: [ meal_extraction_tool ],
         tool_choice: "required"
       }
     )
@@ -77,19 +81,23 @@ class OpenAiService
   end
 
   private
-  
+
   def meal_extraction_tool
     {
       type: "function",
       function: {
         name: "extract_meal_info",
-        description: "Extract nutritional information and meal name from an image or description",
+        description: "Extract nutritional information, meal name, and brief concise description from an image or text",
         parameters: {
           type: :object,
           properties: {
             meal_name: {
               type: :string,
-              description: "The name or description of the meal"
+              description: "The name or title of the meal"
+            },
+            description: {
+              type: :string,
+              description: "A very concise description of the meal (max 15 words) mentioning only essential information about primary ingredients"
             },
             calories: {
               type: :integer,
@@ -126,6 +134,7 @@ class OpenAiService
           },
           required: [
             "meal_name",
+            "description",
             "calories",
             "fats",
             "proteins",

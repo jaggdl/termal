@@ -4,10 +4,10 @@ class ProcessMealImageJob < ApplicationJob
   def perform(user_meal_id, prompt)
     user_meal = UserMeal.find(user_meal_id)
     meal = user_meal.meal
-    
+
     openai_service = OpenAiService.new
     meal_data = nil
-    
+
     # Check if an image is attached
     if meal.image.attached?
       base64_image_url = process_image(meal.image)
@@ -16,10 +16,11 @@ class ProcessMealImageJob < ApplicationJob
       # Process the meal based on text prompt only
       meal_data = openai_service.analyze_meal_text(prompt)
     end
-    
+
     if meal_data
       meal.update(
         meal_name: meal_data[:meal_name],
+        description: meal_data[:description],
         calories: meal_data[:calories],
         fats: meal_data[:fats],
         proteins: meal_data[:proteins],
@@ -40,7 +41,7 @@ class ProcessMealImageJob < ApplicationJob
   def process_image(meal_image)
     image_data = meal_image.download
     Rails.logger.info("Image data size: #{image_data.size}")
-    
+
     # Create a temporary file and write the image data to it
     temp_file = Tempfile.new([ "meal_image", ".jpg" ], binmode: true)
     temp_file.write(image_data)
