@@ -1,13 +1,29 @@
-<div id="flash" class="p-4 m-auto max-w-4xl flex justify-end w-full space-y-2">
+<div id="flash" class="p-4 m-auto max-w-4xl flex flex-col items-end justify-end w-full space-y-2">
   <% flash.each do |key, message| %>
-    <div class="flex justify-between items-center mb-2 p-4 rounded-lg text-white
-                <%= 'bg-green-500' if key.to_s == 'notice' %>
-                <%= 'bg-red-500' if key.to_s == 'alert' %>
-                <%= 'bg-yellow-500' if key.to_s == 'warning' %>"
+    <% border_color = case key.to_s
+       when 'notice' then 'border-green-500'
+       when 'alert' then 'border-red-500'
+       when 'warning' then 'border-amber-500'
+       else 'border-blue-500'
+       end %>
+    
+    <% text_color = case key.to_s
+       when 'notice' then 'text-green-700'
+       when 'alert' then 'text-red-700'
+       when 'warning' then 'text-amber-700'
+       else 'text-blue-700'
+       end %>
+    
+    <div class="flex justify-between items-center mb-2 p-4 rounded-lg backdrop-blur-sm w-80
+                bg-white/80 shadow-lg border-2 <%= border_color %> <%= text_color %> pointer-events-auto"
          data-controller="flash" data-flash-key="<%= key %>">
       <span><%= message %></span>
-      <button type="button" class="text-white" data-action="click->flash#close">
-        <span aria-hidden="true">×</span>
+      <button type="button" class="ml-4 p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400" 
+              aria-label="Close notification" 
+              data-action="click->flash#close">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
       </button>
     </div>
   <% end %>
