@@ -41,7 +41,7 @@ gem "thruster", require: false
 # gem "image_processing", "~> 1.2"
 
 # Vector search
-gem "sqlite-vec", platform: :ruby_33
+gem "sqlite-vec"
 gem "neighbor"
 
 group :development, :test do
