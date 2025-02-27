@@ -1,7 +1,7 @@
 class MealsController < ApplicationController
   include ApiKeyCheck
 
-  before_action :set_meal, only: [:show, :update, :destroy]
+  before_action :set_meal, only: [ :show, :update, :destroy ]
 
   def index
     @meals_by_day = Current.user.meals.all.order(created_at: :desc).group_by do |meal|
@@ -37,7 +37,7 @@ class MealsController < ApplicationController
     else
       @meals = []
     end
-    render partial: 'meals/search_results', locals: { meals: @meals }
+    render partial: "meals/search_results", locals: { meals: @meals }
   end
 
   private

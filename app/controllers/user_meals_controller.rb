@@ -1,26 +1,26 @@
 class UserMealsController < ApplicationController
   include ApiKeyCheck
 
-  before_action :set_meal, only: [:show, :update, :destroy]
-  before_action :check_api_key, only: [:new, :create]
+  before_action :set_meal, only: [ :show, :update, :destroy ]
+  before_action :check_api_key, only: [ :new, :create ]
 
   def index
     user_timezone = Current.user_profile.timezone
     tz = ActiveSupport::TimeZone[user_timezone]
-    
+
     local_now = Time.current.in_time_zone(tz)
     @today = local_now.to_date
     @yesterday = @today - 1.day
-    
+
     if params[:date]
       @date = Date.parse(params[:date])
     else
       @date = @today
     end
-    
+
     local_start = tz.local(@date.year, @date.month, @date.day, 0, 0, 0)
     local_end = tz.local(@date.year, @date.month, @date.day, 23, 59, 59)
-    
+
     @meals = Current.user_meals.where(consumed_at: local_start..local_end).order(consumed_at: :desc)
     @meals_by_day = { @date => @meals }
   end
@@ -65,12 +65,12 @@ class UserMealsController < ApplicationController
         format.html { redirect_to new_user_meal_path, alert: "No image data provided." }
       end and return
     end
-  
+
     @user_meal = Current.user.user_meals.build(consumed_at: Time.now)
     @meal = @user_meal.build_meal()
 
     @meal.image.attach(params[:user_meal][:file])
-  
+
     begin
       if @user_meal.save
         ProcessMealImageJob.perform_later(@user_meal.id, params[:user_meal][:prompt])
@@ -108,7 +108,7 @@ class UserMealsController < ApplicationController
     ImageProcessing::Vips
       .source(image)
       .resize_to_limit(1000, 1000)
-      .convert('png')  # Converts to PNG
+      .convert("png")  # Converts to PNG
       .call
   end
 
@@ -120,14 +120,14 @@ class UserMealsController < ApplicationController
   def create_from_meal_id
     meal_id = params[:meal_id]
     @user_meal = Current.user_meals.new(meal_id: meal_id, consumed_at: Time.now)
-  
+
     if @user_meal.save
       date = @user_meal.consumed_at_in_timezone.to_date
-  
+
       render turbo_stream: [
         turbo_stream.prepend(
-          "user-meals-#{date.to_s}",
-          partial: 'user_meals/user_meal',
+          "user-meals-#{date}",
+          partial: "user_meals/user_meal",
           locals: { user_meal: @user_meal }
         ),
         turbo_stream.remove("no-meals-message"),
@@ -139,7 +139,7 @@ class UserMealsController < ApplicationController
       ]
     else
       respond_to do |format|
-        format.turbo_stream { 
+        format.turbo_stream {
           render turbo_stream: turbo_stream.replace(
             "flash",
             partial: "shared/flash",

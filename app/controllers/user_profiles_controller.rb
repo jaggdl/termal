@@ -1,5 +1,5 @@
 class UserProfilesController < ApplicationController
-  before_action :set_user_profile, only: [:show, :update]
+  before_action :set_user_profile, only: [ :show, :update ]
 
   def show
     @profile = Current.user_profile || UserProfile.new
@@ -9,14 +9,14 @@ class UserProfilesController < ApplicationController
   def update
     unless @profile
       create_user_profile
-      redirect_to profile_path, notice: 'Profile was successfully updated.'
+      redirect_to profile_path, notice: "Profile was successfully updated."
       return
     end
 
     if @profile.update(profile_params)
-      redirect_to profile_path, notice: 'Profile was successfully updated.'
+      redirect_to profile_path, notice: "Profile was successfully updated."
     else
-      render :show, alert: 'Something went wrong'
+      render :show, alert: "Something went wrong"
     end
   end
 

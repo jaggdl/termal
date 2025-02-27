@@ -10,7 +10,7 @@ class OnboardingController < ApplicationController
       redirect_to onboarding_path, alert: "Try another email address or password."
       return
     end
-    
+
     user.user_profile = UserProfile.new(
       timezone: cookies[:timezone]
     )
@@ -18,7 +18,7 @@ class OnboardingController < ApplicationController
     if user.save
       start_new_session_for user
       redirect_to after_authentication_url
-    else  
+    else
       redirect_to onboarding_path, alert: "Try another email address or password."
     end
   end

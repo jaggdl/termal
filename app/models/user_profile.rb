@@ -5,7 +5,7 @@ class UserProfile < ApplicationRecord
 
   delegate :daily_targets, to: :nutrition_calculator
 
-  private 
+  private
 
   def nutrition_calculator
     @nutrition_calculator ||= NutritionCalculator.new(self)

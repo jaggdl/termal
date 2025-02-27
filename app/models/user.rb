@@ -6,7 +6,7 @@ class User < ApplicationRecord
   has_many :meals, through: :user_meals
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
-  
+
   def user_meals_on_date(date)
     timezone = user_profile.timezone
     start_of_day = date.in_time_zone(timezone).beginning_of_day

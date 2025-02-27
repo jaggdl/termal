@@ -30,12 +30,12 @@ class ProcessMealImageJob < ApplicationJob
     image_data = meal_image.download
     Rails.logger.info("Image data size: #{image_data.size}")
     Rails.logger.info("Image data first few bytes: #{image_data.byteslice(0, 10).inspect}")
-  
+
     # Create a temporary file and write the image data to it
-    temp_file = Tempfile.new(['meal_image', '.jpg'], binmode: true)
+    temp_file = Tempfile.new([ "meal_image", ".jpg" ], binmode: true)
     temp_file.write(image_data)
     temp_file.rewind
-  
+
     begin
       resized_image = resize_and_convert_image(temp_file.path)
       convert_to_base64_with_mime(resized_image)
@@ -48,15 +48,15 @@ class ProcessMealImageJob < ApplicationJob
       temp_file.unlink # Ensure the temp file is deleted
     end
   end
-  
+
   def resize_and_convert_image(image_path)
     ImageProcessing::Vips
       .source(image_path)
       .resize_to_limit(1000, 1000)
-      .convert('png')  # Converts to PNG
+      .convert("png")  # Converts to PNG
       .call
   end
-  
+
   def convert_to_base64_with_mime(image)
     encoded_image = Base64.strict_encode64(File.read(image.path))
     "data:image/png;base64,#{encoded_image}"

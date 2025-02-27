@@ -13,8 +13,8 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "user_meals#index"
-  
-  resources :meals, only: [:index, :show] do
+
+  resources :meals, only: [ :index, :show ] do
     collection do
       get :search
     end
@@ -26,6 +26,6 @@ Rails.application.routes.draw do
   get "/global_settings", to: "global_settings#index", as: :global_settings
   patch "/global_settings", to: "global_settings#update", as: :update_global_settings
 
-  resource :profile, controller: 'user_profiles'
-  resource :onboarding, controller: 'onboarding'
+  resource :profile, controller: "user_profiles"
+  resource :onboarding, controller: "onboarding"
 end
