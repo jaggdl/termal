@@ -32,7 +32,6 @@
         <%= link_to 'Summary', nutrition_summary_path, class: "#{current_page?(nutrition_summary_path) ? 'font-bold text-xl text-black' : ''}" %>
         <div class="w-full flex justify-end items-center space-x-8">
           <%= link_to 'Profile', profile_path, class: "#{current_page?(profile_path) ? 'font-bold text-xl text-black' : ''}" %>
-          <%= render partial: 'shared/aqua_button', locals: { text: 'New Meal', path: new_user_meal_path } %>
         </div>
       </nav>
       
@@ -42,9 +41,8 @@
           <%= link_to 'Meals', root_path, class: "mr-4 #{current_page?(root_path) || request.path.start_with?('/user_meals') ? 'font-bold text-black' : 'text-gray-600'}" %>
           <%= link_to 'Summary', nutrition_summary_path, class: "#{current_page?(nutrition_summary_path) ? 'font-bold text-black' : 'text-gray-600'}" %>
         </div>
-        <div class="flex items-center">
-          <%= link_to 'Profile', profile_path, class: "mr-2 #{current_page?(profile_path) ? 'font-bold text-black' : 'text-gray-600'}" %>
-          <%= link_to '+', new_user_meal_path, class: "bg-gradient-to-r from-cyan-400 to-blue-500 text-white px-3 py-1 rounded-lg font-bold" %>
+        <div class="flex items-center space-x-4">
+          <%= link_to 'Profile', profile_path, class: "#{current_page?(profile_path) ? 'font-bold text-black' : 'text-gray-600'}" %>
         </div>
       </nav>
       
