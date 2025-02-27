@@ -4,8 +4,19 @@ class ProcessMealImageJob < ApplicationJob
   def perform(user_meal_id, prompt)
     user_meal = UserMeal.find(user_meal_id)
     meal = user_meal.meal
-    base64_image_url = process_image(meal.image)
-    meal_data = analyze_meal_image(base64_image_url, prompt)
+    
+    openai_service = OpenAiService.new
+    meal_data = nil
+    
+    # Check if an image is attached
+    if meal.image.attached?
+      base64_image_url = process_image(meal.image)
+      meal_data = openai_service.analyze_meal_image(base64_image_url, prompt)
+    else
+      # Process the meal based on text prompt only
+      meal_data = openai_service.analyze_meal_text(prompt)
+    end
+    
     if meal_data
       meal.update(
         meal_name: meal_data[:meal_name],
@@ -20,7 +31,7 @@ class ProcessMealImageJob < ApplicationJob
       )
       user_meal.broadcast_user_meal
     else
-      Rails.logger.error("No image attached to meal ID: #{meal_id}")
+      Rails.logger.error("Failed to analyze meal for user_meal_id: #{user_meal_id}")
     end
   end
 
@@ -29,8 +40,7 @@ class ProcessMealImageJob < ApplicationJob
   def process_image(meal_image)
     image_data = meal_image.download
     Rails.logger.info("Image data size: #{image_data.size}")
-    Rails.logger.info("Image data first few bytes: #{image_data.byteslice(0, 10).inspect}")
-
+    
     # Create a temporary file and write the image data to it
     temp_file = Tempfile.new([ "meal_image", ".jpg" ], binmode: true)
     temp_file.write(image_data)
@@ -60,10 +70,5 @@ class ProcessMealImageJob < ApplicationJob
   def convert_to_base64_with_mime(image)
     encoded_image = Base64.strict_encode64(File.read(image.path))
     "data:image/png;base64,#{encoded_image}"
-  end
-
-  def analyze_meal_image(base64_image, prompt)
-    openai_service = OpenAiService.new
-    openai_service.analyze_meal_image(base64_image, prompt)
   end
 end

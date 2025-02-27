@@ -53,23 +53,27 @@ class UserMealsController < ApplicationController
   def create
     return create_from_meal_id if params[:meal_id]
 
-    unless params[:user_meal][:file].present?
+    # Check if either a file or a prompt is provided
+    unless params[:user_meal][:file].present? || params[:user_meal][:prompt].present?
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(
             "flash",
             partial: "shared/flash",
-            locals: { flash: { alert: "No image data provided." } }
+            locals: { flash: { alert: "Please provide either an image or a meal description." } }
           )
         end
-        format.html { redirect_to new_user_meal_path, alert: "No image data provided." }
+        format.html { redirect_to new_user_meal_path, alert: "Please provide either an image or a meal description." }
       end and return
     end
 
     @user_meal = Current.user.user_meals.build(consumed_at: Time.now)
     @meal = @user_meal.build_meal()
 
-    @meal.image.attach(params[:user_meal][:file])
+    # Attach image if provided
+    if params[:user_meal][:file].present?
+      @meal.image.attach(params[:user_meal][:file])
+    end
 
     begin
       if @user_meal.save

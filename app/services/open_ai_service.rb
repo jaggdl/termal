@@ -39,67 +39,36 @@ class OpenAiService
       parameters: {
         model: "o1",
         messages: messages,
-        tools: [
+        tools: [meal_extraction_tool],
+        tool_choice: "required"
+      }
+    )
+
+    extract_meal_data(response)
+  end
+  
+  # New method to analyze meals based on text prompt only
+  def analyze_meal_text(prompt)
+    # Default to generic meal if no prompt is provided
+    prompt ||= "A basic meal"
+    
+    messages = [
+      {
+        role: "user",
+        content: [
           {
-            type: "function",
-            function: {
-              name: "extract_meal_info",
-              description: "Extract nutritional information and meal name from an image",
-              parameters: {
-                type: :object,
-                properties: {
-                  meal_name: {
-                    type: :string,
-                    description: "The name or description of the meal"
-                  },
-                  calories: {
-                    type: :integer,
-                    description: "Total calories in the meal"
-                  },
-                  fats: {
-                    type: :number,
-                    description: "Total grams of fat"
-                  },
-                  proteins: {
-                    type: :number,
-                    description: "Total grams of protein"
-                  },
-                  carbs: {
-                    type: :number,
-                    description: "Total grams of carbohydrates"
-                  },
-                  fiber: {
-                    type: :number,
-                    description: "Total grams of dietary fiber"
-                  },
-                  sodium: {
-                    type: :number,
-                    description: "Total milligrams of sodium"
-                  },
-                  sugar: {
-                    type: :number,
-                    description: "Total grams of sugar"
-                  },
-                  cholesterol: {
-                    type: :number,
-                    description: "Total milligrams of cholesterol"
-                  }
-                },
-                required: [
-                  "meal_name",
-                  "calories",
-                  "fats",
-                  "proteins",
-                  "carbs",
-                  "fiber",
-                  "sodium",
-                  "sugar",
-                  "cholesterol"
-                ]
-              }
-            }
+            type: "text",
+            text: "Analyze this meal description and provide estimated nutritional information: #{prompt}"
           }
-        ],
+        ]
+      }
+    ]
+
+    response = @client.chat(
+      parameters: {
+        model: "o1",
+        messages: messages,
+        tools: [meal_extraction_tool],
         tool_choice: "required"
       }
     )
@@ -108,6 +77,68 @@ class OpenAiService
   end
 
   private
+  
+  def meal_extraction_tool
+    {
+      type: "function",
+      function: {
+        name: "extract_meal_info",
+        description: "Extract nutritional information and meal name from an image or description",
+        parameters: {
+          type: :object,
+          properties: {
+            meal_name: {
+              type: :string,
+              description: "The name or description of the meal"
+            },
+            calories: {
+              type: :integer,
+              description: "Total calories in the meal"
+            },
+            fats: {
+              type: :number,
+              description: "Total grams of fat"
+            },
+            proteins: {
+              type: :number,
+              description: "Total grams of protein"
+            },
+            carbs: {
+              type: :number,
+              description: "Total grams of carbohydrates"
+            },
+            fiber: {
+              type: :number,
+              description: "Total grams of dietary fiber"
+            },
+            sodium: {
+              type: :number,
+              description: "Total milligrams of sodium"
+            },
+            sugar: {
+              type: :number,
+              description: "Total grams of sugar"
+            },
+            cholesterol: {
+              type: :number,
+              description: "Total milligrams of cholesterol"
+            }
+          },
+          required: [
+            "meal_name",
+            "calories",
+            "fats",
+            "proteins",
+            "carbs",
+            "fiber",
+            "sodium",
+            "sugar",
+            "cholesterol"
+          ]
+        }
+      }
+    }
+  end
 
   def extract_meal_data(response)
     message = response.dig("choices", 0, "message")

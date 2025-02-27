@@ -1,8 +1,7 @@
 <li class="flex gap-x-4 items-center">
   <%= link_to user_meal_path(user_meal), class: "flex gap-x-4 items-center vintage-link w-full backdrop-blur-xs" do %>
     <div class="md:min-w-32 md:min-h-32 min-w-24 min-h-24 relative">
-      <%= image_tag user_meal.meal.image.variant(resize_to_limit: [256, 256]), 
-        class: "absolute inset-0 w-full h-full object-cover bg-gray-200" %>
+      <%= meal_image_tag(user_meal.meal, size: :medium) %>
     </div>  
     <%= render partial: 'user_meals/meal_info', locals: { user_meal: user_meal } %>
   <% end %>
