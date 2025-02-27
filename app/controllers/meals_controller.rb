@@ -32,8 +32,7 @@ class MealsController < ApplicationController
 
   def search
     if params[:q].present?
-      search_term = "%#{params[:q].downcase}%"
-      @meals = Current.user.meals.where("LOWER(meal_name) LIKE ? OR LOWER(description) LIKE ?", search_term, search_term).limit(5)
+      @meals = Meal.vector_search(query: params[:q], user: Current.user, limit: 5)
     else
       @meals = []
     end

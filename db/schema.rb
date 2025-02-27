@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_27_080652) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_28_000000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -110,4 +110,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_080652) do
   add_foreign_key "user_meals", "meals"
   add_foreign_key "user_meals", "users"
   add_foreign_key "user_profiles", "users"
+
+  # Virtual tables defined in this database.
+  # Note that virtual tables may not work with other database engines. Be careful if changing database.
+  create_virtual_table "meal_vectors", "vec0", ["meal_id integer primary key", "embedding float[1536] distance_metric=cosine"]
 end
