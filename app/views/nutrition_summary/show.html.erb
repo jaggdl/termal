@@ -16,56 +16,22 @@
   <!-- Summary cards -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
     <!-- Calories card -->
-    <div data-nutrition-charts-target="card" data-type="calories" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer">
-      <h3 class="text-lg font-semibold text-center mb-2">Calories</h3>
-      <div class="text-3xl font-bold text-center mb-2"><%= @summary[:averages][:calories].round %></div>
-      <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
-      
-      <% calories_pct = @summary[:percentages][:calories] %>
-      <% status_color = calories_pct > 110 ? "text-red-500" : (calories_pct < 90 ? "text-amber-500" : "text-green-500") %>
-      <div class="text-center <%= status_color %>">
-        <%= calories_pct %>% of target
+    <% nutrients = ["calories", "proteins", "carbs", "fats"] %>
+    <% nutrients.each do |nutrient| %>
+      <% average = @summary[:averages][nutrient.to_sym] %>
+      <% percentage = @summary[:percentages][nutrient.to_sym] %>
+      <% display_value = nutrient == "calories" ? average.round.to_s : "#{average.round(1)}g" %>
+      <% status_color = get_status_color(nutrient, percentage) %>
+    
+      <div data-nutrition-charts-target="card" data-type="<%= nutrient %>" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer">
+        <h3 class="text-lg font-semibold text-center mb-2"><%= nutrient.capitalize %></h3>
+        <div class="text-3xl font-bold text-center mb-2"><%= display_value %></div>
+        <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
+        <div class="text-center <%= status_color %>">
+          <%= percentage %>% of target
+        </div>
       </div>
-    </div>
-
-    <!-- Proteins card -->
-    <div data-nutrition-charts-target="card" data-type="proteins" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer">
-      <h3 class="text-lg font-semibold text-center mb-2">Proteins</h3>
-      <div class="text-3xl font-bold text-center mb-2"><%= @summary[:averages][:proteins].round(1) %>g</div>
-      <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
-      
-      <% proteins_pct = @summary[:percentages][:proteins] %>
-      <% status_color = proteins_pct > 110 ? "text-green-500" : (proteins_pct < 90 ? "text-amber-500" : "text-green-500") %>
-      <div class="text-center <%= status_color %>">
-        <%= proteins_pct %>% of target
-      </div>
-    </div>
-
-    <!-- Carbs card -->
-    <div data-nutrition-charts-target="card" data-type="carbs" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer">
-      <h3 class="text-lg font-semibold text-center mb-2">Carbs</h3>
-      <div class="text-3xl font-bold text-center mb-2"><%= @summary[:averages][:carbs].round(1) %>g</div>
-      <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
-      
-      <% carbs_pct = @summary[:percentages][:carbs] %>
-      <% status_color = carbs_pct > 110 ? "text-red-500" : (carbs_pct < 90 ? "text-amber-500" : "text-green-500") %>
-      <div class="text-center <%= status_color %>">
-        <%= carbs_pct %>% of target
-      </div>
-    </div>
-
-    <!-- Fats card -->
-    <div data-nutrition-charts-target="card" data-type="fats" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer">
-      <h3 class="text-lg font-semibold text-center mb-2">Fats</h3>
-      <div class="text-3xl font-bold text-center mb-2"><%= @summary[:averages][:fats].round(1) %>g</div>
-      <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
-      
-      <% fats_pct = @summary[:percentages][:fats] %>
-      <% status_color = fats_pct > 110 ? "text-red-500" : (fats_pct < 90 ? "text-amber-500" : "text-green-500") %>
-      <div class="text-center <%= status_color %>">
-        <%= fats_pct %>% of target
-      </div>
-    </div>
+    <% end %>
   </div>
 
   <!-- Single Dynamic Chart -->
