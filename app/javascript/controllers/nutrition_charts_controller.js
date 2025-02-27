@@ -3,16 +3,8 @@ import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="nutrition-charts"
 export default class extends Controller {
   static targets = ["chart", "card"]
-  static values = { 
-    dates: Array,
-    calories: Array,
-    proteins: Array,
-    carbs: Array,
-    fats: Array,
-    caloriesTarget: Number,
-    proteinsTarget: Number,
-    carbsTarget: Number,
-    fatsTarget: Number,
+  static values = {
+    chartData: Object,
     period: Number,
     activeType: { type: String, default: "calories" }
   }
@@ -26,7 +18,7 @@ export default class extends Controller {
     } else {
       this.initializeChart()
     }
-    
+
     // Add active class to the calories card by default
     this.cardTargets.forEach(card => {
       if (card.dataset.type === "calories") {
@@ -47,14 +39,14 @@ export default class extends Controller {
   initializeChart() {
     // Store the chart context since we'll recreate it
     this.chartCtx = this.chartTarget.getContext('2d')
-    
+
     // Create initial calories chart
     this.createChart("calories")
   }
-  
+
   showNutrient(event) {
     const type = event.currentTarget.dataset.type
-    
+
     // Update active card styling
     this.cardTargets.forEach(card => {
       if (card.dataset.type === type) {
@@ -63,7 +55,7 @@ export default class extends Controller {
         card.classList.remove("ring-2", "ring-sky-400")
       }
     })
-    
+
     // Update chart
     this.activeTypeValue = type
     this.createChart(type)
@@ -74,45 +66,46 @@ export default class extends Controller {
     if (this.chart) {
       this.chart.destroy()
     }
-    
+
     // Prepare data based on nutrient type
     let data, target, color, unit, title
-    
-    switch(type) {
+    const chartData = this.chartDataValue
+
+    switch (type) {
       case "proteins":
-        data = this.proteinsValue
-        target = this.proteinsTargetValue
+        data = chartData.nutrients.proteins
+        target = chartData.targets.proteins
         color = "rgba(244, 63, 94, 1)"
         unit = "g"
         title = "Proteins (g)"
         break
       case "carbs":
-        data = this.carbsValue
-        target = this.carbsTargetValue
+        data = chartData.nutrients.carbs
+        target = chartData.targets.carbs
         color = "rgba(16, 185, 129, 1)"
         unit = "g"
         title = "Carbs (g)"
         break
       case "fats":
-        data = this.fatsValue
-        target = this.fatsTargetValue
+        data = chartData.nutrients.fats
+        target = chartData.targets.fats
         color = "rgba(251, 191, 36, 1)"
         unit = "g"
         title = "Fats (g)"
         break
       default: // calories
-        data = this.caloriesValue
-        target = this.caloriesTargetValue
+        data = chartData.nutrients.calories
+        target = chartData.targets.calories
         color = "rgba(56, 189, 248, 1)"
         unit = ""
         title = "Calories"
     }
-    
+
     // Create new chart
     this.chart = new Chart(this.chartCtx, {
       type: 'line',
       data: {
-        labels: this.datesValue,
+        labels: chartData.dates,
         datasets: [{
           label: title,
           data: data,

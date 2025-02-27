@@ -1,15 +1,8 @@
 <div class="mx-auto py-6 w-full"
      data-controller="nutrition-charts"
-     data-nutrition-charts-dates-value="<%= @summary[:dates].to_json %>"
-     data-nutrition-charts-calories-value="<%= @summary[:calories].to_json %>"
-     data-nutrition-charts-proteins-value="<%= @summary[:proteins].to_json %>"
-     data-nutrition-charts-carbs-value="<%= @summary[:carbs].to_json %>"
-     data-nutrition-charts-fats-value="<%= @summary[:fats].to_json %>"
-     data-nutrition-charts-calories-target-value="<%= @summary[:daily_targets][:calories] %>"
-     data-nutrition-charts-proteins-target-value="<%= @summary[:daily_targets][:proteins] %>"
-     data-nutrition-charts-carbs-target-value="<%= @summary[:daily_targets][:carbs] %>"
-     data-nutrition-charts-fats-target-value="<%= @summary[:daily_targets][:fats] %>"
-     data-nutrition-charts-period-value="<%= @period %>">
+     data-nutrition-charts-chart-data-value="<%= @summary[:chart_data].to_json %>"
+     data-nutrition-charts-period-value="<%= @period %>"
+>
   
   <h1 class="text-2xl font-bold text-center mb-6">Nutrition Summary</h1>
   

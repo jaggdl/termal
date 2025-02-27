@@ -23,13 +23,18 @@ class NutritionSummaryService
     averages = calculate_averages(meal_data)
     percentages = calculate_percentages(averages, daily_targets)
 
-    # Return all data needed for the summary view
+    # Return all data needed for the summary view in a more compact structure
     {
-      dates: meal_data.map { |data| data[:date_formatted] },
-      calories: meal_data.map { |data| data[:calories] },
-      proteins: meal_data.map { |data| data[:proteins] },
-      fats: meal_data.map { |data| data[:fats] },
-      carbs: meal_data.map { |data| data[:carbs] },
+      chart_data: {
+        dates: meal_data.map { |data| data[:date_formatted] },
+        nutrients: {
+          calories: meal_data.map { |data| data[:calories] },
+          proteins: meal_data.map { |data| data[:proteins] },
+          fats: meal_data.map { |data| data[:fats] },
+          carbs: meal_data.map { |data| data[:carbs] }
+        },
+        targets: daily_targets
+      },
       daily_targets: daily_targets,
       averages: averages,
       percentages: percentages,
