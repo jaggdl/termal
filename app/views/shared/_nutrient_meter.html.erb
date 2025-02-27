@@ -10,6 +10,9 @@
 
   <div class="text-center mb-1">
     <span class="text-sm text-nowrap">
+    <% if defined?(show_nutrient) %>
+      <span><%= unit[0..2] %></span>
+    <% end %>  
       <%= defined?(show_unit) ? (total_value.round(defined?(decimals) ? decimals : 0)) : total_value %><%= defined?(show_unit) && show_unit ? unit == 'calories' ? '' : 'g' : '' %> / <%= base_number %><%= defined?(show_unit) && show_unit ? unit == 'calories' ? '' : 'g' : '' %>
     </span>
   </div>

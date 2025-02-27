@@ -1,14 +1,9 @@
-<div id="nutrient-meters-<%= date.to_s %>" class="flex lg:space-x-4 flex-col lg:flex-row">
-  <div class="flex space-x-4">
-    <%= render partial: 'shared/nutrient_meter', 
-              locals: { user_meals: user_meals, unit: 'calories', daily_targets: user_profile.daily_targets } %>
-    <%= render partial: 'shared/nutrient_meter', 
-              locals: { user_meals: user_meals, unit: 'fats', daily_targets: user_profile.daily_targets } %>
-  </div>
-  <div class="flex space-x-4">
-    <%= render partial: 'shared/nutrient_meter', 
-              locals: { user_meals: user_meals, unit: 'proteins', daily_targets: user_profile.daily_targets } %>
-    <%= render partial: 'shared/nutrient_meter', 
-              locals: { user_meals: user_meals, unit: 'carbs', daily_targets: user_profile.daily_targets } %>
-  </div>
+<div id="nutrient-meters-<%= date.to_s %>" class="grid gap-x-4 grid-cols-2 md:grid-cols-4">
+  <% nutrients = ["calories", "proteins", "carbs", "fats"] %>
+  <% nutrients.each do |nutrient| %>
+    <div class="flex w-32">
+      <%= render partial: 'shared/nutrient_meter', 
+                locals: { user_meals: user_meals, unit: nutrient, daily_targets: user_profile.daily_targets, show_unit: true, show_nutrient: true } %>
+    </div>
+  <% end %>
 </div>
