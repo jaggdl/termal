@@ -3,9 +3,6 @@
      data-nutrition-charts-chart-data-value="<%= @summary[:chart_data].to_json %>"
      data-nutrition-charts-period-value="<%= @period %>"
 >
-  
-  <h1 class="text-2xl font-bold text-center mb-6">Nutrition Summary</h1>
-  
   <!-- Period selector -->
   <div class="mb-8 flex justify-center space-x-4">
     <%= link_to "Last 7 Days", nutrition_summary_path(period: 7), class: "#{@period == 7 ? 'aqua-reflection bg-gradient-to-b from-sky-300 to-sky-500' : 'bg-gray-200'} px-4 py-2 rounded-full text-sm #{@period == 7 ? 'text-white' : 'text-gray-700'}" %>
@@ -14,28 +11,30 @@
   </div>
 
   <!-- Summary cards -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
     <!-- Calories card -->
     <% nutrients = ["calories", "proteins", "carbs", "fats"] %>
     <% nutrients.each do |nutrient| %>
       <% average = @summary[:averages][nutrient.to_sym] %>
-      <% percentage = @summary[:percentages][nutrient.to_sym] %>
-      <% display_value = nutrient == "calories" ? average.round.to_s : "#{average.round(1)}g" %>
-      <% status_color = get_status_color(nutrient, percentage) %>
     
       <div data-nutrition-charts-target="card" data-type="<%= nutrient %>" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer">
         <h3 class="text-lg font-semibold text-center mb-2"><%= nutrient.capitalize %></h3>
-        <div class="text-3xl font-bold text-center mb-2"><%= display_value %></div>
+        
+        <%= render partial: 'shared/nutrient_meter', 
+                  locals: { 
+                    unit: nutrient, 
+                    daily_targets: @summary[:daily_targets], 
+                    value: average,
+                    show_unit: true,
+                    decimals: nutrient == "calories" ? 0 : 1
+                  } %>
+                
         <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
-        <div class="text-center <%= status_color %>">
-          <%= percentage %>% of target
-        </div>
       </div>
     <% end %>
   </div>
 
-  <!-- Single Dynamic Chart -->
-  <div class="bg-white rounded-lg shadow-md p-4">
+  <div>
     <h3 class="text-lg font-semibold mb-4">Nutrient Over Time</h3>
     <p class="text-sm text-gray-500 mb-4">Click on a card above to view different nutrients</p>
     <div class="max-h-[560px]">
