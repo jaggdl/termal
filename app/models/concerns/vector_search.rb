@@ -19,11 +19,9 @@ module VectorSearch
   def find_or_create_meal_vector
     return unless meal_name.present?
 
-    vector = MealVector.find_or_create_by!(meal_id: id)
-
-    vector.embedding = Embedding.create(weighted_content_for_embedding).embedding
-    vector.save!
-    vector
+    MealVector.find_or_create_by!(meal_id: id) do |vector|
+      vector.embedding = Embedding.create(weighted_content_for_embedding).embedding
+    end
   end
 
   class_methods do
