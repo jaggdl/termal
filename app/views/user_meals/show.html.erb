@@ -40,14 +40,12 @@
 
         </div>
 
-        <div class="mt-6 flex justify-between">
-          <%= f.submit "Save Changes", class: "bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700" %>
+        <div class="mt-6 flex justify-end gap-x-4">
+          <%= link_to 'Remove', user_meal_path(@user_meal), 
+              class: 'text-sm py-2 px-4 border border-red-500 text-red-500 rounded-full hover:bg-red-50 transition-colors', 
+              data: { turbo_method: "delete", turbo_confirm: "Are you sure?" } %>
+          <%= f.submit "Save Changes", class: "aqua-reflection flex items-center text-sm justify-center px-4 py-2 rounded-full bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md hover:from-sky-400 hover:to-sky-600 cursor-pointer" %>
         </div>
-
-        <div class="flex gap-2">
-          <%= link_to 'Remove', user_meal_path(@user_meal), class: 'btn btn-sm btn-outline-danger', data: { turbo_method: "delete", turbo_confirm: "Are you sure?" } %>
-        </div>
-
       <% end %>
     </div>
   </div>
