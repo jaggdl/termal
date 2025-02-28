@@ -1,5 +1,5 @@
 class InvitesController < ApplicationController
-  before_action :verify_can_invite, only: [ :index, :regenerate, :invalidate ]
+  before_action :verify_can_invite, only: [ :index, :regenerate ]
 
   def index
     @invite = Invite.get_active_for(Current.user)
@@ -16,17 +16,6 @@ class InvitesController < ApplicationController
     end
 
     redirect_to family_path, notice: "Invite link regenerated successfully"
-  end
-
-  def invalidate
-    @invite = Current.user.invites.active.first
-
-    if @invite
-      @invite.invalidate!
-      redirect_to family_path, notice: "Invite link invalidated successfully"
-    else
-      redirect_to family_path, alert: "No active invite to invalidate"
-    end
   end
 
   private
