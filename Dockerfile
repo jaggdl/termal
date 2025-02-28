@@ -16,13 +16,7 @@ WORKDIR /rails
 
 # Install base packages
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 \
-    fontconfig libfreetype6 libjpeg62-turbo libpng16-16 libxrender1 libx11-6 \
-    libxext6 xfonts-base xfonts-75dpi libfontconfig1 wget && \
-    # Install wkhtmltopdf/wkhtmltoimage
-    wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb && \
-    apt-get install -y --no-install-recommends ./wkhtmltox_0.12.6-1.buster_amd64.deb && \
-    rm -f ./wkhtmltox_0.12.6-1.buster_amd64.deb && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Set production environment
