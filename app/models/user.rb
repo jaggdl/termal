@@ -1,12 +1,23 @@
 class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
-  has_one :user_profile
+  has_one :user_profile, dependent: :destroy
   has_many :user_meals, dependent: :destroy
   has_many :meals, through: :user_meals
   has_many :invites, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
+
+  # Override destroy to handle foreign key constraints properly
+  def destroy
+    ActiveRecord::Base.transaction do
+      # First delete any user_meals (which references meals that might have meal_vectors)
+      user_meals.destroy_all
+      
+      # Now we can safely destroy the user
+      super
+    end
+  end
 
   def user_meals_on_date(date)
     timezone = user_profile.timezone

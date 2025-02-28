@@ -33,6 +33,7 @@ Rails.application.routes.draw do
   get "/family", to: "invites#index", as: :family
   post "/family/invites/regenerate", to: "invites#regenerate", as: :regenerate_invite
   post "/family/invites/invalidate", to: "invites#invalidate", as: :invalidate_invite
+  delete "/family/users/:id", to: "invites#destroy_user", as: :delete_family_user
 
   # Join routes
   get "/join/:token", to: "joins#new", as: :join
