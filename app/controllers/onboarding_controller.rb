@@ -1,8 +1,10 @@
 class OnboardingController < ApplicationController
   allow_unauthenticated_access only: %i[ show create ]
   skip_before_action :authenticate_and_redirect
+  before_action :redirect_if_users_exist, only: [ :show, :create ]
 
   def show
+    # Renders the onboarding page if no users exist
   end
 
   def create
@@ -21,5 +23,11 @@ class OnboardingController < ApplicationController
     else
       redirect_to onboarding_path, alert: "Try another email address or password."
     end
+  end
+
+  private
+
+  def redirect_if_users_exist
+    redirect_to root_path if User.exists?
   end
 end
