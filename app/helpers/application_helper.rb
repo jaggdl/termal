@@ -19,4 +19,8 @@ module ApplicationHelper
       end
     end
   end
+
+  def main_nutrients
+    [ "calories", "proteins", "fats", "carbs" ]
+  end
 end

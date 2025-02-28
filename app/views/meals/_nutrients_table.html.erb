@@ -1,6 +1,5 @@
 <div class="flex md:justify-start justify-end space-x-2">
-  <% nutrient_keys = ['calories', 'fats', 'proteins', 'carbs'] %>
-  <% nutrient_keys.each do |key| %>
+  <% main_nutrients.each do |key| %>
     <div class="text-sm flex flex-col w-10 text-right">
       <span class="font-semibold"><%= meal[key] %></span>
       <span class="text-gray-500"><%= key[0, 3] %></span>

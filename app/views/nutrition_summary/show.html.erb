@@ -3,18 +3,14 @@
      data-nutrition-charts-chart-data-value="<%= @summary[:chart_data].to_json %>"
      data-nutrition-charts-period-value="<%= @period %>"
 >
-  <!-- Period selector -->
   <div class="mb-8 flex justify-center space-x-4">
     <%= link_to "Last 7 Days", nutrition_summary_path(period: 7), class: "#{@period == 7 ? 'aqua-reflection bg-gradient-to-b from-sky-300 to-sky-500' : 'bg-gray-200'} px-4 py-2 rounded-full text-sm #{@period == 7 ? 'text-white' : 'text-gray-700'}" %>
     <%= link_to "Last 14 Days", nutrition_summary_path(period: 14), class: "#{@period == 14 ? 'aqua-reflection bg-gradient-to-b from-sky-300 to-sky-500' : 'bg-gray-200'} px-4 py-2 rounded-full text-sm #{@period == 14 ? 'text-white' : 'text-gray-700'}" %>
     <%= link_to "Last 28 Days", nutrition_summary_path(period: 28), class: "#{@period == 28 ? 'aqua-reflection bg-gradient-to-b from-sky-300 to-sky-500' : 'bg-gray-200'} px-4 py-2 rounded-full text-sm #{@period == 28 ? 'text-white' : 'text-gray-700'}" %>
   </div>
 
-  <!-- Summary cards -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-    <!-- Calories card -->
-    <% nutrients = ["calories", "proteins", "carbs", "fats"] %>
-    <% nutrients.each do |nutrient| %>
+    <% main_nutrients.each do |nutrient| %>
       <% average = @summary[:averages][nutrient.to_sym] %>
     
       <div data-nutrition-charts-target="card" data-type="<%= nutrient %>" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer">

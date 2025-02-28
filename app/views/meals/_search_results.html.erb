@@ -9,9 +9,6 @@
           <% end %>
           <div class="flex flex-col">
             <span><%= meal.meal_name %></span>
-            <% if meal.description.present? %>
-              <span class="text-xs text-gray-600 truncate max-w-xs"><%= meal.description %></span>
-            <% end %>
             <%= render partial: 'meals/nutrients_table', locals: { meal: meal } %>
           </div>
         </div>
