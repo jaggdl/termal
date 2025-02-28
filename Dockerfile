@@ -16,33 +16,28 @@ WORKDIR /rails
 
 # Install base packages
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 libjpeg62-turbo libpng16-16 libxrender1 libfontconfig1 libxext6 && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives && \
+    ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so.62 /usr/lib/x86_64-linux-gnu/libjpeg.so.8
 
 # Install wkhtmltopdf/wkhtmltoimage with all dependencies
-RUN apt-get update && \
+RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl \
-        fontconfig \
+        wkhtmltopdf \
+        xvfb \
+        libfontconfig \
+        libfreetype6 \
         libjpeg62-turbo \
-        libpng16-16 \
-        libssl1.1 \
         libx11-6 \
-        libxcb1 \
         libxext6 \
         libxrender1 \
         xfonts-75dpi \
-        xfonts-base \
-        zlib1g && \
-    mkdir -p /tmp/wkhtml && \
-    cd /tmp/wkhtml && \
-    curl -L https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.stretch_amd64.deb -o wkhtmltox.deb && \
-    apt-get install -y ./wkhtmltox.deb && \
-    cd / && \
-    rm -rf /tmp/wkhtml && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+        xfonts-base && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
+# Create wrapper script for wkhtmltoimage to run with xvfb
+RUN echo '#!/bin/bash\nxvfb-run -a --server-args="-screen 0, 1024x768x24" /usr/bin/wkhtmltoimage "$@"' > /usr/local/bin/wkhtmltoimage && \
+    chmod +x /usr/local/bin/wkhtmltoimage
 
 # Set production environment
 ENV RAILS_ENV="production" \
