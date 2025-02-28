@@ -10,14 +10,14 @@ class Embedding
       access_token: GlobalSetting.get("openai_api_key"),
       log_errors: true
     )
-    
+
     embedding = client.embeddings(
       parameters: {
-        model: "text-embedding-3-small", 
+        model: "text-embedding-3-small",
         input: input
       }
     ).fetch("data")[0]["embedding"]
-    
+
     new(embedding)
   end
 
