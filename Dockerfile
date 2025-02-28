@@ -25,6 +25,7 @@ RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
         wkhtmltopdf \
         xvfb \
+        xauth \
         libfontconfig \
         libfreetype6 \
         libjpeg62-turbo \
