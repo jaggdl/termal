@@ -32,7 +32,7 @@
         <%= link_to 'Summary', nutrition_summary_path, class: "#{current_page?(nutrition_summary_path) ? 'font-bold text-xl text-black' : ''}" %>
         <div class="w-full flex justify-end items-center space-x-8">
           <% if Current.user&.can_invite? %>
-            <%= link_to 'Invites', invites_path, class: "#{request.path.start_with?('/invites') ? 'font-bold text-xl text-black' : ''}" %>
+            <%= link_to 'Family', family_path, class: "#{request.path.start_with?('/family') ? 'font-bold text-xl text-black' : ''}" %>
           <% end %>
           <%= link_to 'Profile', profile_path, class: "#{current_page?(profile_path) ? 'font-bold text-xl text-black' : ''}" %>
         </div>
@@ -46,7 +46,7 @@
         </div>
         <div class="flex items-center space-x-4">
           <% if Current.user&.can_invite? %>
-            <%= link_to 'Invites', invites_path, class: "#{request.path.start_with?('/invites') ? 'font-bold text-black' : 'text-gray-600'}" %>
+            <%= link_to 'Family', family_path, class: "#{request.path.start_with?('/family') ? 'font-bold text-black' : 'text-gray-600'}" %>
           <% end %>
           <%= link_to 'Profile', profile_path, class: "#{current_page?(profile_path) ? 'font-bold text-black' : 'text-gray-600'}" %>
         </div>
