@@ -4,6 +4,7 @@ class User < ApplicationRecord
   has_one :user_profile
   has_many :user_meals, dependent: :destroy
   has_many :meals, through: :user_meals
+  has_many :invites, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
@@ -12,5 +13,13 @@ class User < ApplicationRecord
     start_of_day = date.in_time_zone(timezone).beginning_of_day
     end_of_day = date.in_time_zone(timezone).end_of_day
     user_meals.where(consumed_at: start_of_day..end_of_day)
+  end
+  
+  def first_user?
+    self.id == User.order(:id).first&.id
+  end
+  
+  def can_invite?
+    first_user?
   end
 end

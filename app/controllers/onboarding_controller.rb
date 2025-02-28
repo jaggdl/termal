@@ -28,6 +28,11 @@ class OnboardingController < ApplicationController
   private
 
   def redirect_if_users_exist
-    redirect_to root_path if User.exists?
+    # If users exist, redirect to root or login page
+    # This ensures only the first user can register directly,
+    # all other users need to use an invite link
+    if User.exists?
+      redirect_to new_session_path, alert: "Registration is by invitation only. Please contact an admin for an invite."
+    end
   end
 end
