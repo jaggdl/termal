@@ -1,7 +1,12 @@
 # Configure IMGKit for HTML to image conversion
 IMGKit.configure do |config|
-  # Use the bundled wkhtmltoimage binary
-  config.wkhtmltoimage = Gem.bin_path('wkhtmltoimage-binary', 'wkhtmltoimage')
+  if Rails.env.production?
+    # Use the system wkhtmltoimage in production
+    config.wkhtmltoimage = '/usr/local/bin/wkhtmltoimage'
+  else
+    # Use the bundled wkhtmltoimage binary in development
+    config.wkhtmltoimage = Gem.bin_path('wkhtmltoimage-binary', 'wkhtmltoimage')
+  end
   
   # Set default options
   config.default_options = {
