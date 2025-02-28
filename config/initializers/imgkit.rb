@@ -2,7 +2,7 @@
 IMGKit.configure do |config|
   if Rails.env.production?
     # Use the system wkhtmltoimage in production
-    config.wkhtmltoimage = '/usr/bin/wkhtmltoimage'
+    config.wkhtmltoimage = '/usr/local/bin/wkhtmltoimage'
   else
     # Use the bundled wkhtmltoimage binary in development
     config.wkhtmltoimage = Gem.bin_path('wkhtmltoimage-binary', 'wkhtmltoimage')
