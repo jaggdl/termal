@@ -20,16 +20,6 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives && \
     ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so.62 /usr/lib/x86_64-linux-gnu/libjpeg.so.8
 
-# Install wkhtmltopdf/wkhtmltoimage with all dependencies
-RUN apt-get update -qq && \
-    apt-get install -y wget && \
-    wget -q -O /tmp/wkhtmltox.deb https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.debian11_amd64.deb && \
-    apt-get install -y --no-install-recommends /tmp/wkhtmltox.deb && \
-    rm /tmp/wkhtmltox.deb && \
-    apt-get purge -y wget && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
-
 # Set production environment
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
