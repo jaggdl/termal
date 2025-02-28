@@ -1,3 +1,19 @@
+<% 
+  # Set page title and OpenGraph metadata
+  content_for :title, @meal.meal_name
+  
+  meal_og_url = meal_og_image_url(@meal.id, format: :png)
+  meal_description = @meal.description.present? ? @meal.description : "#{@meal.calories} calories, #{@meal.proteins}g protein, #{@meal.fats}g fat, #{@meal.carbs}g carbs"
+  
+  content_for :meta_tags do
+    meta_og_tags(
+      title: @meal.meal_name,
+      description: meal_description,
+      image: meal_og_url
+    )
+  end
+%>
+
 <div class="max-w-xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-6">
   <%= link_to "Back", root_path, class: "text-blue-600 hover:underline" %>
   <% if @meal.image.attached? %>

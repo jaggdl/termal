@@ -74,3 +74,6 @@ gem "tailwindcss-ruby", "~> 4.0"
 gem "tailwindcss-rails", "~> 4.1"
 
 gem "image_processing", "~> 1.14"
+# For HTML to image conversion
+gem "imgkit"
+gem "wkhtmltoimage-binary"

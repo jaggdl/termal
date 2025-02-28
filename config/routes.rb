@@ -38,4 +38,7 @@ Rails.application.routes.draw do
   # Join routes
   get "/join/:token", to: "joins#new", as: :join
   post "/join/:token", to: "joins#create", as: :create_user
+
+  # OG Image routes
+  get "/og/meals/:id", to: "og_images#meal", as: :meal_og_image, defaults: { format: 'png' }
 end
