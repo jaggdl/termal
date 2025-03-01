@@ -1,19 +1,3 @@
-<% 
-  # Set page title and OpenGraph metadata
-  content_for :title, @user_meal.meal.meal_name
-  
-  meal_og_url = meal_og_image_url(@user_meal.meal.id, format: :png)
-  meal_description = @user_meal.meal.description.present? ? @user_meal.meal.description : "#{@user_meal.meal.calories} calories, #{@user_meal.meal.proteins}g protein, #{@user_meal.meal.fats}g fat, #{@user_meal.meal.carbs}g carbs"
-  
-  content_for :meta_tags do
-    meta_og_tags(
-      title: @user_meal.meal.meal_name,
-      description: meal_description,
-      image: meal_og_url
-    )
-  end
-%>
-
 <div class="space-y-6">
   <%= link_to request.referer || root_path, class: "flex gap-2 group p-2 relative" do %>
     <%= render partial: "shared/arrow_button", locals: { direction: "left", disabled: false } %>

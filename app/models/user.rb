@@ -13,7 +13,7 @@ class User < ApplicationRecord
     ActiveRecord::Base.transaction do
       # First delete any user_meals (which references meals that might have meal_vectors)
       user_meals.destroy_all
-
+      
       # Now we can safely destroy the user
       super
     end

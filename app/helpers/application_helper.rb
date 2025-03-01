@@ -23,23 +23,4 @@ module ApplicationHelper
   def main_nutrients
     [ "calories", "proteins", "fats", "carbs" ]
   end
-
-  def meta_og_tags(title: nil, description: nil, image: nil)
-    tags = []
-
-    # Add OpenGraph title
-    tags << tag.meta(property: "og:title", content: title || "Calories Tracker")
-
-    # Add OpenGraph description
-    tags << tag.meta(property: "og:description", content: description || "Track your meals and calories")
-
-    # Add OpenGraph image if provided
-    tags << tag.meta(property: "og:image", content: image) if image
-
-    # Add Twitter card type
-    tags << tag.meta(name: "twitter:card", content: "summary_large_image")
-
-    # Return all tags
-    safe_join(tags)
-  end
 end

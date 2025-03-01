@@ -6,9 +6,6 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-# Require IMGKit for HTML to image conversion
-require 'imgkit'
-
 module CaloriesTracker
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
