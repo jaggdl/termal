@@ -9,29 +9,15 @@ class ProcessMealImageJob < ApplicationJob
       openai_service = OpenAiService.new
       meal_data = nil
 
-      # Check if an image is attached
       if meal.image.attached?
         base64_image_url = process_image(meal.image)
         meal_data = openai_service.analyze_meal_image(base64_image_url, prompt)
       else
-        # Process the meal based on text prompt only
         meal_data = openai_service.analyze_meal_text(prompt)
       end
 
       if meal_data
-        meal.update(
-          meal_name: meal_data[:meal_name],
-          description: meal_data[:description],
-          calories: meal_data[:calories],
-          fats: meal_data[:fats],
-          proteins: meal_data[:proteins],
-          carbs: meal_data[:carbs],
-          fiber: meal_data[:fiber],
-          sodium: meal_data[:sodium],
-          sugar: meal_data[:sugar],
-          cholesterol: meal_data[:cholesterol],
-        )
-        # Clear any previous errors
+        meal.update(meal_data)
         user_meal.update(error: nil)
         user_meal.broadcast_user_meal
       else
