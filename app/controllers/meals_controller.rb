@@ -36,7 +36,7 @@ class MealsController < ApplicationController
     else
       @meals = []
     end
-    render partial: "meals/search_results", locals: { meals: @meals }
+    render partial: "meals/search_results", locals: { meals: @meals, date: params[:date] }
   end
 
   private

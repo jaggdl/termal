@@ -149,7 +149,18 @@ class UserMealsController < ApplicationController
 
   def create_from_meal_id
     meal_id = params[:meal_id]
-    @user_meal = Current.user_meals.new(meal_id: meal_id, consumed_at: Time.now)
+
+    # Use the provided date parameter if available, otherwise default to current time
+    if params[:date].present?
+      user_timezone = Current.user_profile.timezone
+      tz = ActiveSupport::TimeZone[user_timezone]
+      date = Date.parse(params[:date])
+      consumed_at = tz.local(date.year, date.month, date.day, 23, 59, 59)
+    else
+      consumed_at = Time.now
+    end
+
+    @user_meal = Current.user_meals.new(meal_id: meal_id, consumed_at: consumed_at)
 
     if @user_meal.save
       date = @user_meal.consumed_at_in_timezone.to_date

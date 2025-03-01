@@ -12,7 +12,7 @@
             <%= render partial: 'meals/nutrients_table', locals: { meal: meal } %>
           </div>
         </div>
-        <%= button_to user_meals_path, params: { meal_id: meal.id }, method: :post, data: { turbo: true } do %>
+        <%= button_to user_meals_path, params: { meal_id: meal.id, date: date }, method: :post, data: { turbo: true } do %>
           <%= render partial: 'shared/aqua_style', locals: { text: 'Add' } %>
         <% end %>
       </li>
