@@ -2,11 +2,10 @@
 
 ## Commands
 - **Server**: `bin/dev` - Run development server
-- **Tests**: `bin/rails test` - Run all tests
-- **Single Test**: `bin/rails test TEST=test/models/user_test.rb` - Run specific test
-- **Linter**: `bin/rubocop` - Run RuboCop linter
 - **Brakeman**: `bin/brakeman` - Run security analysis
 - **Console**: `bin/rails console` - Rails console
+
+Please don't bother executing tests. I will do it myself.
 
 ## Code Style
 - **Ruby**: Follow Rails Omakase (RuboCop) style guide

@@ -5,38 +5,63 @@ class ProcessMealImageJob < ApplicationJob
     user_meal = UserMeal.find(user_meal_id)
     meal = user_meal.meal
 
-    openai_service = OpenAiService.new
-    meal_data = nil
+    begin
+      openai_service = OpenAiService.new
+      meal_data = nil
 
-    # Check if an image is attached
-    if meal.image.attached?
-      base64_image_url = process_image(meal.image)
-      meal_data = openai_service.analyze_meal_image(base64_image_url, prompt)
-    else
-      # Process the meal based on text prompt only
-      meal_data = openai_service.analyze_meal_text(prompt)
-    end
+      # Check if an image is attached
+      if meal.image.attached?
+        base64_image_url = process_image(meal.image)
+        meal_data = openai_service.analyze_meal_image(base64_image_url, prompt)
+      else
+        # Process the meal based on text prompt only
+        meal_data = openai_service.analyze_meal_text(prompt)
+      end
 
-    if meal_data
-      meal.update(
-        meal_name: meal_data[:meal_name],
-        description: meal_data[:description],
-        calories: meal_data[:calories],
-        fats: meal_data[:fats],
-        proteins: meal_data[:proteins],
-        carbs: meal_data[:carbs],
-        fiber: meal_data[:fiber],
-        sodium: meal_data[:sodium],
-        sugar: meal_data[:sugar],
-        cholesterol: meal_data[:cholesterol],
-      )
-      user_meal.broadcast_user_meal
-    else
-      Rails.logger.error("Failed to analyze meal for user_meal_id: #{user_meal_id}")
+      if meal_data
+        meal.update(
+          meal_name: meal_data[:meal_name],
+          description: meal_data[:description],
+          calories: meal_data[:calories],
+          fats: meal_data[:fats],
+          proteins: meal_data[:proteins],
+          carbs: meal_data[:carbs],
+          fiber: meal_data[:fiber],
+          sodium: meal_data[:sodium],
+          sugar: meal_data[:sugar],
+          cholesterol: meal_data[:cholesterol],
+        )
+        # Clear any previous errors
+        user_meal.update(error: nil)
+        user_meal.broadcast_user_meal
+      else
+        handle_error(user_meal, :failed_meal_analysis)
+      end
+    rescue => e
+      if e.is_a?(Faraday::UnauthorizedError)
+        handle_error(user_meal, :invalid_openai_api_key)
+      else
+        Rails.logger.error("Meal processing error: #{e.message}")
+        handle_error(user_meal, :server_error)
+      end
     end
   end
 
   private
+
+  def handle_error(user_meal, error_code)
+    user_meal.update(error: error_code.to_s)
+    user_meal.broadcast_user_meal
+
+    error_message = UserMeal.error_message_for(error_code)
+
+    user_meal.broadcast_replace_to(
+      [ user_meal.user, "user_meals" ],
+      target: "flash",
+      partial: "shared/flash",
+      locals: { flash: { alert: error_message } }
+    )
+  end
 
   def process_image(meal_image)
     image_data = meal_image.download
@@ -53,7 +78,9 @@ class ProcessMealImageJob < ApplicationJob
     rescue => e
       Rails.logger.error("Failed to process image: #{e.message}")
       Rails.logger.error("Error backtrace: #{e.backtrace.join("\n")}")
-      raise e
+      # Instead of raising the original error, raise a custom error with a specific code
+      # that will be caught by the main rescue block
+      raise StandardError.new(:image_processing_error)
     ensure
       temp_file.close
       temp_file.unlink # Ensure the temp file is deleted
