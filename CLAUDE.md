@@ -18,3 +18,11 @@ Please don't bother executing tests. I will do it myself.
 - **Testing**: Test models and controllers, focus on happy paths + edge cases
 
 This project is a Ruby on Rails application for tracking calories and meals.
+
+## Error Handling
+
+Error codes are managed through the `ErrorMessages` concern. When adding new error types:
+
+1. Add the error code and message to `ERROR_CODES` hash in `app/models/concerns/error_messages.rb`
+2. In job classes, store error codes using `handle_error(object, :error_code)`
+3. Error messages are displayed using the `error_message` method which translates error codes to human-readable messages

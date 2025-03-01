@@ -20,7 +20,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :user_meals
+  resources :user_meals do
+    member do
+      post :retry_processing
+    end
+  end
   get "nutrition_summary", to: "nutrition_summary#show", as: :nutrition_summary
 
   get "/global_settings", to: "global_settings#index", as: :global_settings

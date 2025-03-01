@@ -42,6 +42,31 @@ class UserMealsController < ApplicationController
     end
   end
 
+  def retry_processing
+    @user_meal = Current.user_meals.find(params[:id])
+
+    # Clear the error
+    @user_meal.update(error: nil)
+
+    # Get the meal associated with this user_meal
+    meal = @user_meal.meal
+
+    # Re-process using the OpenAI service, use stored prompt if available
+    prompt = params[:prompt].presence || meal.prompt.presence || "Analyze this meal"
+    ProcessMealImageJob.perform_later(@user_meal.id, prompt)
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          "user-meal-#{@user_meal.id}",
+          partial: "user_meals/meal_info",
+          locals: { user_meal: @user_meal }
+        )
+      end
+      format.html { redirect_to root_path, notice: "Processing meal again..." }
+    end
+  end
+
   def destroy
     if @user_meal.destroy
       redirect_to root_path, notice: "Meal was successfully removed."
@@ -68,7 +93,8 @@ class UserMealsController < ApplicationController
     end
 
     @user_meal = Current.user.user_meals.build(consumed_at: Time.now)
-    @meal = @user_meal.build_meal()
+    prompt = params[:user_meal][:prompt]
+    @meal = @user_meal.build_meal(prompt: prompt)
 
     # Attach image if provided
     if params[:user_meal][:file].present?
@@ -77,7 +103,7 @@ class UserMealsController < ApplicationController
 
     begin
       if @user_meal.save
-        ProcessMealImageJob.perform_later(@user_meal.id, params[:user_meal][:prompt])
+        ProcessMealImageJob.perform_later(@user_meal.id, prompt)
         redirect_to root_path, notice: "Meal was successfully created."
       else
         render :new, alert: "Something went wrong :( ..."
