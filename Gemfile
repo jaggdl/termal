@@ -74,3 +74,5 @@ gem "tailwindcss-ruby", "~> 4.0"
 gem "tailwindcss-rails", "~> 4.1"
 
 gem "image_processing", "~> 1.14"
+
+gem "heroicon", "~> 1.0"

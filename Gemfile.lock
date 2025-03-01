@@ -124,6 +124,8 @@ GEM
       raabro (~> 1.4)
     globalid (1.2.1)
       activesupport (>= 6.1)
+    heroicon (1.0.0)
+      rails (>= 5.2)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     image_processing (1.14.0)
@@ -378,6 +380,7 @@ DEPENDENCIES
   brakeman
   capybara
   debug
+  heroicon (~> 1.0)
   image_processing (~> 1.14)
   importmap-rails
   jbuilder

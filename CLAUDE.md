@@ -16,6 +16,7 @@ Please don't bother executing tests. I will do it myself.
 - **HTML/ERB**: Use Tailwind CSS for styling
 - **JavaScript**: Use Stimulus.js for interactive elements
 - **Testing**: Test models and controllers, focus on happy paths + edge cases
+- **Icons**: This project uses the heroicons gem. Here's an example of the usage: `<%= heroicon "magnifying-glass", options: { class: "text-primary-500" } %>` 
 
 This project is a Ruby on Rails application for tracking calories and meals.
 
