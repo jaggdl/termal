@@ -13,11 +13,12 @@
     <% end %>
   </div>
 
+  <h3 class="text-lg font-semibold mb-4">Daily average</h3>
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
     <% main_nutrients.each do |nutrient| %>
       <% average = @summary[:averages][nutrient.to_sym] %>
     
-      <div data-nutrition-charts-target="card" data-type="<%= nutrient %>" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer">
+      <div data-nutrition-charts-target="card" data-type="<%= nutrient %>" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 pb-2 hover:shadow-lg transition-shadow cursor-pointer">
         <h3 class="text-lg font-semibold text-center mb-2"><%= nutrient.capitalize %></h3>
         
         <%= render partial: 'shared/nutrient_meter', 
@@ -28,15 +29,11 @@
                     show_unit: true,
                     decimals: nutrient == "calories" ? 0 : 1
                   } %>
-                
-        <div class="text-sm text-center text-gray-500 mb-2">daily average</div>
       </div>
     <% end %>
   </div>
 
   <div>
-    <h3 class="text-lg font-semibold mb-4">Nutrient Over Time</h3>
-    <p class="text-sm text-gray-500 mb-4">Click on a card above to view different nutrients</p>
     <div class="max-h-[560px]">
       <canvas data-nutrition-charts-target="chart" height="400"></canvas>
     </div>

@@ -122,6 +122,14 @@ export default class extends Controller {
           borderDash: [5, 5],
           fill: false,
           pointRadius: 0
+        }, {
+          label: 'Average',
+          data: Array(this.periodValue).fill(chartData.averages[type]),
+          borderColor: 'rgba(79, 70, 229, 0.7)',
+          borderWidth: 1.5,
+          borderDash: [5, 3],
+          fill: false,
+          pointRadius: 0
         }]
       },
       options: {

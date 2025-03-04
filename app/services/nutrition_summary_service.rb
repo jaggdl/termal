@@ -33,7 +33,8 @@ class NutritionSummaryService
           fats: meal_data.map { |data| data[:fats] },
           carbs: meal_data.map { |data| data[:carbs] }
         },
-        targets: daily_targets
+        targets: daily_targets,
+        averages: averages
       },
       daily_targets: daily_targets,
       averages: averages,
@@ -95,11 +96,22 @@ class NutritionSummaryService
   end
 
   def calculate_averages(meal_data)
+    # Filter out current day and empty days (days with no meals)
+    valid_days = meal_data.reject do |d|
+      d[:date] == Time.current.in_time_zone(timezone).to_date ||
+      (d[:calories] == 0 && d[:proteins] == 0 && d[:fats] == 0 && d[:carbs] == 0)
+    end
+
+    # If there are no valid days, return zeros
+    return { calories: 0, proteins: 0, carbs: 0, fats: 0 } if valid_days.empty?
+
+    # Calculate averages based on valid days count instead of period
+    valid_days_count = valid_days.size
     {
-      calories: meal_data.sum { |d| d[:calories] } / period,
-      proteins: meal_data.sum { |d| d[:proteins] } / period,
-      carbs: meal_data.sum { |d| d[:carbs] } / period,
-      fats: meal_data.sum { |d| d[:fats] } / period
+      calories: valid_days.sum { |d| d[:calories] } / valid_days_count,
+      proteins: valid_days.sum { |d| d[:proteins] } / valid_days_count,
+      carbs: valid_days.sum { |d| d[:carbs] } / valid_days_count,
+      fats: valid_days.sum { |d| d[:fats] } / valid_days_count
     }
   end
 
