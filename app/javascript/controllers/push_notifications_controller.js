@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="push-notifications"
 export default class extends Controller {
-  static targets = ["subscribeButton", "status"]
+  static targets = ["subscribeButton", "status", "toggleSwitch"]
 
   connect() {
     this.registerServiceWorker()
@@ -13,7 +13,7 @@ export default class extends Controller {
       try {
         const registration = await navigator.serviceWorker.register('/service-worker')
         console.log('Service Worker registered with scope:', registration.scope)
-        
+
         // Check if we already have a subscription after service worker is ready
         navigator.serviceWorker.ready.then(registration => {
           this.checkSubscription(registration)
@@ -40,19 +40,20 @@ export default class extends Controller {
     if (this.hasStatusTarget) {
       switch (status) {
         case 'enabled':
-          this.statusTarget.textContent = 'Push notifications are enabled'
-          this.statusTarget.classList.remove('text-red-500', 'text-yellow-500')
-          this.statusTarget.classList.add('text-green-500')
+          this.subscribeButtonTarget.checked = true
           break
         case 'disabled':
-          this.statusTarget.textContent = 'Push notifications are disabled'
-          this.statusTarget.classList.remove('text-green-500', 'text-red-500')
-          this.statusTarget.classList.add('text-yellow-500')
+          this.subscribeButtonTarget.checked = false
           break
         case 'error':
           this.statusTarget.textContent = 'Error with push notifications'
           this.statusTarget.classList.remove('text-green-500', 'text-yellow-500')
           this.statusTarget.classList.add('text-red-500')
+          this.subscribeButtonTarget.checked = false
+          if (this.hasToggleSwitchTarget) {
+            this.toggleSwitchTarget.classList.add('bg-red-200')
+            this.toggleSwitchTarget.classList.remove('bg-gray-200', 'peer-checked:bg-sky-400')
+          }
           break
       }
     }
@@ -61,6 +62,7 @@ export default class extends Controller {
   async toggleSubscription() {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
       alert('Push notifications are not supported by your browser')
+      this.updateStatus('error')
       return
     }
 
@@ -77,6 +79,18 @@ export default class extends Controller {
       }
     } catch (error) {
       console.error('Error toggling subscription:', error)
+      this.updateStatus('error')
+
+      // Reset toggle state after error
+      if (this.hasToggleSwitchTarget) {
+        setTimeout(() => {
+          this.toggleSwitchTarget.classList.remove('bg-red-200')
+          this.toggleSwitchTarget.classList.add('bg-gray-200')
+          if (this.subscribeButtonTarget.checked) {
+            this.toggleSwitchTarget.classList.add('peer-checked:bg-sky-400')
+          }
+        }, 2000)
+      }
     }
   }
 
@@ -89,28 +103,28 @@ export default class extends Controller {
         this.updateStatus('error')
         return
       }
-      
+
       // Get VAPID public key
       const vapidPublicKey = document.querySelector('meta[name="vapid-public-key"]')?.content
-      
+
       if (!vapidPublicKey) {
         console.error('VAPID public key not found')
         this.updateStatus('error')
         return
       }
-      
+
       // Convert the base64 VAPID key to Uint8Array
       const convertedVapidKey = this.urlBase64ToUint8Array(vapidPublicKey)
-      
+
       // Subscribe to push
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: convertedVapidKey
       })
-      
+
       // Send the subscription to the server
       await this.sendSubscriptionToServer(subscription)
-      
+
       this.updateStatus('enabled')
       console.log('Subscribed to push notifications')
     } catch (error) {
@@ -123,10 +137,10 @@ export default class extends Controller {
     try {
       // Unsubscribe from push manager
       await subscription.unsubscribe()
-      
+
       // Remove subscription from server
       await this.removeSubscriptionFromServer(subscription)
-      
+
       this.updateStatus('disabled')
       console.log('Unsubscribed from push notifications')
     } catch (error) {
@@ -139,23 +153,23 @@ export default class extends Controller {
       console.log('Notifications not supported')
       return 'denied'
     }
-    
+
     if (Notification.permission === 'granted') {
       return 'granted'
     }
-    
+
     if (Notification.permission === 'denied') {
       console.log('Permission for notifications was denied')
       return 'denied'
     }
-    
+
     return await Notification.requestPermission()
   }
 
   async sendSubscriptionToServer(subscription) {
     const token = document.querySelector('meta[name="csrf-token"]').content
     const subscriptionJson = subscription.toJSON()
-    
+
     try {
       const response = await fetch('/push_subscriptions', {
         method: 'POST',
@@ -171,7 +185,7 @@ export default class extends Controller {
           }
         })
       })
-      
+
       if (!response.ok) {
         throw new Error('Failed to save subscription on the server')
       }
@@ -184,7 +198,7 @@ export default class extends Controller {
   async removeSubscriptionFromServer(subscription) {
     const token = document.querySelector('meta[name="csrf-token"]').content
     const subscriptionJson = subscription.toJSON()
-    
+
     try {
       const response = await fetch('/push_subscriptions/' + encodeURIComponent(subscriptionJson.endpoint), {
         method: 'DELETE',
@@ -193,7 +207,7 @@ export default class extends Controller {
           'X-CSRF-Token': token
         }
       })
-      
+
       if (!response.ok) {
         throw new Error('Failed to remove subscription from the server')
       }
@@ -209,14 +223,14 @@ export default class extends Controller {
     const base64 = (base64String + padding)
       .replace(/-/g, '+')
       .replace(/_/g, '/')
-      
+
     const rawData = window.atob(base64)
     const outputArray = new Uint8Array(rawData.length)
-    
+
     for (let i = 0; i < rawData.length; ++i) {
       outputArray[i] = rawData.charCodeAt(i)
     }
-    
+
     return outputArray
   }
 }
