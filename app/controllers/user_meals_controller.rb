@@ -176,6 +176,11 @@ class UserMealsController < ApplicationController
           "flash",
           partial: "shared/flash",
           locals: { flash: { notice: "Meal successfully added" } }
+        ),
+        turbo_stream.replace(
+          "nutrient-meters-#{date}",
+          partial: "shared/nutrient_meters",
+          locals: { user_meals: Current.user.user_meals_on_date(date), date: date, user_profile: Current.user_profile }
         )
       ]
     else
