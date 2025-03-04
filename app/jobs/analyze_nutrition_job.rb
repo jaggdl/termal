@@ -35,11 +35,11 @@ class AnalyzeNutritionJob < ApplicationJob
     full_analysis = ""
 
     openai_service.stream_analyze_nutrition(analysis_data) do |chunk|
-      if chunk
-        # Ensure chunk is a string
-        chunk_text = chunk.is_a?(String) ? chunk : chunk.to_s
-        full_analysis += chunk_text
-        # Broadcast the chunk as HTML rendered from markdown
+      if chunk.present?
+        # Add the chunk to our full analysis
+        full_analysis += chunk.to_s
+
+        # Broadcast the full analysis so far as HTML rendered from markdown
         Turbo::StreamsChannel.broadcast_update_to(
           [ user, "nutrition_analysis" ],
           target: "nutrition_analysis_content",

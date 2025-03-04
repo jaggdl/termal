@@ -130,21 +130,26 @@ class OpenAiService
       }
     ]
 
-    # Call the streaming API with a block that yields each chunk
-    @client.chat(
-      parameters: {
-        model: "gpt-4o",
-        messages: messages,
-        stream: block
-      }
-    ) do |chunk|
-      # Make sure we extract the content as a string
+    # Create a processor Proc that will handle each chunk and call the provided block
+    chunk_processor = Proc.new do |chunk|
+      # Extract the content from the delta
       content = nil
       if chunk.is_a?(Hash) && chunk.dig("choices", 0, "delta", "content")
         content = chunk.dig("choices", 0, "delta", "content").to_s
       end
-      yield(content) if content && block_given?
+      
+      # Call the original block with the content
+      block.call(content) if content.present?
     end
+
+    # Call the streaming API with the Proc as the stream parameter
+    @client.chat(
+      parameters: {
+        model: "gpt-4o",
+        messages: messages,
+        stream: chunk_processor
+      }
+    )
   end
 
   private
