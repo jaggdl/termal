@@ -1,5 +1,5 @@
 <div class="relative mb-4" data-controller="search">
-  <form action="/meals/search" method="get" data-turbo-frame="search_results" data-search-target="form">
+  <form action="/meals/search" method="get" data-turbo-frame="search_results" data-search-target="form" data-action="turbo:submit-start->search#startSubmit turbo:submit-end->search#endSubmit">
     <div class="grid grid-cols-1 w-full">
       <input 
         type="text" 
@@ -12,14 +12,21 @@
       <% if params[:date].present? %>
         <input type="hidden" name="date" value="<%= params[:date] %>">
       <% end %>
-      <%= heroicon "magnifying-glass", options: { class: "pointer-events-none col-start-1 row-start-1 ml-3 size-5 self-center text-gray-400 sm:size-4" } %>
+
+      <div data-search-target="searchIcon" class="pointer-events-none col-start-1 row-start-1 ml-3 size-5 self-center text-gray-400 sm:size-4">
+        <%= heroicon "magnifying-glass", options: { class: "" } %>
+      </div>
+      <div data-search-target="loader" class="pointer-events-none col-start-1 row-start-1 ml-3 size-5 self-center text-primary-500 hidden">
+        <%= heroicon "arrow-path", options: { class: "size-5 animate-spin text-gray-600" } %>
+      </div>
     </div>
     <button 
-      class="absolute right-4 top-1 hidden"
+      class="absolute right-4 top-1.5 hidden flex items-center gap-2"
       type="button" 
       data-search-target="clearButton" 
       data-action="click->search#clear">
       Clear
+      <%= heroicon "x-mark", options: { class: "size-5 text-gray-600" } %>
     </button>
   </form>
   <turbo-frame id="search_results" data-search-target="results">
