@@ -1,19 +1,22 @@
-<div class="mx-auto py-6 w-full"
+<div class="mx-auto py-4 w-full"
      data-controller="nutrition-charts"
      data-nutrition-charts-chart-data-value="<%= @summary[:chart_data].to_json %>"
      data-nutrition-charts-period-value="<%= @period %>"
 >
-  <div class="mb-8 flex justify-center space-x-4">
-    <% periods = [7, 14, 28] %>
+  <div class="mb-4 flex justify-between items-center">
+    <h3 class="text-lg font-semibold">Daily average</h3>
     
-    <% periods.each do |days| %>
-      <%= link_to nutrition_summary_path(period: days) do %>
-        <%= render "shared/aqua_style", text: "Last #{days} Days", color: (@period == days ? "sky" : "gray") %>
-      <% end %>
-    <% end %>
+    <div>
+      <select onchange="window.location=this.value" class="bg-white border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-sky-500">
+        <% periods = [7, 14, 28, 60, 90] %>
+        <% periods.each do |days| %>
+          <option value="<%= nutrition_summary_path(period: days) %>" <%= @period == days ? 'selected' : '' %>>
+            <%= "#{days} Days" %>
+          </option>
+        <% end %>
+      </select>
+    </div>
   </div>
-
-  <h3 class="text-lg font-semibold mb-4">Daily average</h3>
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
     <% main_nutrients.each do |nutrient| %>
       <% average = @summary[:averages][nutrient.to_sym] %>
@@ -34,7 +37,7 @@
   </div>
 
   <div>
-    <div class="max-h-[560px]">
+    <div class="max-h-[280px] md:max-h-[560px]">
       <canvas data-nutrition-charts-target="chart" height="400"></canvas>
     </div>
   </div>
