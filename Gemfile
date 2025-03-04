@@ -76,3 +76,6 @@ gem "tailwindcss-rails", "~> 4.1"
 gem "image_processing", "~> 1.14"
 
 gem "heroicon", "~> 1.0"
+
+# For Web Push notifications
+gem "web-push"

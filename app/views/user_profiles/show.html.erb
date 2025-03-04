@@ -110,4 +110,22 @@
       </button>
     </div>
   <% end %>
+
+  <div class="mt-10 border-t pt-6" data-controller="push-notifications">
+    <h2 class="text-lg font-medium text-sky-700 mb-4">Notifications</h2>
+    
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="font-medium text-gray-700">Push Notifications</p>
+        <p class="text-sm text-gray-500" data-push-notifications-target="status">Checking notification status...</p>
+      </div>
+      
+      <button type="button" 
+              data-action="push-notifications#toggleSubscription"
+              data-push-notifications-target="subscribeButton"
+              class="px-4 py-2 rounded-lg bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md hover:from-sky-400 hover:to-sky-600">
+        Toggle Notifications
+      </button>
+    </div>
+  </div>
 </div>

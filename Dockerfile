@@ -24,6 +24,11 @@ ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development"
+    
+# Optional environment variables for Web Push (VAPID keys should be passed at runtime)
+# VAPID_PUBLIC_KEY="your_public_key_here" \
+# VAPID_PRIVATE_KEY="your_private_key_here" \
+# VAPID_CONTACT_EMAIL="your_email@example.com"
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build

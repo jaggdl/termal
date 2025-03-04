@@ -5,6 +5,7 @@ class User < ApplicationRecord
   has_many :user_meals, dependent: :destroy
   has_many :meals, through: :user_meals
   has_many :invites, dependent: :destroy
+  has_many :push_subscriptions, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
@@ -32,5 +33,22 @@ class User < ApplicationRecord
 
   def can_invite?
     first_user?
+  end
+
+  # Send a push notification to all of this user's devices
+  def send_push_notification(title:, message:, path: nil, icon: nil)
+    return if push_subscriptions.empty?
+
+    push_subscriptions.each do |subscription|
+      WebPushJob.perform_later(
+        title: title,
+        message: message,
+        endpoint: subscription.endpoint,
+        p256dh_key: subscription.p256dh_key,
+        auth_key: subscription.auth_key,
+        path: path,
+        icon: icon
+      )
+    end
   end
 end
