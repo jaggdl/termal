@@ -1,0 +1,90 @@
+<%= turbo_stream_from Current.user, "nutrition_analysis" %>
+
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Nutritional Analysis
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        7-day nutrition review and recommendations
+      </p>
+    </div>
+  </div>
+
+  <% if @analysis.present? %>
+    <div class="mt-8 bg-white overflow-hidden shadow rounded-lg">
+      <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+              Professional Analysis
+            </h3>
+            <%= heroicon "academic-cap", options: { class: "ml-2 h-5 w-5 text-blue-500" } %>
+          </div>
+          <% if @analysis_time.present? %>
+            <span class="text-sm text-gray-500">
+              Generated <%= time_ago_in_words(@analysis_time) %> ago
+            </span>
+          <% end %>
+        </div>
+      </div>
+      
+      <div class="px-4 py-5 sm:p-6">
+        <div class="prose max-w-none" id="nutrition_analysis_content">
+          <%= markdown(@analysis) %>
+        </div>
+        
+        <div class="mt-6 flex justify-end space-x-4">
+          <%= button_to create_analysis_path, method: :post, params: { streaming: true }, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" do %>
+            <%= heroicon "sparkles", options: { class: "mr-2 -ml-1 h-5 w-5" } %>
+            Analyze with Streaming
+          <% end %>
+          
+          <%= button_to create_analysis_path, method: :post, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500", form: { data: { turbo: true } } do %>
+            <%= heroicon "arrow-path", options: { class: "mr-2 -ml-1 h-5 w-5" } %>
+            Refresh Analysis
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="mt-8 bg-white overflow-hidden shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6 text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100">
+          <%= heroicon "exclamation", options: { class: "h-6 w-6 text-yellow-600" } %>
+        </div>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No AI Analysis Available</h3>
+        <p class="mt-1 text-sm text-gray-500">
+          <% if GlobalSetting.get("openai_api_key").blank? %>
+            Nutritional analysis requires an OpenAI API key to be configured in global settings.
+          <% else %>
+            Click the button below to generate a personalized analysis of your nutrition data.
+          <% end %>
+        </p>
+        <div class="prose max-w-none" id="nutrition_analysis_content">
+        </div>
+        <div class="mt-6">
+          <% if GlobalSetting.get("openai_api_key").blank? %>
+            <a href="<%= global_settings_path %>" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              <%= heroicon "cog", options: { class: "mr-2 -ml-1 h-5 w-5" } %>
+              Configure Settings
+            </a>
+          <% else %>
+            <div class="flex space-x-4">
+              <%= button_to create_analysis_path, method: :post, params: { streaming: true }, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" do %>
+                <%= heroicon "sparkles", options: { class: "mr-2 -ml-1 h-5 w-5" } %>
+                Generate with Streaming
+              <% end %>
+              
+              <%= button_to create_analysis_path, method: :post, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500", form: { data: { turbo: true } } do %>
+                <%= heroicon "document-text", options: { class: "mr-2 -ml-1 h-5 w-5" } %>
+                Generate Analysis
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

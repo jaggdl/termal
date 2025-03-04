@@ -35,6 +35,7 @@
       <nav class="hidden md:flex space-x-8 text-gray-600 items-end mb-4">
         <%= link_to 'Meals', root_path, class: "#{current_page?(root_path) || request.path.start_with?('/user_meals') ? 'font-bold text-xl text-black' : ''}" %>
         <%= link_to 'Summary', nutrition_summary_path, class: "#{current_page?(nutrition_summary_path) ? 'font-bold text-xl text-black' : ''}" %>
+        <%= link_to 'Analysis', analysis_path, class: "#{current_page?(analysis_path) ? 'font-bold text-xl text-black' : ''}" %>
         <div class="w-full flex justify-end items-center space-x-8">
           <% if Current.user&.can_invite? %>
             <%= link_to 'Family', family_path, class: "#{request.path.start_with?('/family') ? 'font-bold text-xl text-black' : ''}" %>
@@ -47,7 +48,8 @@
       <nav class="md:hidden flex justify-between items-center mb-4">
         <div class="flex items-center">
           <%= link_to 'Meals', root_path, class: "mr-4 #{current_page?(root_path) || request.path.start_with?('/user_meals') ? 'font-bold text-black' : 'text-gray-600'}" %>
-          <%= link_to 'Summary', nutrition_summary_path, class: "#{current_page?(nutrition_summary_path) ? 'font-bold text-black' : 'text-gray-600'}" %>
+          <%= link_to 'Summary', nutrition_summary_path, class: "mr-4 #{current_page?(nutrition_summary_path) ? 'font-bold text-black' : 'text-gray-600'}" %>
+          <%= link_to 'Analysis', analysis_path, class: "#{current_page?(analysis_path) ? 'font-bold text-black' : 'text-gray-600'}" %>
         </div>
         <div class="flex items-center space-x-4">
           <% if Current.user&.can_invite? %>

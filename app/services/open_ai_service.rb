@@ -80,6 +80,73 @@ class OpenAiService
     extract_meal_data(response)
   end
 
+  # Analyze nutritional data for the past 7 days
+  def analyze_nutrition(analysis_data)
+    # Render the analysis prompt template
+    prompt_template = ApplicationController.renderer.render(
+      partial: "templates/nutrition_analysis_prompt",
+      locals: { analysis_data: analysis_data }
+    )
+
+    messages = [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: prompt_template
+          }
+        ]
+      }
+    ]
+
+    response = @client.chat(
+      parameters: {
+        model: "gpt-4o",
+        messages: messages
+      }
+    )
+
+    response.dig("choices", 0, "message", "content")
+  end
+
+  # Stream analyze nutritional data with a block that receives markdown chunks
+  def stream_analyze_nutrition(analysis_data, &block)
+    # Render the analysis prompt template
+    prompt_template = ApplicationController.renderer.render(
+      partial: "templates/nutrition_analysis_prompt",
+      locals: { analysis_data: analysis_data }
+    )
+
+    messages = [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: prompt_template
+          }
+        ]
+      }
+    ]
+
+    # Call the streaming API with a block that yields each chunk
+    @client.chat(
+      parameters: {
+        model: "gpt-4o",
+        messages: messages,
+        stream: block
+      }
+    ) do |chunk|
+      # Make sure we extract the content as a string
+      content = nil
+      if chunk.is_a?(Hash) && chunk.dig("choices", 0, "delta", "content")
+        content = chunk.dig("choices", 0, "delta", "content").to_s
+      end
+      yield(content) if content && block_given?
+    end
+  end
+
   private
 
   def meal_extraction_tool

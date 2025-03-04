@@ -1,0 +1,49 @@
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Nutritional Analysis
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        7-day nutrition review and recommendations
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-8 bg-white overflow-hidden shadow rounded-lg">
+    <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Professional Analysis
+          </h3>
+          <%= heroicon "academic-cap", options: { class: "ml-2 h-5 w-5 text-blue-500" } %>
+        </div>
+        <div id="nutrition_analysis_status" class="text-sm text-gray-500">
+          <div class="flex items-center">
+            <div class="mr-2">Generating analysis...</div>
+            <svg class="animate-spin h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="px-4 py-5 sm:p-6">
+      <div id="nutrition_analysis_content" class="prose max-w-none min-h-[200px]">
+        <p class="text-gray-500 italic">Analyzing your nutritional data...</p>
+      </div>
+      
+      <div class="mt-6 flex justify-end">
+        <%= link_to analysis_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" do %>
+          <%= heroicon "arrow-left", options: { class: "mr-2 -ml-1 h-5 w-5" } %>
+          Back to Summary
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= turbo_stream_from @stream_id %>

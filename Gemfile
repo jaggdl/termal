@@ -79,3 +79,6 @@ gem "heroicon", "~> 1.0"
 
 # For Web Push notifications
 gem "web-push"
+
+# For Markdown rendering
+gem "redcarpet"

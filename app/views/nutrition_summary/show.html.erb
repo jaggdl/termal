@@ -2,7 +2,11 @@
      data-controller="nutrition-charts"
      data-nutrition-charts-chart-data-value="<%= @summary[:chart_data].to_json %>"
      data-nutrition-charts-period-value="<%= @period %>"
+     data-nutrition-charts-active-type-value="<%= @selected_nutrient %>"
 >
+  <!-- Container for the nutrition analysis content -->
+  <div id="nutrition_analysis_content" class="mb-4 mt-2"></div>
+  <div id="nutrition_analysis_status" class="mb-4"></div>
   <div class="mb-4 flex justify-between items-center">
     <h3 class="text-lg font-semibold">Daily average</h3>
     
@@ -10,7 +14,7 @@
       <select onchange="window.location=this.value" class="bg-white border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-sky-500">
         <% periods = [7, 14, 28, 60, 90] %>
         <% periods.each do |days| %>
-          <option value="<%= nutrition_summary_path(period: days) %>" <%= @period == days ? 'selected' : '' %>>
+          <option value="<%= nutrition_summary_path(period: days, nutrient: @selected_nutrient) %>" <%= @period == days ? 'selected' : '' %>>
             <%= "#{days} Days" %>
           </option>
         <% end %>

@@ -23,4 +23,26 @@ module ApplicationHelper
   def main_nutrients
     [ "calories", "proteins", "fats", "carbs" ]
   end
+
+  def markdown(text)
+    return "" if text.blank?
+
+    renderer = Redcarpet::Render::HTML.new(
+      hard_wrap: true,
+      filter_html: false,
+      link_attributes: { target: "_blank" }
+    )
+
+    markdown = Redcarpet::Markdown.new(
+      renderer,
+      autolink: true,
+      tables: true,
+      fenced_code_blocks: true,
+      strikethrough: true,
+      superscript: true,
+      highlight: true
+    )
+
+    markdown.render(text).html_safe
+  end
 end

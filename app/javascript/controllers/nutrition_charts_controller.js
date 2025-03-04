@@ -19,9 +19,9 @@ export default class extends Controller {
       this.initializeChart()
     }
 
-    // Add active class to the calories card by default
+    // Add active class to the selected card
     this.cardTargets.forEach(card => {
-      if (card.dataset.type === "calories") {
+      if (card.dataset.type === this.activeTypeValue) {
         card.classList.add("ring-2", "ring-sky-400")
       }
     })
@@ -40,8 +40,8 @@ export default class extends Controller {
     // Store the chart context since we'll recreate it
     this.chartCtx = this.chartTarget.getContext('2d')
 
-    // Create initial calories chart
-    this.createChart("calories")
+    // Create initial chart using the active type
+    this.createChart(this.activeTypeValue)
   }
 
   showNutrient(event) {
@@ -59,6 +59,13 @@ export default class extends Controller {
     // Update chart
     this.activeTypeValue = type
     this.createChart(type)
+    
+    // Update URL with selected nutrient type
+    const url = new URL(window.location)
+    url.searchParams.set('nutrient', type)
+    
+    // Replace state without reloading the page
+    window.history.replaceState({}, '', url)
   }
 
   createChart(type) {

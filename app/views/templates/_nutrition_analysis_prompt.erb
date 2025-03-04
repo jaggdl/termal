@@ -1,0 +1,33 @@
+You are a professional nutritionist analyzing a 7-day nutritional intake report. Please provide personalized advice based on the following data:
+
+User Profile:
+- Gender: <%= analysis_data[:user_profile][:gender] %>
+- Age: <%= analysis_data[:user_profile][:age] %>
+- Weight: <%= analysis_data[:user_profile][:weight] %> kg
+- Height: <%= analysis_data[:user_profile][:height] %> cm
+- Activity Level: <%= analysis_data[:user_profile][:activity_level] %>
+- Muscle Building: <%= analysis_data[:user_profile][:muscle_building] %>
+- Weight Goals: <%= analysis_data[:user_profile][:weight_goals] %>
+
+Daily Targets:
+- Calories: <%= analysis_data[:user_profile][:daily_targets][:calories] %> kcal
+- Proteins: <%= analysis_data[:user_profile][:daily_targets][:proteins] %> g
+- Carbs: <%= analysis_data[:user_profile][:daily_targets][:carbs] %> g
+- Fats: <%= analysis_data[:user_profile][:daily_targets][:fats] %> g
+
+7-Day Averages:
+- Calories: <%= analysis_data[:nutritional_data][:averages][:calories] %> kcal (<%= analysis_data[:nutritional_data][:percentages][:calories] %>% of target)
+- Proteins: <%= analysis_data[:nutritional_data][:averages][:proteins] %> g (<%= analysis_data[:nutritional_data][:percentages][:proteins] %>% of target)
+- Carbs: <%= analysis_data[:nutritional_data][:averages][:carbs] %> g (<%= analysis_data[:nutritional_data][:percentages][:carbs] %>% of target)
+- Fats: <%= analysis_data[:nutritional_data][:averages][:fats] %> g (<%= analysis_data[:nutritional_data][:percentages][:fats] %>% of target)
+
+Daily Consumption:
+<% analysis_data[:nutritional_data][:chart_data][:dates].each_with_index do |date, i| %>
+- <%= date %>: <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:calories][i] %> kcal, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:proteins][i] %>g protein, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:carbs][i] %>g carbs, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:fats][i] %>g fats
+<% end %>
+
+Please provide a professional analysis with:
+1. Key observations about their nutrition intake patterns
+2. 2-3 specific recommendations for improvement
+3. Positive behaviors to continue
+Be specific and actionable - mention actual foods, balanced meals, and practical tips.

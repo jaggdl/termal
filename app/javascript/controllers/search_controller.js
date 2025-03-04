@@ -25,15 +25,6 @@ export default class extends Controller {
     }, 300);
   }
 
-  // Intercept Turbo Frame renders to prevent rendering after an abort
-  beforeFrameRender(event) {
-    if (this.abortedValue && event.target.id === "search_results") {
-      // Prevent the render of the search results if we've aborted
-      event.preventDefault();
-      this.abortedValue = false;
-    }
-  }
-
   clear() {
     this.inputTarget.value = "";
     this.toggleClearButton();
