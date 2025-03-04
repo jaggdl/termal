@@ -16,5 +16,4 @@ class Rails::PwaController < ApplicationController
   def manifest
     render template: "pwa/manifest", layout: false
   end
-
 end

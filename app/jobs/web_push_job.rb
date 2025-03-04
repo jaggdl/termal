@@ -5,7 +5,7 @@ class WebPushJob < ApplicationJob
     message_json = {
       title: title,
       body: message,
-      icon: icon || ActionController::Base.helpers.asset_url("icon.png"),
+      icon: icon || "/icon.png",
       data: {
         path: path || "/"
       }
@@ -18,7 +18,7 @@ class WebPushJob < ApplicationJob
         p256dh: p256dh_key,
         auth: auth_key,
         vapid: {
-          subject: "mailto:#{Rails.configuration.x.vapid.contact_email}",
+          subject: "mailto:#{Rails.configuration.x.vapid[:contact_email]}",
           public_key: Rails.configuration.x.vapid[:public_key],
           private_key: Rails.configuration.x.vapid[:private_key]
         }
