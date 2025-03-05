@@ -32,7 +32,7 @@ class MealsController < ApplicationController
 
   def search
     if params[:q].present?
-      @meals = Meal.vector_search(query: params[:q], user: Current.user, limit: 5)
+      @meals = Meal.vector_search(query: params[:q], user: Current.user, limit: 10)
     else
       @meals = []
     end
