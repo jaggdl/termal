@@ -88,6 +88,8 @@ class OpenAiService
       locals: { analysis_data: analysis_data }
     )
 
+    puts prompt_template
+
     messages = [
       {
         role: "user",

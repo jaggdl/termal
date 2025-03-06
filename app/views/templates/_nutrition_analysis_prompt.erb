@@ -29,7 +29,7 @@ Daily Consumption:
 <% if analysis_data[:meal_details].present? %>
 Detailed Meal List:
 <% analysis_data[:meal_details].each do |meal| %>
-- <%= meal[:date] %> <%= meal[:time] %>: <%= meal[:name] %> 
+- <%= meal[:date] %> <%= meal[:time] %>: <%= meal[:meal_name] %> 
   Description: <%= meal[:description].present? ? meal[:description] : "No description" %>
   Nutrition: <%= meal[:calories] %> kcal, <%= meal[:proteins] %>g protein, <%= meal[:carbs] %>g carbs, <%= meal[:fats] %>g fats
 <% end %>

@@ -39,7 +39,7 @@ class AnalyzeNutritionJob < ApplicationJob
 
     # Get analysis directly
     analysis_text = openai_service.analyze_nutrition(analysis_data)
-    
+
     # Create a new NutritionAnalysis record
     NutritionAnalysis.create!(
       user: user,
@@ -69,7 +69,7 @@ class AnalyzeNutritionJob < ApplicationJob
       {
         date: user_meal.consumed_at_in_timezone.strftime("%b %d, %Y"),
         time: user_meal.consumed_at_in_timezone.strftime("%I:%M %p"),
-        name: user_meal.meal.name,
+        meal_name: user_meal.meal.meal_name,
         description: user_meal.meal.description,
         calories: user_meal.meal.calories,
         proteins: user_meal.meal.proteins,
