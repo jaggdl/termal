@@ -36,8 +36,8 @@
       </div>
       
       <div class="px-4 py-5 sm:p-6">
-        <div class="prose max-w-none" id="nutrition_analysis_content">
-          <%= @analysis.text %>
+        <div class="prose" id="nutrition_analysis_content">
+          <%= markdown(@analysis.text) %>
         </div>
       </div>
     </div>

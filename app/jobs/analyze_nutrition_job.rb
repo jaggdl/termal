@@ -6,21 +6,21 @@ class AnalyzeNutritionJob < ApplicationJob
     return unless user
 
     period_days = case period
-                  when "today"
-                    1
-                  when "yesterday"
-                    1
-                  when "last_week", nil
-                    7
-                  else
-                    7
-                  end
+    when "today"
+      1
+    when "yesterday"
+      1
+    when "last_week", nil
+      7
+    else
+      7
+    end
 
     summary_service = if period == "yesterday"
-                        NutritionSummaryService.new(user, period: period_days, offset: 1)
-                      else
-                        NutritionSummaryService.new(user, period: period_days)
-                      end
+      NutritionSummaryService.new(user, period: period_days, offset: 1)
+    else
+      NutritionSummaryService.new(user, period: period_days)
+    end
     summary = summary_service.summary_data
 
     return unless GlobalSetting.get("openai_api_key").present?
