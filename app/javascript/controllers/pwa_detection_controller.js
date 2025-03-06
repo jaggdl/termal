@@ -12,9 +12,9 @@ export default class extends Controller {
       document.referrer.includes('android-app://');
 
     if (isStandalone) {
-      document.documentElement.style.setProperty('--nav-b-padding', '10');
+      document.documentElement.style.setProperty('--nav-b-padding', '2.5rem');
     } else {
-      document.documentElement.style.setProperty('--nav-b-padding', '3');
+      document.documentElement.style.setProperty('--nav-b-padding', '0.75rem');
     }
   }
 }
