@@ -49,7 +49,7 @@ Detailed Meal List:
 <% end %>
 
 Please provide a professional analysis with:
-0. Provide the response in markdown format well formatted. Only the markdown content, not in a code clock. Also, include links to the meal when mentioned and also link the dates.
+0. Provide the response in markdown format well formatted. Only the markdown content, not in a code clock. Also, include links to the meal when mentioned and also link the dates. e.g. "The [meal name](/user_meals/[:user_meal_id])... The [day](/user_meals?date=DD-MM-YY)"
 1. Key observations about their nutrition intake patterns<% if analysis_data[:period] == "today" || analysis_data[:period] == "yesterday" %>
 2. 1-2 specific recommendations for improvement based on this <%= analysis_data[:period] %>'s intake
 3. What they did well <%= analysis_data[:period] %>

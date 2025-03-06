@@ -125,7 +125,7 @@ class OpenAiService
 
     response = @client.chat(
       parameters: {
-        model: "o1",
+        model: "gpt-4o",
         messages: messages
       }
     )
