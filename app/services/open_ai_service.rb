@@ -110,48 +110,6 @@ class OpenAiService
     response.dig("choices", 0, "message", "content")
   end
 
-  # Stream analyze nutritional data with a block that receives markdown chunks
-  def stream_analyze_nutrition(analysis_data, &block)
-    # Render the analysis prompt template
-    prompt_template = ApplicationController.renderer.render(
-      partial: "templates/nutrition_analysis_prompt",
-      locals: { analysis_data: analysis_data }
-    )
-
-    messages = [
-      {
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: prompt_template
-          }
-        ]
-      }
-    ]
-
-    # Create a processor Proc that will handle each chunk and call the provided block
-    chunk_processor = Proc.new do |chunk|
-      # Extract the content from the delta
-      content = nil
-      if chunk.is_a?(Hash) && chunk.dig("choices", 0, "delta", "content")
-        content = chunk.dig("choices", 0, "delta", "content").to_s
-      end
-      
-      # Call the original block with the content
-      block.call(content) if content.present?
-    end
-
-    # Call the streaming API with the Proc as the stream parameter
-    @client.chat(
-      parameters: {
-        model: "gpt-4o",
-        messages: messages,
-        stream: chunk_processor
-      }
-    )
-  end
-
   private
 
   def meal_extraction_tool

@@ -26,9 +26,20 @@ Daily Consumption:
 - <%= date %>: <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:calories][i] %> kcal, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:proteins][i] %>g protein, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:carbs][i] %>g carbs, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:fats][i] %>g fats
 <% end %>
 
+<% if analysis_data[:meal_details].present? %>
+Detailed Meal List:
+<% analysis_data[:meal_details].each do |meal| %>
+- <%= meal[:date] %> <%= meal[:time] %>: <%= meal[:name] %> 
+  Description: <%= meal[:description].present? ? meal[:description] : "No description" %>
+  Nutrition: <%= meal[:calories] %> kcal, <%= meal[:proteins] %>g protein, <%= meal[:carbs] %>g carbs, <%= meal[:fats] %>g fats
+<% end %>
+<% end %>
+
 Please provide a professional analysis with:
-0. Provide the response in markdown format
+0. Provide the response in markdown format well formatted. Only the markdown content.
 1. Key observations about their nutrition intake patterns
 2. 2-3 specific recommendations for improvement
 3. Positive behaviors to continue
-Be specific and actionable - mention actual foods, balanced meals, and practical tips.
+Be specific and actionable - mention actual foods, balanced meals, and practical tips.<% if analysis_data[:meal_details].present? %>
+4. Specific comments on meal choices and timing based on the detailed meal list provided.
+<% end %>

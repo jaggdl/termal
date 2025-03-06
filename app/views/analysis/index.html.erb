@@ -2,17 +2,13 @@
   <div class="md:flex md:items-center md:justify-between">
     <div class="flex-1 min-w-0">
       <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-        Nutritional Analysis
+        Nutritional Analyses
       </h2>
       <p class="mt-1 text-sm text-gray-500">
-        7-day nutrition review and recommendations
+        Review your nutrition analysis history
       </p>
     </div>
-    <div class="mt-4 md:mt-0 md:ml-4 flex space-x-3">
-      <a href="<%= analysis_index_path %>" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-        <%= heroicon "list-bullet", options: { class: "mr-2 -ml-1 h-5 w-5 text-gray-500" } %>
-        All Analyses
-      </a>
+    <div class="mt-4 md:mt-0 md:ml-4">
       <%= form_with url: analysis_index_path, method: :post, class: "flex flex-col items-end" do %>
         <div class="flex items-center mb-2">
           <%= check_box_tag :include_meal_data, "1", false, class: "h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" %>
@@ -20,36 +16,56 @@
         </div>
         <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
           <%= heroicon "sparkles", options: { class: "mr-2 -ml-1 h-5 w-5" } %>
-          Generate New
+          Generate New Analysis
         </button>
       <% end %>
     </div>
   </div>
 
-  <% if @analysis.present? %>
+  <% if @analyses.present? %>
     <div class="mt-8 bg-white overflow-hidden shadow rounded-lg">
       <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">
-              Professional Analysis
-            </h3>
-            <%= heroicon "academic-cap", options: { class: "ml-2 h-5 w-5 text-blue-500" } %>
-          </div>
-          <span class="text-sm text-gray-500">
-            <%= @analysis.formatted_date_range %> • Generated <%= time_ago_in_words(@analysis.executed_at) %> ago
-            <% if @analysis.include_meal_data? %>
-              • <span class="text-blue-600"><%= heroicon "clipboard-document-list", options: { class: "inline h-4 w-4 mr-1" } %>Detailed meal data included</span>
-            <% end %>
-          </span>
-        </div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Your Analysis History
+        </h3>
       </div>
       
-      <div class="px-4 py-5 sm:p-6">
-        <div class="prose max-w-none" id="nutrition_analysis_content">
-          <%= @analysis.text %>
-        </div>
-      </div>
+      <ul class="divide-y divide-gray-200">
+        <% @analyses.each do |analysis| %>
+          <li>
+            <a href="<%= analysis_path(analysis) %>" class="block hover:bg-gray-50">
+              <div class="px-4 py-4 sm:px-6">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <%= heroicon "academic-cap", options: { class: "mr-2 h-5 w-5 text-blue-500" } %>
+                    <p class="text-md font-medium text-gray-900 truncate">
+                      Analysis for <%= analysis.formatted_date_range %>
+                    </p>
+                  </div>
+                  <div class="ml-2 flex-shrink-0 flex space-x-2">
+                    <% if analysis.include_meal_data? %>
+                      <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        <%= heroicon "clipboard-document-list", options: { class: "h-3 w-3 mr-1" } %> Detailed
+                      </p>
+                    <% end %>
+                    <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                      <%= time_ago_in_words(analysis.executed_at) %> ago
+                    </p>
+                  </div>
+                </div>
+                <div class="mt-2 sm:flex sm:justify-between">
+                  <div class="sm:flex">
+                    <p class="flex items-center text-sm text-gray-500 truncate">
+                      <%= heroicon "calendar", options: { class: "flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" } %>
+                      <%= analysis.executed_at.strftime("%B %d, %Y at %I:%M %p") %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </li>
+        <% end %>
+      </ul>
     </div>
   <% else %>
     <div class="mt-8 bg-white overflow-hidden shadow rounded-lg">
@@ -57,12 +73,12 @@
         <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100">
           <%= heroicon "exclamation", options: { class: "h-6 w-6 text-yellow-600" } %>
         </div>
-        <h3 class="mt-2 text-sm font-medium text-gray-900">No Analysis Found</h3>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No Analyses Available</h3>
         <p class="mt-1 text-sm text-gray-500">
           <% if GlobalSetting.get("openai_api_key").blank? %>
             Nutritional analysis requires an OpenAI API key to be configured in global settings.
           <% else %>
-            The requested analysis could not be found or no analyses have been generated yet.
+            Click the button below to generate your first nutritional analysis.
           <% end %>
         </p>
         <div class="mt-6">
@@ -72,11 +88,7 @@
               Configure Settings
             </a>
           <% else %>
-            <div class="flex justify-center space-x-4">
-              <a href="<%= analysis_index_path %>" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                <%= heroicon "arrow-left", options: { class: "mr-2 -ml-1 h-5 w-5 text-gray-500" } %>
-                Back to List
-              </a>
+            <div class="flex justify-center flex-col items-center">
               <%= form_with url: analysis_index_path, method: :post, class: "flex flex-col items-center" do %>
                 <div class="flex items-center mb-2">
                   <%= check_box_tag :include_meal_data, "1", false, class: "h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" %>

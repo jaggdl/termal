@@ -1,13 +1,14 @@
 class AnalyzeNutritionJob < ApplicationJob
   queue_as :default
 
-  def perform(user_id, stream: nil)
+  def perform(user_id, include_meal_data = false)
     # Get the user
     user = User.find_by(id: user_id)
     return unless user
 
     # Get the summary data for the user
-    summary = NutritionSummaryService.new(user, period: 7).summary_data
+    summary_service = NutritionSummaryService.new(user, period: 7)
+    summary = summary_service.summary_data
 
     # Check if OpenAI API key is set
     return unless GlobalSetting.get("openai_api_key").present?
@@ -31,45 +32,50 @@ class AnalyzeNutritionJob < ApplicationJob
       nutritional_data: summary
     }
 
-    # Stream analysis with broadcasting
-    full_analysis = ""
-
-    openai_service.stream_analyze_nutrition(analysis_data) do |chunk|
-      if chunk.present?
-        # Add the chunk to our full analysis
-        full_analysis += chunk.to_s
-
-        # Broadcast the full analysis so far as HTML rendered from markdown
-        Turbo::StreamsChannel.broadcast_update_to(
-          [ user, "nutrition_analysis" ],
-          target: "nutrition_analysis_content",
-          html: ApplicationController.helpers.markdown(full_analysis)
-        )
-      end
+    # Include user meal data if requested
+    if include_meal_data
+      analysis_data[:meal_details] = collect_meal_details(user, summary_service.start_date, summary_service.end_date)
     end
 
-    # Save the completed analysis
-    user_analysis_key = "user_#{user_id}_nutrition_analysis"
-    GlobalSetting.set(user_analysis_key, full_analysis)
-
-    # Also save the timestamp
-    analysis_timestamp_key = "user_#{user_id}_nutrition_analysis_timestamp"
-    GlobalSetting.set(analysis_timestamp_key, Time.current.iso8601)
-
-    # Signal completion
-    Turbo::StreamsChannel.broadcast_update_to(
-      [ user, "nutrition_analysis" ],
-      target: "nutrition_analysis_status",
-      html: "<div class='text-sm text-gray-500'>Analysis completed</div>"
+    # Get analysis directly
+    analysis_text = openai_service.analyze_nutrition(analysis_data)
+    
+    # Create a new NutritionAnalysis record
+    NutritionAnalysis.create!(
+      user: user,
+      text: analysis_text,
+      date_start: summary_service.start_date,
+      date_end: summary_service.end_date,
+      executed_at: Time.current,
+      include_meal_data: include_meal_data
     )
   rescue StandardError => e
     Rails.logger.error("Error in AnalyzeNutritionJob for user #{user_id}: #{e.message}")
-    if user
-      Turbo::StreamsChannel.broadcast_update_to(
-        [ user, "nutrition_analysis" ],
-        target: "nutrition_analysis_status",
-        html: "<div class='text-sm text-red-500'>Error: #{e.message}</div>"
-      )
+  end
+
+  private
+
+  def collect_meal_details(user, start_date, end_date)
+    timezone = ActiveSupport::TimeZone[user.user_profile.timezone]
+    start_datetime = timezone.local(start_date.year, start_date.month, start_date.day, 0, 0, 0)
+    end_datetime = timezone.local(end_date.year, end_date.month, end_date.day, 23, 59, 59)
+
+    user_meals = user.user_meals
+      .includes(:meal)
+      .where(consumed_at: start_datetime..end_datetime)
+      .order(consumed_at: :asc)
+
+    user_meals.map do |user_meal|
+      {
+        date: user_meal.consumed_at_in_timezone.strftime("%b %d, %Y"),
+        time: user_meal.consumed_at_in_timezone.strftime("%I:%M %p"),
+        name: user_meal.meal.name,
+        description: user_meal.meal.description,
+        calories: user_meal.meal.calories,
+        proteins: user_meal.meal.proteins,
+        carbs: user_meal.meal.carbs,
+        fats: user_meal.meal.fats
+      }
     end
   end
 end

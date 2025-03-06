@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_04_041218) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_06_040035) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -57,20 +57,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_04_041218) do
     t.index ["user_id"], name: "index_invites_on_user_id"
   end
 
-  create_table "meal_vectors_chunks", primary_key: "chunk_id", force: :cascade do |t|
-    t.integer "size", null: false
-    t.binary "validity", null: false
-    t.binary "rowids", null: false
-  end
-
-# Could not dump table "meal_vectors_info" because of following StandardError
-#   Unknown type 'ANY' for column 'value'
-
-
-# Could not dump table "meal_vectors_rowids" because of following StandardError
-#   Unknown type '' for column 'id'
-
-
 # Could not dump table "meal_vectors_vector_chunks00" because of following StandardError
 #   Unknown type '' for column 'rowid'
 
@@ -89,6 +75,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_04_041218) do
     t.integer "cholesterol"
     t.text "description"
     t.string "prompt"
+  end
+
+  create_table "nutrition_analyses", force: :cascade do |t|
+    t.text "text"
+    t.date "date_start"
+    t.date "date_end"
+    t.datetime "executed_at"
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "include_meal_data", default: false
+    t.index ["user_id"], name: "index_nutrition_analyses_on_user_id"
   end
 
   create_table "push_subscriptions", force: :cascade do |t|
@@ -148,6 +146,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_04_041218) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "invites", "users"
+  add_foreign_key "nutrition_analyses", "users"
   add_foreign_key "push_subscriptions", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "user_meals", "meals"

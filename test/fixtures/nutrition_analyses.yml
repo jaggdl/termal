@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  text: MyText
+  date_start: 2025-03-05
+  date_end: 2025-03-05
+  executed_at: 2025-03-05 21:44:13
+  user: one
+
+two:
+  text: MyText
+  date_start: 2025-03-05
+  date_end: 2025-03-05
+  executed_at: 2025-03-05 21:44:13
+  user: two

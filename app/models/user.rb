@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_many :meals, through: :user_meals
   has_many :invites, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
+  has_many :nutrition_analyses, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
