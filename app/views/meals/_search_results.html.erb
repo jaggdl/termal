@@ -13,7 +13,7 @@
           </div>
         </div>
         <%= button_to user_meals_path, params: { meal_id: meal.id, date: date }, method: :post, data: { turbo: true } do %>
-          <%= render partial: 'shared/aqua_style', locals: { text: 'Add' } %>
+          <%= render 'shared/aqua_style', text: 'Add' %>
         <% end %>
       </li>
     <% end %>

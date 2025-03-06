@@ -1,8 +1,0 @@
-<% disabled = local_assigns.fetch(:disabled, false) %>
-<% if disabled %>
-  <span class="flex items-center justify-center px-4 text-sm py-2 rounded-full bg-gray-200 text-gray-400"><%= text %></span>
-<% else %>
-  <%= link_to path do %>
-    <%= render "shared/aqua_style", text: text %>
-  <% end %>
-<% end %>

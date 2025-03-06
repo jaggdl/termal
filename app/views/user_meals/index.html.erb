@@ -35,7 +35,9 @@
       <%= render partial: "shared/nutrient_meters", locals: { user_meals: @meals_by_day[@date], date: @date, user_profile: Current.user_profile } %>
     </div>
     <div class="mx-auto">
-      <%= render partial: 'shared/aqua_button', locals: { text: 'New Meal', path: new_user_meal_path } %>
+      <%= link_to new_user_meal_path do %>
+          <%= render "shared/aqua_style", text: "New Meal", icon: "plus" %>
+      <% end %>
     </div>
 
     <div class="w-full">

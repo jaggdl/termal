@@ -1,11 +1,17 @@
 <% 
-  color = local_assigns.fetch(:color, "sky")
+  variant = local_assigns.fetch(:variant, "primary")
+  icon = local_assigns[:icon]
   color_classes = {
-    "sky" => "from-sky-300 to-sky-500 hover:from-sky-400 hover:to-sky-600",
-    "gray" => "from-gray-400/80 to-gray-400 hover:from-gray-400 hover:to-gray-500"
+    "primary" => "from-sky-300 to-sky-500 hover:from-sky-400 hover:to-sky-600",
+    "secondary" => "from-gray-400/80 to-gray-400 hover:from-gray-400 hover:to-gray-500"
   }
-  gradient_classes = color_classes[color] || color_classes["sky"]
+  gradient_classes = color_classes[variant] || color_classes["primary"]
 %>
 <div class="relative cursor-pointer">
-  <span class="aqua-reflection flex items-center text-sm justify-center px-4 py-2 rounded-full bg-gradient-to-b <%= gradient_classes %> text-white shadow-md"><%= text %></span>
+  <span class="aqua-reflection flex items-center text-sm justify-center px-4 py-2 rounded-full bg-gradient-to-b <%= gradient_classes %> text-white shadow-md">
+    <% if icon.present? %>
+      <span class="mr-2"><%= heroicon icon, options: { class: "size-4" } %></span>
+    <% end %>
+    <%= text %>
+  </span>
 </div>

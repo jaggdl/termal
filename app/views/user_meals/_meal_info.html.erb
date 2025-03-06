@@ -19,7 +19,7 @@
       <%= button_to retry_processing_user_meal_path(user_meal), method: :post, 
           onclick: "event.stopPropagation()",
           form: { "data-turbo" => true } do %>
-        <%= render "shared/aqua_style", text: "Retry", color: "gray" %>
+        <%= render "shared/aqua_style", text: "Retry", variant: "secondary" %>
       <% end %>
     </div>
   <% elsif user_meal.meal&.meal_name.present? %>
