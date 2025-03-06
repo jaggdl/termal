@@ -1,28 +1,18 @@
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+<div class="mx-auto pt-8 w-full space-y-8">
   <div class="md:flex md:items-center md:justify-between">
-    <div class="flex-1 min-w-0">
-      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-        Nutritional Analyses
-      </h2>
-      <p class="mt-1 text-sm text-gray-500">
-        Review your nutrition analysis history
-      </p>
-    </div>
-    <div class="mt-4 md:mt-0 md:ml-4">
-      <%= form_with url: analysis_index_path, method: :post, class: "flex flex-col items-end" do %>
-        <div class="flex items-center mb-2">
-          <%= check_box_tag :include_meal_data, "1", false, class: "h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" %>
-          <label for="include_meal_data" class="ml-2 block text-sm text-gray-700">Include meal details</label>
-        </div>
-        <button type="submit" class="">
-          <%= render 'shared/aqua_style', text: 'Generate new analysis', icon: 'sparkles' %>
-        </button>
-      <% end %>
-    </div>
+    <%= form_with url: analysis_index_path, method: :post, class: "flex flex-col items-center w-full" do %>
+      <div class="flex items-center mb-2">
+        <%= check_box_tag :include_meal_data, "1", false, class: "h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" %>
+        <label for="include_meal_data" class="ml-2 block text-sm text-gray-700">Include meal details</label>
+      </div>
+      <button type="submit" class="m-auto">
+        <%= render 'shared/aqua_style', text: 'Generate new analysis', icon: 'sparkles' %>
+      </button>
+    <% end %>
   </div>
 
   <% if @analyses.present? %>
-    <div class="mt-8 bg-white overflow-hidden shadow rounded-lg">
+    <div class="overflow-hidden">
       <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           Your Analysis History
@@ -67,39 +57,22 @@
       </ul>
     </div>
   <% else %>
-    <div class="mt-8 bg-white overflow-hidden shadow rounded-lg">
-      <div class="px-4 py-5 sm:p-6 text-center">
-        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100">
-          <%= heroicon "exclamation", options: { class: "h-6 w-6 text-yellow-600" } %>
-        </div>
-        <h3 class="mt-2 text-sm font-medium text-gray-900">No Analyses Available</h3>
-        <p class="mt-1 text-sm text-gray-500">
-          <% if GlobalSetting.get("openai_api_key").blank? %>
-            Nutritional analysis requires an OpenAI API key to be configured in global settings.
-          <% else %>
-            Click the button below to generate your first nutritional analysis.
-          <% end %>
-        </p>
-        <div class="mt-6">
-          <% if GlobalSetting.get("openai_api_key").blank? %>
-            <a href="<%= global_settings_path %>" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              <%= heroicon "cog", options: { class: "mr-2 -ml-1 h-5 w-5" } %>
-              Configure Settings
-            </a>
-          <% else %>
-            <div class="flex justify-center flex-col items-center">
-              <%= form_with url: analysis_index_path, method: :post, class: "flex flex-col items-center" do %>
-                <div class="flex items-center mb-2">
-                  <%= check_box_tag :include_meal_data, "1", false, class: "h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" %>
-                  <label for="include_meal_data" class="ml-2 block text-sm text-gray-700">Include meal details</label>
-                </div>
-                <button type="submit">
-                  <%= render 'shared/aqua_style', text: 'Generate new analysis', icon: 'sparkles' %>
-                </button>
-              <% end %>
-            </div>
-          <% end %>
-        </div>
+    <div class="px-4 py-5 sm:p-6 text-center">
+      <h3 class="mt-2 text-sm font-medium text-gray-900">No Analyses Available</h3>
+      <p class="mt-1 text-sm text-gray-500">
+        <% if GlobalSetting.get("openai_api_key").blank? %>
+          Nutritional analysis requires an OpenAI API key to be configured in global settings.
+        <% else %>
+          Click the button above to generate your first nutritional analysis.
+        <% end %>
+      </p>
+      <div class="mt-6">
+        <% if GlobalSetting.get("openai_api_key").blank? %>
+          <a href="<%= global_settings_path %>" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <%= heroicon "cog", options: { class: "mr-2 -ml-1 h-5 w-5" } %>
+            Configure Settings
+          </a>
+        <% end %>
       </div>
     </div>
   <% end %>
