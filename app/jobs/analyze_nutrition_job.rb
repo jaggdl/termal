@@ -16,7 +16,7 @@ class AnalyzeNutritionJob < ApplicationJob
       7
     end
 
-    summary_service = if period == "yesterday"
+    summary_service = unless period == "today"
       NutritionSummaryService.new(user, period: period_days, offset: 1)
     else
       NutritionSummaryService.new(user, period: period_days)
