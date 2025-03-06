@@ -2,22 +2,17 @@ class AnalyzeNutritionJob < ApplicationJob
   queue_as :default
 
   def perform(user_id, include_meal_data = false)
-    # Get the user
     user = User.find_by(id: user_id)
     return unless user
 
-    # Get the summary data for the user
     summary_service = NutritionSummaryService.new(user, period: 7)
     summary = summary_service.summary_data
 
-    # Check if OpenAI API key is set
     return unless GlobalSetting.get("openai_api_key").present?
 
-    # Initialize OpenAI service
     openai_service = OpenAiService.new
     user_profile = user.user_profile
 
-    # Create analysis data
     analysis_data = {
       user_profile: {
         gender: user_profile.sex,
@@ -32,15 +27,12 @@ class AnalyzeNutritionJob < ApplicationJob
       nutritional_data: summary
     }
 
-    # Include user meal data if requested
     if include_meal_data
       analysis_data[:meal_details] = collect_meal_details(user, summary_service.start_date, summary_service.end_date)
     end
 
-    # Get analysis directly
     analysis_text = openai_service.analyze_nutrition(analysis_data)
 
-    # Create a new NutritionAnalysis record
     NutritionAnalysis.create!(
       user: user,
       text: analysis_text,

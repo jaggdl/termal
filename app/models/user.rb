@@ -32,7 +32,7 @@ class User < ApplicationRecord
     self.id == User.order(:id).first&.id
   end
 
-  def can_invite?
+  def is_admin?
     first_user?
   end
 

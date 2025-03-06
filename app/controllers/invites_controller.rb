@@ -1,5 +1,5 @@
 class InvitesController < ApplicationController
-  before_action :verify_can_invite, only: [ :index, :regenerate, :destroy_user ]
+  before_action :verify_is_admin, only: [ :index, :regenerate, :destroy_user ]
 
   def index
     @invite = Invite.get_active_for(Current.user)
@@ -40,8 +40,8 @@ class InvitesController < ApplicationController
 
   private
 
-  def verify_can_invite
-    unless Current.user.can_invite?
+  def verify_is_admin
+    unless Current.user.is_admin?
       redirect_to root_path, alert: "You do not have permission to manage family"
     end
   end

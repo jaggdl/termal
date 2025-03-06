@@ -1,12 +1,9 @@
-<div class="mx-auto py-4 w-full"
+<div class="mx-auto w-full"
      data-controller="nutrition-charts"
      data-nutrition-charts-chart-data-value="<%= @summary[:chart_data].to_json %>"
      data-nutrition-charts-period-value="<%= @period %>"
      data-nutrition-charts-active-type-value="<%= @selected_nutrient %>"
 >
-  <!-- Container for the nutrition analysis content -->
-  <div id="nutrition_analysis_content" class="mb-4 mt-2"></div>
-  <div id="nutrition_analysis_status" class="mb-4"></div>
   <div class="mb-4 flex justify-between items-center">
     <h3 class="text-lg font-semibold">Daily average</h3>
     
