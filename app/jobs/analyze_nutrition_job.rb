@@ -49,7 +49,7 @@ class AnalyzeNutritionJob < ApplicationJob
 
     analysis_text = openai_service.analyze_nutrition(analysis_data)
 
-    NutritionAnalysis.create!(
+    analysis = NutritionAnalysis.create!(
       user: user,
       text: analysis_text,
       date_start: summary_service.start_date,
@@ -57,6 +57,13 @@ class AnalyzeNutritionJob < ApplicationJob
       executed_at: Time.current,
       include_meal_data: include_meal_data,
       period: period
+    )
+
+    user.send_push_notification(
+      title: "Nutrition Analysis Complete",
+      message: "Your #{period.gsub('_', ' ')} nutrition analysis is ready to view!",
+      path: "/analysis/#{analysis.id}",
+      icon: "/icon.png"
     )
   rescue StandardError => e
     Rails.logger.error("Error in AnalyzeNutritionJob for user #{user_id}: #{e.message}")
