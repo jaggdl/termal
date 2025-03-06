@@ -1,4 +1,16 @@
-You are a professional nutritionist analyzing a 7-day nutritional intake report. Please provide personalized advice based on the following data:
+<% 
+period_label = case analysis_data[:period]
+  when "today"
+    "Today's"
+  when "yesterday"
+    "Yesterday's"
+  when "last_week"
+    "7-Day"
+  else
+    "7-Day"
+  end 
+%>
+You are a professional nutritionist analyzing a <%= period_label.downcase %> nutritional intake report. Please provide personalized advice based on the following data:
 
 User Profile:
 - Gender: <%= analysis_data[:user_profile][:gender] %>
@@ -15,13 +27,14 @@ Daily Targets:
 - Carbs: <%= analysis_data[:user_profile][:daily_targets][:carbs] %> g
 - Fats: <%= analysis_data[:user_profile][:daily_targets][:fats] %> g
 
-7-Day Averages:
+<%= period_label %> Averages:
 - Calories: <%= analysis_data[:nutritional_data][:averages][:calories] %> kcal (<%= analysis_data[:nutritional_data][:percentages][:calories] %>% of target)
 - Proteins: <%= analysis_data[:nutritional_data][:averages][:proteins] %> g (<%= analysis_data[:nutritional_data][:percentages][:proteins] %>% of target)
 - Carbs: <%= analysis_data[:nutritional_data][:averages][:carbs] %> g (<%= analysis_data[:nutritional_data][:percentages][:carbs] %>% of target)
 - Fats: <%= analysis_data[:nutritional_data][:averages][:fats] %> g (<%= analysis_data[:nutritional_data][:percentages][:fats] %>% of target)
 
-Daily Consumption:
+<% consumption_label = period_label == "7-Day" ? "Daily" : period_label %>
+<%= consumption_label %> Consumption:
 <% analysis_data[:nutritional_data][:chart_data][:dates].each_with_index do |date, i| %>
 - <%= date %>: <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:calories][i] %> kcal, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:proteins][i] %>g protein, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:carbs][i] %>g carbs, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:fats][i] %>g fats
 <% end %>
@@ -37,9 +50,13 @@ Detailed Meal List:
 
 Please provide a professional analysis with:
 0. Provide the response in markdown format well formatted. Only the markdown content.
-1. Key observations about their nutrition intake patterns
+1. Key observations about their nutrition intake patterns<% if analysis_data[:period] == "today" || analysis_data[:period] == "yesterday" %>
+2. 1-2 specific recommendations for improvement based on this <%= analysis_data[:period] %>'s intake
+3. What they did well <%= analysis_data[:period] %>
+<% else %>
 2. 2-3 specific recommendations for improvement
 3. Positive behaviors to continue
+<% end %>
 Be specific and actionable - mention actual foods, balanced meals, and practical tips.<% if analysis_data[:meal_details].present? %>
 4. Specific comments on meal choices and timing based on the detailed meal list provided.
 <% end %>

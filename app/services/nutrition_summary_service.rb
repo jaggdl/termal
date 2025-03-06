@@ -1,11 +1,11 @@
 class NutritionSummaryService
   attr_reader :user, :period, :start_date, :end_date, :timezone
 
-  def initialize(user, period: 7)
+  def initialize(user, period: 7, offset: 0)
     @user = user
     @period = period
     @timezone = ActiveSupport::TimeZone[user.user_profile.timezone]
-    @end_date = Time.current.in_time_zone(timezone).to_date
+    @end_date = Time.current.in_time_zone(timezone).to_date - offset.days
     @start_date = @end_date - (@period - 1).days
   end
 

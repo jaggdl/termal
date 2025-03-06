@@ -1,11 +1,26 @@
 class AnalyzeNutritionJob < ApplicationJob
   queue_as :default
 
-  def perform(user_id, include_meal_data = false)
+  def perform(user_id, include_meal_data = false, period = "last_week")
     user = User.find_by(id: user_id)
     return unless user
 
-    summary_service = NutritionSummaryService.new(user, period: 7)
+    period_days = case period
+                  when "today"
+                    1
+                  when "yesterday"
+                    1
+                  when "last_week", nil
+                    7
+                  else
+                    7
+                  end
+
+    summary_service = if period == "yesterday"
+                        NutritionSummaryService.new(user, period: period_days, offset: 1)
+                      else
+                        NutritionSummaryService.new(user, period: period_days)
+                      end
     summary = summary_service.summary_data
 
     return unless GlobalSetting.get("openai_api_key").present?
@@ -24,7 +39,8 @@ class AnalyzeNutritionJob < ApplicationJob
         weight_goals: user_profile.weight_goals,
         daily_targets: user_profile.daily_targets
       },
-      nutritional_data: summary
+      nutritional_data: summary,
+      period: period
     }
 
     if include_meal_data
@@ -39,7 +55,8 @@ class AnalyzeNutritionJob < ApplicationJob
       date_start: summary_service.start_date,
       date_end: summary_service.end_date,
       executed_at: Time.current,
-      include_meal_data: include_meal_data
+      include_meal_data: include_meal_data,
+      period: period
     )
   rescue StandardError => e
     Rails.logger.error("Error in AnalyzeNutritionJob for user #{user_id}: #{e.message}")
