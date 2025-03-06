@@ -82,15 +82,19 @@ class AnalyzeNutritionJob < ApplicationJob
       .order(consumed_at: :asc)
 
     user_meals.map do |user_meal|
+      date_obj = user_meal.consumed_at_in_timezone.to_date
       {
         date: user_meal.consumed_at_in_timezone.strftime("%b %d, %Y"),
+        date_param: date_obj.strftime("%Y-%m-%d"),
         time: user_meal.consumed_at_in_timezone.strftime("%I:%M %p"),
         meal_name: user_meal.meal.meal_name,
         description: user_meal.meal.description,
         calories: user_meal.meal.calories,
         proteins: user_meal.meal.proteins,
         carbs: user_meal.meal.carbs,
-        fats: user_meal.meal.fats
+        fats: user_meal.meal.fats,
+        meal_id: user_meal.meal.id,
+        user_meal_id: user_meal.id
       }
     end
   end

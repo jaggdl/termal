@@ -36,20 +36,20 @@ Daily Targets:
 <% consumption_label = period_label == "7-Day" ? "Daily" : period_label %>
 <%= consumption_label %> Consumption:
 <% analysis_data[:nutritional_data][:chart_data][:dates].each_with_index do |date, i| %>
-- <%= date %>: <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:calories][i] %> kcal, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:proteins][i] %>g protein, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:carbs][i] %>g carbs, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:fats][i] %>g fats
+- **[<%= date %>](/user_meals?date=<%= analysis_data[:nutritional_data][:chart_data][:nutrients][:date_param] ? analysis_data[:nutritional_data][:chart_data][:nutrients][:date_param][i] : '' %>)**: <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:calories][i] %> kcal, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:proteins][i] %>g protein, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:carbs][i] %>g carbs, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:fats][i] %>g fats
 <% end %>
 
 <% if analysis_data[:meal_details].present? %>
 Detailed Meal List:
 <% analysis_data[:meal_details].each do |meal| %>
-- <%= meal[:date] %> <%= meal[:time] %>: <%= meal[:meal_name] %> 
+- **[<%= meal[:date] %>](/user_meals?date=<%= meal[:date_param] %>) <%= meal[:time] %>**: [<%= meal[:meal_name] %>](/user_meals/<%= meal[:user_meal_id] %>) 
   Description: <%= meal[:description].present? ? meal[:description] : "No description" %>
   Nutrition: <%= meal[:calories] %> kcal, <%= meal[:proteins] %>g protein, <%= meal[:carbs] %>g carbs, <%= meal[:fats] %>g fats
 <% end %>
 <% end %>
 
 Please provide a professional analysis with:
-0. Provide the response in markdown format well formatted. Only the markdown content.
+0. Provide the response in markdown format well formatted. Only the markdown content, not in a code clock. Also, include links to the meal when mentioned and also link the dates.
 1. Key observations about their nutrition intake patterns<% if analysis_data[:period] == "today" || analysis_data[:period] == "yesterday" %>
 2. 1-2 specific recommendations for improvement based on this <%= analysis_data[:period] %>'s intake
 3. What they did well <%= analysis_data[:period] %>
@@ -60,3 +60,4 @@ Please provide a professional analysis with:
 Be specific and actionable but still be friendly and easy going - mention actual foods, balanced meals, and practical tips.<% if analysis_data[:meal_details].present? %>
 4. Specific comments on meal choices and timing based on the detailed meal list provided.
 <% end %>
+

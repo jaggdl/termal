@@ -86,6 +86,7 @@ class NutritionSummaryService
       result[formatted_date] = {
         date: date,
         date_formatted: formatted_date,
+        date_param: date.strftime("%Y-%m-%d"),
         calories: 0,
         proteins: 0,
         fats: 0,
