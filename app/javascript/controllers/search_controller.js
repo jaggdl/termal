@@ -19,7 +19,10 @@ export default class extends Controller {
     }
 
     this.showLoader();
-    this.formTarget.requestSubmit();
+
+    this.timeout = setTimeout(() => {
+      this.formTarget.requestSubmit();
+    }, 100);
   }
 
   clear() {
