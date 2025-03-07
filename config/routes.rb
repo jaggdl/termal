@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   resources :meals, only: [ :index, :show ] do
     collection do
       get :search
+      get :normal_search
     end
   end
 

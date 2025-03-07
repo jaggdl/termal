@@ -45,5 +45,17 @@ module VectorSearch
 
       find_by_sql([ sql, user.id, embedding.to_s, limit * 10, limit ])
     end
+
+    def normal_search(query:, limit: 5, user:)
+      pattern = "%#{query.downcase}%"
+
+      scope = distinct
+        .joins(:user_meals)
+        .where(user_meals: { user_id: user.id })
+        .where("LOWER(meal_name) LIKE ? OR LOWER(description) LIKE ?", pattern, pattern)
+        .order(meal_name: :asc)
+        
+      scope.limit(limit)
+    end
   end
 end

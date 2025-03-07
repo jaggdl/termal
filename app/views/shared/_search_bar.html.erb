@@ -29,7 +29,25 @@
       <%= heroicon "x-mark", options: { class: "size-5 text-gray-600" } %>
     </button>
   </form>
-  <turbo-frame id="search_results" data-search-target="results">
-    <!-- Search results will appear here -->
-  </turbo-frame>
+  
+  <form class="hidden" action="/meals/normal_search" method="get" data-turbo-frame="normal_search_results" data-search-target="normalSearchForm">
+    <input 
+      type="text" 
+      name="q" 
+      data-search-target="normalSearchInput"
+      hidden
+    >
+    <% if params[:date].present? %>
+      <input type="hidden" name="date" value="<%= params[:date] %>">
+    <% end %>
+  </form>
+
+  <div class="absolute top-12 shadow-lg bg-white/80 z-10 backdrop-blur-lg w-full p-2" >
+    <turbo-frame id="normal_search_results" data-search-target="normalSearchResults">
+      <!-- Normal search results will appear here -->
+    </turbo-frame>
+    <turbo-frame id="search_results" data-search-target="results"> 
+      <!-- Vector search results will appear here -->
+    </turbo-frame>
+  </div>
 </div>

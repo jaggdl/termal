@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["form", "input", "results", "clearButton", "loader", "searchIcon"];
+  static targets = ["form", "input", "results", "clearButton", "loader", "searchIcon", "normalSearchForm", "normalSearchInput", "normalSearchResults"];
   static classes = ["loading"];
 
   connect() {
@@ -20,6 +20,10 @@ export default class extends Controller {
 
     this.showLoader();
 
+
+    this.normalSearchInputTarget.value = this.inputTarget.value;
+    this.normalSearchFormTarget.requestSubmit();
+
     this.timeout = setTimeout(() => {
       this.formTarget.requestSubmit();
     }, 100);
@@ -34,6 +38,7 @@ export default class extends Controller {
 
   clearResults() {
     this.resultsTarget.innerHTML = "";
+    this.normalSearchResultsTarget.innerHTML = "";
   }
 
   toggleClearButton() {
