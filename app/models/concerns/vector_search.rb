@@ -6,7 +6,7 @@ module VectorSearch
     after_save :update_vector_embedding
   end
 
-  def weighted_content_for_embedding
+  def content_for_embedding
     text = meal_name.to_s
     text += " " + (description.to_s) if description.present?
     text
@@ -20,26 +20,30 @@ module VectorSearch
     return unless meal_name.present?
 
     MealVector.find_or_create_by!(meal_id: id) do |vector|
-      vector.embedding = Embedding.create(weighted_content_for_embedding).embedding
+      vector.embedding = Embedding.create(content_for_embedding).embedding
     end
   end
 
   class_methods do
-    def vector_search(query:, user:, limit: 5)
+    def vector_search(query:, user:, limit: 5, alpha: 0.1, beta: 0.01)
       embedding = Embedding.create(query)
 
       sql = <<~SQL
-        SELECT meals.*#{' '}
+        SELECT meals.*,
+               distance,
+               SUM(exp(-#{alpha} * ((CAST(strftime('%s', 'now') AS REAL) - CAST(strftime('%s', user_meals.consumed_at) AS REAL)) / 86400.0))) AS interaction_score,
+               (1.0 / (1.0 + distance)) + #{beta} * SUM(exp(-#{alpha} * ((CAST(strftime('%s', 'now') AS REAL) - CAST(strftime('%s', user_meals.consumed_at) AS REAL)) / 86400.0))) AS combined_score
         FROM meals
         INNER JOIN meal_vectors ON meals.id = meal_vectors.meal_id
         INNER JOIN user_meals ON meals.id = user_meals.meal_id
         WHERE user_meals.user_id = ?
-        AND embedding MATCH ? AND k = ?
-        GROUP BY meals.id
-        ORDER BY distance
+          AND meal_vectors.embedding MATCH ? AND k = ?
+        GROUP BY meals.id, distance
+        ORDER BY combined_score DESC
+        LIMIT ?
       SQL
 
-      find_by_sql([ sql, user.id, embedding.to_s, limit ])
+      find_by_sql([ sql, user.id, embedding.to_s, limit * 10, limit ])
     end
   end
 end
