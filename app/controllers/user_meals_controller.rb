@@ -34,8 +34,9 @@ class UserMealsController < ApplicationController
 
   def update
     if @user_meal.update(user_meal_params)
+      date = @user_meal.consumed_at_in_timezone.to_date
       respond_to do |format|
-        format.html { redirect_to root_path, notice: "Meal updated successfully." }
+        format.html { redirect_to user_meals_path(date: date), notice: "Meal updated successfully." }
       end
     else
       render :show, status: :unprocessable_entity
@@ -44,6 +45,7 @@ class UserMealsController < ApplicationController
 
   def retry_processing
     @user_meal = Current.user_meals.find(params[:id])
+    date = @user_meal.consumed_at_in_timezone.to_date
 
     # Clear the error
     @user_meal.update(error: nil)
@@ -63,13 +65,14 @@ class UserMealsController < ApplicationController
           locals: { user_meal: @user_meal }
         )
       end
-      format.html { redirect_to root_path, notice: "Processing meal again..." }
+      format.html { redirect_to user_meals_path(date: date), notice: "Processing meal again..." }
     end
   end
 
   def destroy
+    date = @user_meal.consumed_at_in_timezone.to_date
     if @user_meal.destroy
-      redirect_to root_path, notice: "Meal was successfully removed."
+      redirect_to user_meals_path(date: date), notice: "Meal was successfully removed."
     else
       redirect_to user_meal_path(@user_meal), alert: "Failed to remove meal."
     end
@@ -103,8 +106,9 @@ class UserMealsController < ApplicationController
 
     begin
       if @user_meal.save
+        date = @user_meal.consumed_at_in_timezone.to_date
         ProcessMealImageJob.perform_later(@user_meal.id, prompt)
-        redirect_to root_path, notice: "Meal was successfully created."
+        redirect_to user_meals_path(date: date), notice: "Meal was successfully created."
       else
         render :new, alert: "Something went wrong :( ..."
       end
