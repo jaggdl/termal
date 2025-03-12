@@ -4,6 +4,7 @@ class UserProfilesController < ApplicationController
   def show
     @profile = Current.user_profile || UserProfile.new
     @profile.timezone ||= cookies[:timezone]
+    @global_settings = GlobalSetting.all if Current.user.is_admin?
   end
 
   def update
