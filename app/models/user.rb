@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include UserMealTimeline
+  
   has_secure_password
   has_many :sessions, dependent: :destroy
   has_one :user_profile, dependent: :destroy
@@ -19,13 +21,6 @@ class User < ApplicationRecord
       # Now we can safely destroy the user
       super
     end
-  end
-
-  def user_meals_on_date(date)
-    timezone = user_profile.timezone
-    start_of_day = date.in_time_zone(timezone).beginning_of_day
-    end_of_day = date.in_time_zone(timezone).end_of_day
-    user_meals.where(consumed_at: start_of_day..end_of_day)
   end
 
   def first_user?
