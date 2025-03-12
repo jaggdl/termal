@@ -23,12 +23,8 @@ class User < ApplicationRecord
     end
   end
 
-  def first_user?
-    self.id == User.order(:id).first&.id
-  end
-
   def is_admin?
-    first_user?
+    self.id == User.order(:id).first&.id
   end
 
   # Send a push notification to all of this user's devices
