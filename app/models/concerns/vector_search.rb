@@ -54,7 +54,7 @@ module VectorSearch
         .where(user_meals: { user_id: user.id })
         .where("LOWER(meal_name) LIKE ? OR LOWER(description) LIKE ?", pattern, pattern)
         .order(meal_name: :asc)
-        
+
       scope.limit(limit)
     end
   end

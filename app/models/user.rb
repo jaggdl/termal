@@ -1,6 +1,6 @@
 class User < ApplicationRecord
   include UserMealTimeline
-  
+
   has_secure_password
   has_many :sessions, dependent: :destroy
   has_one :user_profile, dependent: :destroy
