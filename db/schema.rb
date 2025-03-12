@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_06_061839) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_12_045451) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -50,12 +50,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_06_061839) do
   create_table "invites", force: :cascade do |t|
     t.string "token"
     t.integer "user_id", null: false
-    t.boolean "used", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["token"], name: "index_invites_on_token", unique: true
     t.index ["user_id"], name: "index_invites_on_user_id"
   end
+
+  create_table "meal_vectors_chunks", primary_key: "chunk_id", force: :cascade do |t|
+    t.integer "size", null: false
+    t.binary "validity", null: false
+    t.binary "rowids", null: false
+  end
+
+# Could not dump table "meal_vectors_info" because of following StandardError
+#   Unknown type 'ANY' for column 'value'
+
+
+# Could not dump table "meal_vectors_rowids" because of following StandardError
+#   Unknown type '' for column 'id'
+
 
 # Could not dump table "meal_vectors_vector_chunks00" because of following StandardError
 #   Unknown type '' for column 'rowid'

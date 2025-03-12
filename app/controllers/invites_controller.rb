@@ -2,18 +2,13 @@ class InvitesController < ApplicationController
   before_action :verify_is_admin, only: [ :index, :regenerate, :destroy_user ]
 
   def index
-    @invite = Invite.get_active_for(Current.user)
+    @invite = Current.user.invites.first_or_create
     @users = User.includes(:user_profile).order(created_at: :desc)
   end
 
   def regenerate
-    @invite = Current.user.invites.active.first
-
-    if @invite
-      @invite.regenerate!
-    else
-      @invite = Current.user.invites.create
-    end
+    @invite = Current.user.invites.first_or_create
+    @invite.regenerate!
 
     redirect_to family_path, notice: "Invite link regenerated successfully"
   end
@@ -22,7 +17,7 @@ class InvitesController < ApplicationController
     user = User.find(params[:id])
 
     # Prevent deletion of the admin/first user
-    if user.first_user?
+    if user.is_admin?
       redirect_to family_path, alert: "Cannot delete the admin user"
       return
     end
