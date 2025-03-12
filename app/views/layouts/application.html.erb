@@ -36,7 +36,7 @@
         <%= link_to 'Meals', root_path, class: "#{current_page?(root_path) || request.path.start_with?('/user_meals') ? 'font-bold text-xl text-black' : ''}" %>
         <%= link_to 'Summary', nutrition_summary_path, class: "#{current_page?(nutrition_summary_path) ? 'font-bold text-xl text-black' : ''}" %>
         <% if Current.user.is_admin? %>
-          <%= link_to 'Analysis', analysis_index_path, class: "#{request.path.start_with?('/analysis') ? 'font-bold text-xl text-black' : ''}" %>
+          <%= link_to 'Analysis', analyses_path, class: "#{request.path.start_with?('/analysis') ? 'font-bold text-xl text-black' : ''}" %>
         <% end %>
         <div class="w-full flex justify-end items-center space-x-8">
           <% if Current.user.is_admin? %>
@@ -57,7 +57,7 @@
         <% end %>
         
         <% if Current.user.is_admin? %>
-          <%= link_to analysis_index_path, class: "flex flex-col items-center" do %>
+          <%= link_to analyses_path, class: "flex flex-col items-center" do %>
             <%= heroicon "magnifying-glass", options: { class: "h-6 w-6 #{request.path.start_with?('/analysis') ? 'text-sky-500' : 'text-gray-500'}" } %>
           <% end %>
         

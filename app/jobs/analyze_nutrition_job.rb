@@ -1,9 +1,13 @@
 class AnalyzeNutritionJob < ApplicationJob
   queue_as :default
 
-  def perform(user_id, include_meal_data = false, period = "last_week")
+  def perform(user_id, include_meal_data = false, period = "last_week", analysis_id = nil)
     user = User.find_by(id: user_id)
     return unless user
+
+    analysis = analysis_id.present? ? NutritionAnalysis.find_by(id: analysis_id) : nil
+
+    return unless analysis || analysis_id.nil?
 
     period_days = case period
     when "today"
@@ -49,14 +53,10 @@ class AnalyzeNutritionJob < ApplicationJob
 
     analysis_text = openai_service.analyze_nutrition(analysis_data)
 
-    analysis = NutritionAnalysis.create!(
-      user: user,
+    # Update existing analysis
+    analysis.update!(
       text: analysis_text,
-      date_start: summary_service.start_date,
-      date_end: summary_service.end_date,
-      executed_at: Time.current,
-      include_meal_data: include_meal_data,
-      period: period
+      status: "completed"
     )
 
     user.send_push_notification(
@@ -67,6 +67,7 @@ class AnalyzeNutritionJob < ApplicationJob
     )
   rescue StandardError => e
     Rails.logger.error("Error in AnalyzeNutritionJob for user #{user_id}: #{e.message}")
+    analysis.update(text: "An error occurred while generating your analysis. Please try again.", status: "error")
   end
 
   private
