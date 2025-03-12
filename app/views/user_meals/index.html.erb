@@ -4,20 +4,20 @@
 
 <div class="flex flex-col w-full space-y-6">
   <div class="flex w-full flex-col space-y-4">
-    <div class="flex md:flex-row flex-col space-x-4 justify-between items-center">
+    <div class="flex md:flex-row flex-col space-x-4 justify-between items-center space-y-4 md:space-y-0"> 
       <div class="flex justify-between items-center space-x-2">
         <%= link_to user_meals_path(date: (@date - 1).to_s), class: "group relative inline-flex items-center justify-center w-10 h-10 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2", title: "Previous day" do %>
           <%= render partial: "shared/arrow_button", locals: { direction: "left", disabled: false } %>
         <% end %>
 
-        <h2 class="font-semibold w-24 text-center">
+        <h2 class="font-semibold w-32 text-center">
           <% date_string = case @date
           when @today
             "Today"
           when @yesterday
             "Yesterday"
           else
-            @date.strftime("%B %d, %Y")
+            @date
           end %>
           <%= date_string %>
         </h2>
@@ -34,7 +34,7 @@
       </div>
       <%= render partial: "shared/nutrient_meters", locals: { user_meals: @meals_by_day[@date], date: @date, user_profile: Current.user_profile } %>
     </div>
-    <div class="mx-auto">
+    <div class="mx-auto mb-6">
       <%= link_to new_user_meal_path do %>
           <%= render "shared/aqua_style", text: "New Meal", icon: "plus" %>
       <% end %>
