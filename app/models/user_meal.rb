@@ -10,9 +10,11 @@ class UserMeal < ApplicationRecord
     consumed_at.in_time_zone(user.user_profile.timezone)
   end
 
-  def broadcast_user_meal
-    date = consumed_at_in_timezone.to_date
+  def date_consumed
+    consumed_at_in_timezone.to_date
+  end
 
+  def broadcast_user_meal
     broadcast_replace_to(
       [ user, "user_meals" ],
       target: "user-meal-#{id}",
@@ -22,7 +24,7 @@ class UserMeal < ApplicationRecord
 
     broadcast_replace_to(
       [ user, "user_meals" ],
-      target: "nutrient-meters-#{date}",
+      target: "nutrient-meters-#{date_consumed}",
       partial: "shared/nutrient_meters",
       locals: { user_meals: user.user_meals_on_date(date), date: date, user_profile: user.user_profile }
     )

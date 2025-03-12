@@ -63,7 +63,7 @@ class NutritionSummaryService
 
     # Populate with actual data
     user_meals.each do |user_meal|
-      meal_date = user_meal.consumed_at_in_timezone.to_date
+      meal_date = user_meal.date_consumed
       formatted_date = meal_date.strftime("%b %d")
 
       # Skip if outside our date range

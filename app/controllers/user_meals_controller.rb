@@ -27,6 +27,7 @@ class UserMealsController < ApplicationController
 
   def new
     @user_meal = UserMeal.new
+    @date = params[:date]
   end
 
   def show
@@ -34,9 +35,8 @@ class UserMealsController < ApplicationController
 
   def update
     if @user_meal.update(user_meal_params)
-      date = @user_meal.consumed_at_in_timezone.to_date
       respond_to do |format|
-        format.html { redirect_to user_meals_path(date: date), notice: "Meal updated successfully." }
+        format.html { redirect_to user_meals_path(date: @user_meal.date_consumed), notice: "Meal updated successfully." }
       end
     else
       render :show, status: :unprocessable_entity
@@ -45,15 +45,11 @@ class UserMealsController < ApplicationController
 
   def retry_processing
     @user_meal = Current.user_meals.find(params[:id])
-    date = @user_meal.consumed_at_in_timezone.to_date
 
-    # Clear the error
     @user_meal.update(error: nil)
 
-    # Get the meal associated with this user_meal
     meal = @user_meal.meal
 
-    # Re-process using the OpenAI service, use stored prompt if available
     prompt = params[:prompt].presence || meal.prompt.presence || "Analyze this meal"
     ProcessMealImageJob.perform_later(@user_meal.id, prompt)
 
@@ -65,12 +61,12 @@ class UserMealsController < ApplicationController
           locals: { user_meal: @user_meal }
         )
       end
-      format.html { redirect_to user_meals_path(date: date), notice: "Processing meal again..." }
+      format.html { redirect_to user_meals_path(date: @user_meal.date_consumed), notice: "Processing meal again..." }
     end
   end
 
   def destroy
-    date = @user_meal.consumed_at_in_timezone.to_date
+    date = @user_meal.date_consumed
     if @user_meal.destroy
       redirect_to user_meals_path(date: date), notice: "Meal was successfully removed."
     else
@@ -81,7 +77,6 @@ class UserMealsController < ApplicationController
   def create
     return create_from_meal_id if params[:meal_id]
 
-    # Check if either a file or a prompt is provided
     unless params[:user_meal][:file].present? || params[:user_meal][:prompt].present?
       respond_to do |format|
         format.turbo_stream do
@@ -95,7 +90,17 @@ class UserMealsController < ApplicationController
       end and return
     end
 
-    @user_meal = Current.user.user_meals.build(consumed_at: Time.now)
+    # Set consumed_at time based on date parameter if available
+    if params[:date].present?
+      user_timezone = Current.user_profile.timezone
+      tz = ActiveSupport::TimeZone[user_timezone]
+      date = Date.parse(params[:date])
+      consumed_at = tz.local(date.year, date.month, date.day, 23, 59, 59)
+    else
+      consumed_at = Time.now
+    end
+
+    @user_meal = Current.user.user_meals.build(consumed_at: consumed_at)
     prompt = params[:user_meal][:prompt]
     @meal = @user_meal.build_meal(prompt: prompt)
 
@@ -106,9 +111,8 @@ class UserMealsController < ApplicationController
 
     begin
       if @user_meal.save
-        date = @user_meal.consumed_at_in_timezone.to_date
         ProcessMealImageJob.perform_later(@user_meal.id, prompt)
-        redirect_to user_meals_path(date: date), notice: "Meal was successfully created."
+        redirect_to user_meals_path(date: @user_meal.date_consumed), notice: "Meal was successfully created."
       else
         render :new, alert: "Something went wrong :( ..."
       end
@@ -167,7 +171,7 @@ class UserMealsController < ApplicationController
     @user_meal = Current.user_meals.new(meal_id: meal_id, consumed_at: consumed_at)
 
     if @user_meal.save
-      date = @user_meal.consumed_at_in_timezone.to_date
+      date = @user_meal.date_consumed
 
       render turbo_stream: [
         turbo_stream.prepend(
