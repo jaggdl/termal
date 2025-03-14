@@ -56,6 +56,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_050715) do
     t.index ["user_id"], name: "index_invites_on_user_id"
   end
 
+  create_table "meal_vectors_chunks", primary_key: "chunk_id", force: :cascade do |t|
+    t.integer "size", null: false
+    t.binary "validity", null: false
+    t.binary "rowids", null: false
+  end
+
+# Could not dump table "meal_vectors_info" because of following StandardError
+#   Unknown type 'ANY' for column 'value'
+
+
+# Could not dump table "meal_vectors_rowids" because of following StandardError
+#   Unknown type '' for column 'id'
+
+
 # Could not dump table "meal_vectors_vector_chunks00" because of following StandardError
 #   Unknown type '' for column 'rowid'
 
@@ -78,8 +92,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_050715) do
 
   create_table "nutrition_analyses", force: :cascade do |t|
     t.text "text"
-    t.date "date_start"
-    t.date "date_end"
+    t.date "date_start", null: false
+    t.date "date_end", null: false
     t.datetime "executed_at"
     t.integer "user_id", null: false
     t.datetime "created_at", null: false

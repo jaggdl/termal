@@ -8,6 +8,7 @@ class NutritionAnalysis < ApplicationRecord
   broadcasts_to ->(analysis) { [ analysis.user, "analyses" ] }, inserts_by: :replace
 
   def formatted_date_range
+    return "Custom analysis" if date_start.nil? || date_end.nil?
     "#{date_start.strftime('%b %d')} - #{date_end.strftime('%b %d')}"
   end
 
