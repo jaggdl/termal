@@ -90,11 +90,10 @@ class UserMealsController < ApplicationController
       end and return
     end
 
-    # Set consumed_at time based on date parameter if available
-    if params[:date].present?
+    if params[:date].present? && !Current.user.user_date_is_today?(params[:date])
+      date = Date.parse(params[:date])
       user_timezone = Current.user_profile.timezone
       tz = ActiveSupport::TimeZone[user_timezone]
-      date = Date.parse(params[:date])
       consumed_at = tz.local(date.year, date.month, date.day, 23, 59, 59)
     else
       consumed_at = Time.now
@@ -158,8 +157,7 @@ class UserMealsController < ApplicationController
   def create_from_meal_id
     meal_id = params[:meal_id]
 
-    # Use the provided date parameter if available, otherwise default to current time
-    if params[:date].present?
+    if params[:date].present? && !Current.user.user_date_is_today?(params[:date])
       user_timezone = Current.user_profile.timezone
       tz = ActiveSupport::TimeZone[user_timezone]
       date = Date.parse(params[:date])

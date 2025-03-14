@@ -9,9 +9,12 @@ module UserMealTimeline
     user_meals.where(consumed_at: start_of_day..end_of_day)
   end
 
-  # Returns today's date in the user's timezone
   def user_today
     timezone = user_profile&.timezone || "UTC"
     Time.now.in_time_zone(timezone).to_date
+  end
+
+  def user_date_is_today?(user_date)
+    user_today == Date.parse(user_date)
   end
 end
