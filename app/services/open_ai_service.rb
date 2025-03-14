@@ -12,60 +12,40 @@ class OpenAiService
     )
   end
 
-  def analyze_meal_image(base64_image, prompt = nil)
+  def analyze_meal_image(base64_image:, prompt: nil)
     instruction_text = "Analyze this meal image and provide brief information including nutritional content, meal name, and a very concise description of the meal (max 15 words). Only include the most essential information about the primary ingredients."
+    user_message = {
+      role: "user",
+      content: []
+    }
+
+    if base64_image
+      user_message[:content].append({
+        type: "image_url",
+        image_url: {
+          url: base64_image
+        }
+      })
+    end
+
+    if prompt
+      user_message[:content].append({
+        type: "text",
+        text: prompt
+      })
+    end
 
     messages = [
       {
-        role: "user",
+        role: "system",
         content: [
           {
             type: "text",
             text: instruction_text
-          },
-          {
-            type: "image_url",
-            image_url: {
-              url: base64_image
-            }
           }
         ]
-      }
-    ]
-
-    if prompt
-      # Add the user's prompt before our instructions
-      instruction_with_prompt = "User description: #{prompt}\n\n#{instruction_text}"
-      messages.first[:content][0] = { type: "text", text: instruction_with_prompt }
-    end
-
-    response = @client.chat(
-      parameters: {
-        model: "o1",
-        messages: messages,
-        tools: [ meal_extraction_tool ],
-        tool_choice: "required"
-      }
-    )
-
-    extract_meal_data(response)
-  end
-
-  # Analyze meals based on text prompt only
-  def analyze_meal_text(prompt)
-    # Default to generic meal if no prompt is provided
-    prompt ||= "A basic meal"
-
-    messages = [
-      {
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: "Analyze this meal description and provide brief information including nutritional content: #{prompt}\n\nPlease make sure to include a very concise description of the meal (max 15 words), mentioning only the most essential information about primary ingredients."
-          }
-        ]
-      }
+      },
+      user_message
     ]
 
     response = @client.chat(
@@ -80,7 +60,6 @@ class OpenAiService
     extract_meal_data(response)
   end
 
-  # Analyze nutritional data for the past 7 days
   def analyze_nutrition(analysis_data)
     # Add date_param to the chart_data nutrients if not already present
     unless analysis_data[:nutritional_data][:chart_data][:nutrients][:date_param]

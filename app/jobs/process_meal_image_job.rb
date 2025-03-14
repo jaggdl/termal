@@ -6,15 +6,7 @@ class ProcessMealImageJob < ApplicationJob
     meal = user_meal.meal
 
     begin
-      openai_service = OpenAiService.new
-      meal_data = nil
-
-      if meal.image.attached?
-        base64_image_url = process_image(meal.image)
-        meal_data = openai_service.analyze_meal_image(base64_image_url, prompt)
-      else
-        meal_data = openai_service.analyze_meal_text(prompt)
-      end
+      meal_data = get_meal_data(meal, prompt)
 
       if meal_data
         meal.update(meal_data)
@@ -36,9 +28,20 @@ class ProcessMealImageJob < ApplicationJob
 
   private
 
+  def get_meal_data(meal, prompt)
+    openai_service = OpenAiService.new
+
+    base64_image = if meal.image.attached?
+      process_image(meal.image)
+    else
+      nil
+    end
+
+    openai_service.analyze_meal_image(base64_image:, prompt:)
+  end
+
   def handle_error(user_meal, error_code)
     user_meal.update(error: error_code.to_s)
-    user_meal.broadcast_user_meal
 
     error_message = UserMeal.error_message_for(error_code)
 
@@ -54,7 +57,6 @@ class ProcessMealImageJob < ApplicationJob
     image_data = meal_image.download
     Rails.logger.info("Image data size: #{image_data.size}")
 
-    # Create a temporary file and write the image data to it
     temp_file = Tempfile.new([ "meal_image", ".jpg" ], binmode: true)
     temp_file.write(image_data)
     temp_file.rewind
@@ -65,8 +67,6 @@ class ProcessMealImageJob < ApplicationJob
     rescue => e
       Rails.logger.error("Failed to process image: #{e.message}")
       Rails.logger.error("Error backtrace: #{e.backtrace.join("\n")}")
-      # Instead of raising the original error, raise a custom error with a specific code
-      # that will be caught by the main rescue block
       raise StandardError.new(:image_processing_error)
     ensure
       temp_file.close
