@@ -12,11 +12,7 @@ class UserMealsController < ApplicationController
     @today = local_now.to_date
     @yesterday = @today - 1.day
 
-    if params[:date]
-      @date = Date.parse(params[:date])
-    else
-      @date = @today
-    end
+    @date = params[:date] ? Date.parse(params[:date]) : @today
 
     local_start = tz.local(@date.year, @date.month, @date.day, 0, 0, 0)
     local_end = tz.local(@date.year, @date.month, @date.day, 23, 59, 59)
@@ -45,11 +41,9 @@ class UserMealsController < ApplicationController
 
   def retry_processing
     @user_meal = Current.user_meals.find(params[:id])
-
     @user_meal.update(error: nil)
 
     meal = @user_meal.meal
-
     prompt = params[:prompt].presence || meal.prompt.presence || "Analyze this meal"
     ProcessMealImageJob.perform_later(@user_meal.id, prompt)
 
@@ -78,35 +72,16 @@ class UserMealsController < ApplicationController
     return create_from_meal_id if params[:meal_id]
 
     unless params[:user_meal][:file].present? || params[:user_meal][:prompt].present?
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            "flash",
-            partial: "shared/flash",
-            locals: { flash: { alert: "Please provide either an image or a meal description." } }
-          )
-        end
-        format.html { redirect_to new_user_meal_path, alert: "Please provide either an image or a meal description." }
-      end and return
+      render_flash_message("Please provide either an image or a meal description.") and return
     end
 
-    if params[:date].present? && !Current.user.user_date_is_today?(params[:date])
-      date = Date.parse(params[:date])
-      user_timezone = Current.user_profile.timezone
-      tz = ActiveSupport::TimeZone[user_timezone]
-      consumed_at = tz.local(date.year, date.month, date.day, 23, 59, 59)
-    else
-      consumed_at = Time.now
-    end
-
+    consumed_at = calculate_consumed_at(params[:date])
     @user_meal = Current.user.user_meals.build(consumed_at: consumed_at)
     prompt = params[:user_meal][:prompt]
     @meal = @user_meal.build_meal(prompt: prompt)
 
     # Attach image if provided
-    if params[:user_meal][:file].present?
-      @meal.image.attach(params[:user_meal][:file])
-    end
+    @meal.image.attach(params[:user_meal][:file]) if params[:user_meal][:file].present?
 
     begin
       if @user_meal.save
@@ -118,16 +93,7 @@ class UserMealsController < ApplicationController
     rescue => e
       Rails.logger.error("Error in MealsController#create: #{e.message}")
       Rails.logger.error(e.backtrace.join("\n"))
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            "flash",
-            partial: "shared/flash",
-            locals: { flash: { alert: "An unexpected error occurred. Please try again." } }
-          )
-        end
-        format.html { render :new, alert: "An unexpected error occurred. Please try again." }
-      end
+      render_flash_message("An unexpected error occurred. Please try again.", :new)
     end
   end
 
@@ -141,31 +107,38 @@ class UserMealsController < ApplicationController
     params.require(:user_meal).permit(:consumed_at)
   end
 
-  def resize_and_convert_image(image)
-    ImageProcessing::Vips
-      .source(image)
-      .resize_to_limit(1000, 1000)
-      .convert("png")  # Converts to PNG
-      .call
+  def calculate_consumed_at(date_param)
+    if date_param.present? && !Current.user.user_date_is_today?(date_param)
+      date = Date.parse(date_param)
+      user_timezone = Current.user_profile.timezone
+      tz = ActiveSupport::TimeZone[user_timezone]
+      tz.local(date.year, date.month, date.day, 23, 59, 59)
+    else
+      Time.now
+    end
   end
 
-  def convert_to_base64_with_mime(image)
-    encoded_image = Base64.strict_encode64(File.read(image.path))
-    "data:image/png;base64,#{encoded_image}"
+  def render_flash_message(message, fallback_action = nil, alert_type = :alert)
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          "flash",
+          partial: "shared/flash",
+          locals: { flash: { alert_type => message } }
+        )
+      end
+
+      if fallback_action
+        format.html { render fallback_action, alert: message }
+      else
+        format.html { redirect_to new_user_meal_path, alert: message }
+      end
+    end
   end
 
   def create_from_meal_id
     meal_id = params[:meal_id]
-
-    if params[:date].present? && !Current.user.user_date_is_today?(params[:date])
-      user_timezone = Current.user_profile.timezone
-      tz = ActiveSupport::TimeZone[user_timezone]
-      date = Date.parse(params[:date])
-      consumed_at = tz.local(date.year, date.month, date.day, 23, 59, 59)
-    else
-      consumed_at = Time.now
-    end
-
+    consumed_at = calculate_consumed_at(params[:date])
     @user_meal = Current.user_meals.new(meal_id: meal_id, consumed_at: consumed_at)
 
     if @user_meal.save
@@ -190,16 +163,7 @@ class UserMealsController < ApplicationController
         )
       ]
     else
-      respond_to do |format|
-        format.turbo_stream {
-          render turbo_stream: turbo_stream.replace(
-            "flash",
-            partial: "shared/flash",
-            locals: { flash: { alert: "Something went wrong. Please try again" } }
-          )
-        }
-        format.html { render :new, status: :unprocessable_entity }
-      end
+      render_flash_message("Something went wrong. Please try again", :new, :alert)
     end
   end
 end
