@@ -14,6 +14,10 @@ class UserMeal < ApplicationRecord
     consumed_at_in_timezone.to_date
   end
 
+  def time_consumed
+    consumed_at_in_timezone.to_time
+  end
+
   def broadcast_user_meal
     broadcast_replace_to(
       [ user, "user_meals" ],

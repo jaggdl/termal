@@ -60,11 +60,13 @@ class OpenAiService
     extract_meal_data(response)
   end
 
-  def analyze_nutrition(analysis_data)
+  def analyze_nutrition(user_profile:, summary_data:, meal_data:)
     prompt_template = ApplicationController.renderer.render(
       partial: "templates/nutrition_analysis_prompt",
-      locals: { analysis_data: analysis_data }
+      locals: { user_profile:, summary_data:, meal_data: }
     )
+
+    puts prompt_template
 
     messages = [
       {

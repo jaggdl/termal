@@ -1,63 +1,46 @@
-<% 
-period_label = case analysis_data[:period]
-  when "today"
-    "Today's"
-  when "yesterday"
-    "Yesterday's"
-  when "last_week"
-    "7-Day"
-  else
-    "7-Day"
-  end 
-%>
-You are a professional nutritionist analyzing a <%= period_label.downcase %> nutritional intake report. Please provide personalized advice based on the following data:
+You are a professional nutritionist analyzing a nutritional intake report. Please provide personalized advice based on the following data:
 
 User Profile:
-- Gender: <%= analysis_data[:user_profile][:gender] %>
-- Age: <%= analysis_data[:user_profile][:age] %>
-- Weight: <%= analysis_data[:user_profile][:weight] %> kg
-- Height: <%= analysis_data[:user_profile][:height] %> cm
-- Activity Level: <%= analysis_data[:user_profile][:activity_level] %>
-- Muscle Building: <%= analysis_data[:user_profile][:muscle_building] %>
-- Weight Goals: <%= analysis_data[:user_profile][:weight_goals] %>
+- Gender: <%= user_profile.sex %>
+- Age: <%= user_profile.age %>
+- Weight: <%= user_profile.weight %> kg
+- Height: <%= user_profile.height %> cm
+- Activity Level: <%= user_profile.physical_activity %>
+- Muscle Building: <%= user_profile.muscle_building %>
+- Weight Goals: <%= user_profile.weight_goals %>
 
 Daily Targets:
-- Calories: <%= analysis_data[:user_profile][:daily_targets][:calories] %> kcal
-- Proteins: <%= analysis_data[:user_profile][:daily_targets][:proteins] %> g
-- Carbs: <%= analysis_data[:user_profile][:daily_targets][:carbs] %> g
-- Fats: <%= analysis_data[:user_profile][:daily_targets][:fats] %> g
+- Calories: <%= user_profile.daily_targets[:calories] %> kcal
+- Proteins: <%= user_profile.daily_targets[:proteins] %> g
+- Carbs: <%= user_profile.daily_targets[:carbs] %> g
+- Fats: <%= user_profile.daily_targets[:fats] %> g
 
-<%= period_label %> Averages:
-- Calories: <%= analysis_data[:nutritional_data][:averages][:calories] %> kcal (<%= analysis_data[:nutritional_data][:percentages][:calories] %>% of target)
-- Proteins: <%= analysis_data[:nutritional_data][:averages][:proteins] %> g (<%= analysis_data[:nutritional_data][:percentages][:proteins] %>% of target)
-- Carbs: <%= analysis_data[:nutritional_data][:averages][:carbs] %> g (<%= analysis_data[:nutritional_data][:percentages][:carbs] %>% of target)
-- Fats: <%= analysis_data[:nutritional_data][:averages][:fats] %> g (<%= analysis_data[:nutritional_data][:percentages][:fats] %>% of target)
+Averages in this period:
+- Calories: <%= summary_data[:averages][:calories] %> kcal (<%= summary_data[:percentages][:calories] %>% of target)
+- Proteins: <%= summary_data[:averages][:proteins] %> g (<%= summary_data[:percentages][:proteins] %>% of target)
+- Carbs: <%= summary_data[:averages][:carbs] %> g (<%= summary_data[:percentages][:carbs] %>% of target)
+- Fats: <%= summary_data[:averages][:fats] %> g (<%= summary_data[:percentages][:fats] %>% of target)
 
-<% consumption_label = period_label == "7-Day" ? "Daily" : period_label %>
-<%= consumption_label %> Consumption:
-<% analysis_data[:nutritional_data][:chart_data][:dates].each_with_index do |date, i| %>
-- **[<%= date %>](/user_meals?date=<%= analysis_data[:nutritional_data][:chart_data][:nutrients][:date_param] ? analysis_data[:nutritional_data][:chart_data][:nutrients][:date_param][i] : '' %>)**: <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:calories][i] %> kcal, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:proteins][i] %>g protein, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:carbs][i] %>g carbs, <%= analysis_data[:nutritional_data][:chart_data][:nutrients][:fats][i] %>g fats
+Consumption in this period:
+<% summary_data[:chart_data][:dates].each_with_index do |date, i| %>
+  <%
+      #TODO: Add the date param
+  %>
+  - **[<%= date %>](/user_meals?date=<%=  %>)**: <%= summary_data[:chart_data][:nutrients][:calories][i] %> kcal, <%= summary_data[:chart_data][:nutrients][:proteins][i] %>g protein, <%= summary_data[:chart_data][:nutrients][:carbs][i] %>g carbs, <%= summary_data[:chart_data][:nutrients][:fats][i] %>g fats
 <% end %>
 
-<% if analysis_data[:meal_details].present? %>
-Detailed Meal List:
-<% analysis_data[:meal_details].each do |meal| %>
-- **[<%= meal[:date] %>](/user_meals?date=<%= meal[:date_param] %>) <%= meal[:time] %>**: [<%= meal[:meal_name] %>](/user_meals/<%= meal[:user_meal_id] %>) 
-  Description: <%= meal[:description].present? ? meal[:description] : "No description" %>
-  Nutrition: <%= meal[:calories] %> kcal, <%= meal[:proteins] %>g protein, <%= meal[:carbs] %>g carbs, <%= meal[:fats] %>g fats
-<% end %>
+<% if meal_data.present? %>
+  Detailed Meal List:
+  <% meal_data.each do |meal| %>
+    - **[<%= meal[:date] %>](/user_meals?date=<%= meal[:date] %>) <%= meal[:time] %>**: [<%= meal[:meal_name] %>](/user_meals/<%= meal[:user_meal_id] %>) 
+      Description: <%= meal[:description].present? ? meal[:description] : "No description" %>
+      Nutrition: <%= meal[:calories] %> kcal, <%= meal[:proteins] %>g protein, <%= meal[:carbs] %>g carbs, <%= meal[:fats] %>g fats
+  <% end %>
 <% end %>
 
 Please provide a professional analysis with:
-0. Provide the response in markdown format well formatted. Only the markdown content, not in a code clock. Also, include links to the meal when mentioned and also link the dates. e.g. "The [meal name](/user_meals/[:user_meal_id])... The [day](/user_meals?date=DD-MM-YY)"
-1. Key observations about their nutrition intake patterns<% if analysis_data[:period] == "today" || analysis_data[:period] == "yesterday" %>
-2. 1-2 specific recommendations for improvement based on this <%= analysis_data[:period] %>'s intake
-3. What they did well <%= analysis_data[:period] %>
-<% else %>
-2. 2-3 specific recommendations for improvement
-3. Positive behaviors to continue
-<% end %>
-Be specific and actionable but still be friendly and easy going - mention actual foods, balanced meals, and practical tips.<% if analysis_data[:meal_details].present? %>
+0. Provide the response in markdown format well formatted. Only the markdown content, not in a code block. Also, include links to the meal when mentioned and also link the dates. e.g. "The [meal name](/user_meals/[:user_meal_id])... The [day](/user_meals?date=DD-MM-YY)"
+1. Key observations about their nutrition intake patterns
+2. 1-2 specific recommendations for improvement based on this period intake
+3. What they did well. Be specific and actionable but still be friendly and easy going - mention actual foods, balanced meals, and practical tips.
 4. Specific comments on meal choices and timing based on the detailed meal list provided.
-<% end %>
-

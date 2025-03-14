@@ -10,20 +10,13 @@ class NutritionSummaryService
   end
 
   def summary_data
-    # Get all user meals in the period
-    user_meals = fetch_meals
-
-    # Get daily targets
     daily_targets = user.user_profile.daily_targets
 
-    # Group and calculate meal data
-    meal_data = process_meal_data(user_meals)
+    meal_data = process_meal_data
 
-    # Calculate averages and percentages
     averages = calculate_averages(meal_data)
     percentages = calculate_percentages(averages, daily_targets)
 
-    # Return all data needed for the summary view in a more compact structure
     {
       chart_data: {
         dates: meal_data.map { |data| data[:date_formatted] },
@@ -45,19 +38,19 @@ class NutritionSummaryService
     }
   end
 
-  private
-
-  def fetch_meals
+  def user_meals
     start_datetime = timezone.local(start_date.year, start_date.month, start_date.day, 0, 0, 0)
     end_datetime = timezone.local(end_date.year, end_date.month, end_date.day, 23, 59, 59)
 
-    user.user_meals
+    @user_meals ||= user.user_meals
         .includes(:meal)
         .where(consumed_at: start_datetime..end_datetime)
         .order(consumed_at: :asc)
   end
 
-  def process_meal_data(user_meals)
+  private
+
+  def process_meal_data
     # Initialize data hash with zero values for each date
     meal_data = initialize_meal_data_hash
 

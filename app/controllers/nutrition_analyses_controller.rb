@@ -41,7 +41,12 @@ class NutritionAnalysesController < ApplicationController
     )
 
     # Queue job with analysis ID
-    AnalyzeNutritionJob.perform_later(Current.user.id, include_meal_data, period, analysis.id)
+    AnalyzeNutritionJob.perform_later(
+      user_id: Current.user.id,
+      summary_data: summary_service.summary_data,
+      analysis_id: analysis.id,
+      user_meals_ids: include_meal_data ? summary_service.user_meals.map { |user_meal| user_meal.id  } : nil
+    )
 
     redirect_to analyses_path, notice: "Analysis job has been queued. It will update automatically when complete."
   end
