@@ -61,30 +61,6 @@ class OpenAiService
   end
 
   def analyze_nutrition(analysis_data)
-    # Add date_param to the chart_data nutrients if not already present
-    unless analysis_data[:nutritional_data][:chart_data][:nutrients][:date_param]
-      dates = analysis_data[:nutritional_data][:chart_data][:dates]
-
-      # Create date_param array from dates if possible
-      if dates.is_a?(Array) && dates.first.is_a?(String)
-        begin
-          date_params = []
-          dates.each do |date_str|
-            # Try to parse dates like "Mar 05" into full dates
-            month_abbr = date_str.split(" ").first
-            day = date_str.split(" ").last.to_i
-            month = Date::ABBR_MONTHNAMES.index(month_abbr)
-            year = Time.current.year
-            date_params << Date.new(year, month, day).strftime("%Y-%m-%d")
-          end
-          analysis_data[:nutritional_data][:chart_data][:nutrients][:date_param] = date_params
-        rescue => e
-          Rails.logger.error("Error creating date_param: #{e.message}")
-        end
-      end
-    end
-
-    # Render the analysis prompt template
     prompt_template = ApplicationController.renderer.render(
       partial: "templates/nutrition_analysis_prompt",
       locals: { analysis_data: analysis_data }
@@ -104,7 +80,7 @@ class OpenAiService
 
     response = @client.chat(
       parameters: {
-        model: "gpt-4o",
+        model: "o1",
         messages: messages
       }
     )
