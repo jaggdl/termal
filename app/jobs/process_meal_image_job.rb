@@ -19,7 +19,6 @@ class ProcessMealImageJob < ApplicationJob
       if meal_data
         meal.update(meal_data)
         user_meal.update(error: nil)
-        user_meal.broadcast_user_meal
       else
         handle_error(user_meal, :failed_meal_analysis)
       end
@@ -30,6 +29,8 @@ class ProcessMealImageJob < ApplicationJob
         Rails.logger.error("Meal processing error: #{e.message}")
         handle_error(user_meal, :server_error)
       end
+    ensure
+      user_meal.broadcast_user_meal
     end
   end
 

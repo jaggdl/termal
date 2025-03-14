@@ -26,7 +26,7 @@ class UserMeal < ApplicationRecord
       [ user, "user_meals" ],
       target: "nutrient-meters-#{date_consumed}",
       partial: "shared/nutrient_meters",
-      locals: { user_meals: user.user_meals_on_date(date), date: date, user_profile: user.user_profile }
+      locals: { user_meals: user.user_meals_on_date(date_consumed), date: date_consumed, user_profile: user.user_profile }
     )
   end
 end
