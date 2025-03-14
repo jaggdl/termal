@@ -29,8 +29,8 @@ module VectorSearch
       sql = <<~SQL
         SELECT meals.*,
                distance,
-               SUM(exp(-#{alpha} * ((CAST(strftime('%s', 'now') AS REAL) - CAST(strftime('%s', user_meals.consumed_at) AS REAL)) / 86400.0))) AS interaction_score,
-               (1.0 / (1.0 + distance)) + #{beta} * SUM(exp(-#{alpha} * ((CAST(strftime('%s', 'now') AS REAL) - CAST(strftime('%s', user_meals.consumed_at) AS REAL)) / 86400.0))) AS combined_score
+               SUM(exp(-? * ((CAST(strftime('%s', 'now') AS REAL) - CAST(strftime('%s', user_meals.consumed_at) AS REAL)) / 86400.0))) AS interaction_score,
+               (1.0 / (1.0 + distance)) + ? * SUM(exp(-? * ((CAST(strftime('%s', 'now') AS REAL) - CAST(strftime('%s', user_meals.consumed_at) AS REAL)) / 86400.0))) AS combined_score
         FROM meals
         INNER JOIN meal_vectors ON meals.id = meal_vectors.meal_id
         INNER JOIN user_meals ON meals.id = user_meals.meal_id
@@ -41,7 +41,7 @@ module VectorSearch
         LIMIT ?
       SQL
 
-      find_by_sql([ sql, user.id, embedding.to_s, limit * 10, limit ])
+      find_by_sql([ sql, alpha, beta, alpha, user.id, embedding.to_s, limit * 10, limit ])
     end
 
     def normal_search(query:, limit: 5, user:)
