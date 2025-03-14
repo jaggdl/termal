@@ -7,9 +7,7 @@ module VectorSearch
   end
 
   def content_for_embedding
-    text = meal_name.to_s
-    text += " " + (description.to_s) if description.present?
-    text
+    "#{meal_name} #{description}"
   end
 
   def update_vector_embedding

@@ -12,6 +12,15 @@ class OpenAiService
     )
   end
 
+  def embedding(input)
+    @client.embeddings(
+      parameters: {
+        model: "text-embedding-3-small",
+        input: input
+      }
+    ).fetch("data")[0]["embedding"]
+  end
+
   def analyze_meal_image(base64_image:, prompt: nil)
     instruction_text = "Analyze this meal image and provide brief information including nutritional content, meal name, and a very concise description of the meal (max 15 words). Only include the most essential information about the primary ingredients."
     user_message = {

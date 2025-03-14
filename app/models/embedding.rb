@@ -6,18 +6,8 @@ class Embedding
   end
 
   def self.create(input)
-    client = OpenAI::Client.new(
-      access_token: GlobalSetting.get("openai_api_key"),
-      log_errors: true
-    )
-
-    embedding = client.embeddings(
-      parameters: {
-        model: "text-embedding-3-small",
-        input: input
-      }
-    ).fetch("data")[0]["embedding"]
-
+    open_ai_service = OpenAiService.new
+    embedding = open_ai_service.embedding(input)
     new(embedding)
   end
 
