@@ -40,7 +40,7 @@
       <% end %>
     </div>
 
-    <div class="w-full">
+    <div class="w-screen -ml-5 md:w-full md:-ml-0">
       <ul id="user-meals-<%= @date.to_s %>">
         <% @meals_by_day[@date].each do |user_meal| %>
           <%= render user_meal %>
