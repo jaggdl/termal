@@ -5,6 +5,16 @@ class NutritionAnalysesController < ApplicationController
 
   def show
     @analysis = Current.user.nutrition_analyses.find(params[:id])
+
+    summary_service = NutritionSummaryService.new(
+      Current.user,
+      period: @analysis.period,
+      offset: @analysis.offset
+    )
+
+    @summary_data = summary_service.summary_data
+    @selected_nutrient = params[:nutrient] || "calories"
+    @period = @analysis.period
   end
 
   def create
@@ -36,7 +46,6 @@ class NutritionAnalysesController < ApplicationController
       status: "pending"
     )
 
-    # Queue job with analysis ID
     AnalyzeNutritionJob.perform_later(
       user_id: Current.user.id,
       summary_data: summary_service.summary_data,

@@ -1,0 +1,47 @@
+<div class="mx-auto w-full"
+     data-controller="nutrition-charts"
+     data-nutrition-charts-chart-data-value="<%= chart_data.to_json %>"
+     data-nutrition-charts-period-value="<%= period %>"
+     data-nutrition-charts-active-type-value="<%= selected_nutrient %>"
+>
+  <div class="mb-4 flex justify-between items-end">
+    <h3 class="">Daily average</h3>
+    
+    <% if show_period_selector %>
+      <div>
+        <select onchange="window.location=this.value" class="bg-white border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-sky-500">
+          <% periods = [7, 14, 28, 60, 90] %>
+          <% periods.each do |days| %>
+            <option value="<%= nutrition_summary_path(period: days, nutrient: selected_nutrient) %>" <%= period == days ? 'selected' : '' %>>
+              <%= "#{days} Days" %>
+            </option>
+          <% end %>
+        </select>
+      </div>
+    <% end %>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <% main_nutrients.each do |nutrient| %>
+      <% average = averages[nutrient.to_sym] %>
+    
+      <div data-nutrition-charts-target="card" data-type="<%= nutrient %>" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 pb-2 hover:shadow-lg transition-shadow cursor-pointer">
+        <h3 class="text-lg font-semibold text-center mb-2"><%= nutrient.capitalize %></h3>
+        
+        <%= render partial: 'shared/nutrient_meter', 
+                  locals: { 
+                    unit: nutrient, 
+                    daily_targets: daily_targets, 
+                    value: average,
+                    show_unit: true,
+                    decimals: nutrient == "calories" ? 0 : 1
+                  } %>
+      </div>
+    <% end %>
+  </div>
+
+  <div>
+    <div class="max-h-[280px] md:max-h-[560px]">
+      <canvas data-nutrition-charts-target="chart" height="400"></canvas>
+    </div>
+  </div>
+</div>

@@ -11,6 +11,14 @@ class NutritionAnalysis < ApplicationRecord
     "#{date_start.strftime('%b %d')} - #{date_end.strftime('%b %d')}"
   end
 
+  def period
+    (date_end - date_start).to_i + 1
+  end
+
+  def offset
+    (user.user_today - date_end).to_i
+  end
+
   def pending?
     status == "pending"
   end

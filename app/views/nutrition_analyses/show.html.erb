@@ -1,19 +1,19 @@
 <div class="w-full">
   <div class="space-y-4">
-    <%= link_to request.referer || root_path, class: "flex gap-2 group p-2 relative" do %>
+    <%= link_to analyses_path, class: "flex gap-2 group p-2 relative" do %>
       <%= render partial: "shared/arrow_button", locals: { direction: "left", disabled: false } %>
       <span>Back</span>
     <% end %>
 
-    <div class="">
+    <div class="mb-6">
       <div class="flex items-center justify-between">
         <div class="flex items-center">
           <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Professional Analysis
+            Analysis for <strong><%= @analysis.formatted_date_range %></strong>
           </h3>
         </div>
         <span class="text-sm text-gray-500 flex flex-col">
-          <%= @analysis.formatted_date_range %> • Generated <%= time_ago_in_words(@analysis.executed_at) %> ago
+          Generated <%= time_ago_in_words(@analysis.executed_at) %> ago
           <% if @analysis.include_meal_data? %>
             • <span class="text-blue-600"><%= heroicon "clipboard-document-list", options: { class: "inline h-4 w-4 mr-1" } %>Detailed meal data included</span>
           <% end %>
@@ -21,7 +21,19 @@
       </div>
     </div>
     
-    <div class="prose" id="nutrition_analysis_content">
+    <% if @summary_data %>
+      <%= render partial: 'shared/nutrient_summary_charts', 
+               locals: { 
+                 chart_data: @summary_data[:chart_data],
+                 period: @period,
+                 selected_nutrient: @selected_nutrient,
+                 averages: @summary_data[:averages],
+                 daily_targets: @summary_data[:daily_targets],
+                 show_period_selector: false
+               } %>
+    <% end %>
+    
+    <div class="prose mt-12" id="nutrition_analysis_content">
       <%= markdown(@analysis.text) %>
     </div>
   </div>
