@@ -3,12 +3,12 @@
   <ul class="">
     <% meals.each do |meal| %>
       <li class="flex gap-x-4 items-center w-full justify-between">
-        <div class="flex gap-x-2 items-center">
+        <div class="flex gap-x-2 items-center w-full">
           <%= link_to meal_path(meal) do %>
             <%= meal_image_tag(meal, size: :small) %>
           <% end %>
-          <div class="flex flex-col">
-            <span><%= meal.meal_name %></span>
+          <div class="flex flex-col w-full">
+            <span class="line-clamp-1"><%= meal.meal_name %></span>
             <%= render partial: 'meals/nutrients_table', locals: { meal: meal } %>
           </div>
         </div>

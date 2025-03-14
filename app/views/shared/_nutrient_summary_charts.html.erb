@@ -25,7 +25,7 @@
       <% average = averages[nutrient.to_sym] %>
     
       <div data-nutrition-charts-target="card" data-type="<%= nutrient %>" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 pb-2 hover:shadow-lg transition-shadow cursor-pointer">
-        <h3 class="text-lg font-semibold text-center mb-2"><%= nutrient.capitalize %></h3>
+        <h3 class="text-lg text-center mb-2"><%= nutrient.capitalize %></h3>
         
         <%= render partial: 'shared/nutrient_meter', 
                   locals: { 

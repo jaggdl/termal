@@ -1,7 +1,7 @@
 <div id="user-meal-<%= user_meal.id %>" class="flex md:flex-row flex-col justify-between w-full md:items-center pr-4">
   <div class="flex flex-col">
     <div class="flex items-center">
-      <span class="md:text-lg"><%= user_meal.meal&.meal_name || "" %></span>
+      <span class="md:text-lg line-clamp-1"><%= user_meal.meal&.meal_name || "" %></span>
     </div>
     <span class="text-sm text-gray-500"><%= user_meal.consumed_at_in_timezone.strftime("%I:%M %p") %></span>
     <% if user_meal.error.present? %>
