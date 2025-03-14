@@ -71,7 +71,7 @@ gem "ruby-openai"
 
 gem "tailwindcss-ruby", "~> 4.0"
 
-gem "tailwindcss-rails", "~> 4.1"
+gem "tailwindcss-rails", "~> 4.2"
 
 gem "image_processing", "~> 1.14"
 
