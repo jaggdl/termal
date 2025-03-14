@@ -9,10 +9,8 @@ class NutritionAnalysesController < ApplicationController
 
   def create
     include_meal_data = params[:include_meal_data] == "1"
-    period = params[:period]
 
-    # Create analysis record first with pending status
-    period_days = case period
+    period = case params[:period]
     when "today"
       1
     when "yesterday"
@@ -23,11 +21,9 @@ class NutritionAnalysesController < ApplicationController
       7
     end
 
-    summary_service = unless period == "today"
-      NutritionSummaryService.new(Current.user, period: period_days, offset: 1)
-    else
-      NutritionSummaryService.new(Current.user, period: period_days)
-    end
+    offset = period == "today" ? 1 : 0
+
+    summary_service = NutritionSummaryService.new(Current.user, period:, offset:)
 
     analysis = NutritionAnalysis.create!(
       user: Current.user,
