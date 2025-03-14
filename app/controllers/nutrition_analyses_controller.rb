@@ -42,7 +42,6 @@ class NutritionAnalysesController < ApplicationController
       date_end: summary_service.end_date,
       executed_at: Time.current,
       include_meal_data: include_meal_data,
-      period: period,
       status: "pending"
     )
 
