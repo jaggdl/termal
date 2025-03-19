@@ -1,5 +1,3 @@
-require "ruby_llm"
-
 class MealExtractor < RubyLLM::Tool
   description "Extract nutritional information, meal name, and brief description from an image or text"
 

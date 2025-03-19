@@ -8,8 +8,6 @@ class AnalyzeNutritionJob < ApplicationJob
     analysis = analysis_id.present? ? NutritionAnalysis.find_by(id: analysis_id) : nil
     return unless analysis
 
-    return unless GlobalSetting.get("openai_api_key").present?
-
     llm_service = LlmService.new
 
     user_profile = user.user_profile
