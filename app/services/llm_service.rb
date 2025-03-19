@@ -1,6 +1,3 @@
-require "ruby_llm"
-require_relative "../lib/tools/meal_extractor"
-
 class LlmService
   def initialize
     @openai_api_key = GlobalSetting.get("openai_api_key")
