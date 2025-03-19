@@ -6,8 +6,8 @@ class Embedding
   end
 
   def self.create(input)
-    open_ai_service = OpenAiService.new
-    embedding = open_ai_service.embedding(input)
+    llm_service = LlmService.new
+    embedding = llm_service.embedding(input)
     new(embedding)
   end
 

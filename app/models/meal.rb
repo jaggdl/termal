@@ -8,4 +8,12 @@ class Meal < ApplicationRecord
   def created_at_in_timezone
     created_at.in_time_zone(Current.user_profile.timezone)
   end
+
+  def image_path
+    if image.attached?
+      ActiveStorage::Blob.service.send(:path_for, image.key)
+    else
+      nil
+    end
+  end
 end

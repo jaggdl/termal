@@ -6,14 +6,8 @@ class ProcessMealImageJob < ApplicationJob
     meal = user_meal.meal
 
     begin
-      meal_data = get_meal_data(meal, prompt)
-
-      if meal_data
-        meal.update(meal_data)
-        user_meal.update(error: nil)
-      else
-        handle_error(user_meal, :failed_meal_analysis)
-      end
+      get_meal_data(meal, prompt)
+      user_meal.update(error: nil)
     rescue => e
       if e.is_a?(Faraday::UnauthorizedError)
         handle_error(user_meal, :invalid_openai_api_key)
@@ -29,15 +23,8 @@ class ProcessMealImageJob < ApplicationJob
   private
 
   def get_meal_data(meal, prompt)
-    openai_service = OpenAiService.new
-
-    base64_image = if meal.image.attached?
-      process_image(meal.image)
-    else
-      nil
-    end
-
-    openai_service.analyze_meal_image(base64_image:, prompt:)
+    llm_service = LlmService.new
+    llm_service.analyze_meal_image(meal)
   end
 
   def handle_error(user_meal, error_code)
@@ -51,39 +38,5 @@ class ProcessMealImageJob < ApplicationJob
       partial: "shared/flash",
       locals: { flash: { alert: error_message } }
     )
-  end
-
-  def process_image(meal_image)
-    image_data = meal_image.download
-    Rails.logger.info("Image data size: #{image_data.size}")
-
-    temp_file = Tempfile.new([ "meal_image", ".jpg" ], binmode: true)
-    temp_file.write(image_data)
-    temp_file.rewind
-
-    begin
-      resized_image = resize_and_convert_image(temp_file.path)
-      convert_to_base64_with_mime(resized_image)
-    rescue => e
-      Rails.logger.error("Failed to process image: #{e.message}")
-      Rails.logger.error("Error backtrace: #{e.backtrace.join("\n")}")
-      raise StandardError.new(:image_processing_error)
-    ensure
-      temp_file.close
-      temp_file.unlink # Ensure the temp file is deleted
-    end
-  end
-
-  def resize_and_convert_image(image_path)
-    ImageProcessing::Vips
-      .source(image_path)
-      .resize_to_limit(1000, 1000)
-      .convert("png")  # Converts to PNG
-      .call
-  end
-
-  def convert_to_base64_with_mime(image)
-    encoded_image = Base64.strict_encode64(File.read(image.path))
-    "data:image/png;base64,#{encoded_image}"
   end
 end

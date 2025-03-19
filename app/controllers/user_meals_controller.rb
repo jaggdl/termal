@@ -1,3 +1,6 @@
+require "mini_magick"
+require "tempfile"
+
 class UserMealsController < ApplicationController
   include ApiKeyCheck
 
@@ -81,7 +84,9 @@ class UserMealsController < ApplicationController
     @meal = @user_meal.build_meal(prompt: prompt)
 
     # Attach image if provided
-    @meal.image.attach(params[:user_meal][:file]) if params[:user_meal][:file].present?
+    if params[:user_meal][:file].present?
+      process_and_attach_image(@meal, params[:user_meal][:file])
+    end
 
     begin
       if @user_meal.save
@@ -133,6 +138,33 @@ class UserMealsController < ApplicationController
       else
         format.html { redirect_to new_user_meal_path, alert: message }
       end
+    end
+  end
+
+  def process_and_attach_image(meal, image_file)
+    # Convert image to JPG format
+    begin
+      # Process the image to JPG format
+      image = MiniMagick::Image.new(image_file.tempfile.path)
+      image.format "jpg"
+
+      # Create a tempfile for the processed image
+      processed_tempfile = Tempfile.new([ "processed", ".jpg" ])
+      image.write(processed_tempfile.path)
+      processed_tempfile.rewind
+
+      # Create a new ActionDispatch::Http::UploadedFile with the processed image
+      processed_file = ActionDispatch::Http::UploadedFile.new(
+        tempfile: processed_tempfile,
+        filename: "#{File.basename(image_file.original_filename, '.*')}.jpg",
+        type: "image/jpeg"
+      )
+
+      # Attach the processed image
+      meal.image.attach(processed_file)
+    rescue => e
+      Rails.logger.error("Image conversion error: #{e.message}")
+      meal.image.attach(image_file) # Fallback to original file if conversion fails
     end
   end
 

@@ -10,7 +10,7 @@ class AnalyzeNutritionJob < ApplicationJob
 
     return unless GlobalSetting.get("openai_api_key").present?
 
-    openai_service = OpenAiService.new
+    llm_service = LlmService.new
 
     user_profile = user.user_profile
 
@@ -20,7 +20,7 @@ class AnalyzeNutritionJob < ApplicationJob
       nil
     end
 
-    analysis_text = openai_service.analyze_nutrition(user_profile:, summary_data:, meal_data:)
+    analysis_text = llm_service.analyze_nutrition(user_profile:, summary_data:, meal_data:)
 
     # Update existing analysis
     analysis.update!(

@@ -66,19 +66,15 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "ruby-openai"
-
-
 gem "tailwindcss-ruby", "~> 4.0"
-
 gem "tailwindcss-rails", "~> 4.2"
 
 gem "image_processing", "~> 1.14"
 
 gem "heroicon", "~> 1.0"
 
-# For Web Push notifications
 gem "web-push"
 
-# For Markdown rendering
 gem "redcarpet"
+
+gem "ruby_llm", "~> 1.0"
