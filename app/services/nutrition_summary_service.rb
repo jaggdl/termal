@@ -92,11 +92,10 @@ class NutritionSummaryService
   def calculate_averages(meal_data)
     # Filter out current day and empty days (days with no meals)
     valid_days = meal_data.reject do |d|
-      d[:date] == Time.current.in_time_zone(timezone).to_date ||
+      d[:date] == Time.current.in_time_zone(timezone).to_date && @period != 1 ||
       (d[:calories] == 0 && d[:proteins] == 0 && d[:fats] == 0 && d[:carbs] == 0)
     end
 
-    # If there are no valid days, return zeros
     return { calories: 0, proteins: 0, carbs: 0, fats: 0 } if valid_days.empty?
 
     # Calculate averages based on valid days count instead of period
@@ -111,10 +110,10 @@ class NutritionSummaryService
 
   def calculate_percentages(averages, daily_targets)
     {
-      calories: (averages[:calories] / daily_targets[:calories] * 100).round,
-      proteins: (averages[:proteins] / daily_targets[:proteins] * 100).round,
-      carbs: (averages[:carbs] / daily_targets[:carbs] * 100).round,
-      fats: (averages[:fats] / daily_targets[:fats] * 100).round
+      calories: (averages[:calories].fdiv(daily_targets[:calories]) * 100).round,
+      proteins: (averages[:proteins].fdiv(daily_targets[:proteins]) * 100).round,
+      carbs: (averages[:carbs].fdiv(daily_targets[:carbs]) * 100).round,
+      fats: (averages[:fats].fdiv(daily_targets[:fats]) * 100).round
     }
   end
 end

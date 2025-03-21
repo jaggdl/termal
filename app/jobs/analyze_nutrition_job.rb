@@ -3,24 +3,16 @@ class AnalyzeNutritionJob < ApplicationJob
 
   def perform(user_id:, user_meals_ids:, summary_data:, analysis_id: nil)
     user = User.find_by(id: user_id)
-    return unless user
-
-    analysis = analysis_id.present? ? NutritionAnalysis.find_by(id: analysis_id) : nil
-    return unless analysis
+    analysis = NutritionAnalysis.find_by(id: analysis_id)
 
     llm_service = LlmService.new
 
     user_profile = user.user_profile
 
-    meal_data = if user_meals_ids
-      collect_meal_details(user_meals_ids)
-    else
-      nil
-    end
+    meal_data = collect_meal_details(user_meals_ids)
 
     analysis_text = llm_service.analyze_nutrition(user_profile:, summary_data:, meal_data:)
 
-    # Update existing analysis
     analysis.update!(
       text: analysis_text,
       status: "completed"

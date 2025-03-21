@@ -18,20 +18,18 @@ class NutritionAnalysesController < ApplicationController
   end
 
   def create
-    include_meal_data = params[:include_meal_data] == "1"
-
     period = case params[:period]
     when "today"
       1
     when "yesterday"
       1
-    when "last_week", nil
+    when "last_week"
       7
     else
       7
     end
 
-    offset = period == "today" ? 1 : 0
+    offset = params[:period] == "today" ? 0 : 1
 
     summary_service = NutritionSummaryService.new(Current.user, period:, offset:)
 
@@ -41,7 +39,7 @@ class NutritionAnalysesController < ApplicationController
       date_start: summary_service.start_date,
       date_end: summary_service.end_date,
       executed_at: Time.current,
-      include_meal_data: include_meal_data,
+      include_meal_data: true,
       status: "pending"
     )
 
@@ -49,7 +47,7 @@ class NutritionAnalysesController < ApplicationController
       user_id: Current.user.id,
       summary_data: summary_service.summary_data,
       analysis_id: analysis.id,
-      user_meals_ids: include_meal_data ? summary_service.user_meals.map { |user_meal| user_meal.id  } : nil
+      user_meals_ids: summary_service.user_meals.map { |user_meal| user_meal.id  }
     )
 
     redirect_to analyses_path, notice: "Analysis job has been queued. It will update automatically when complete."

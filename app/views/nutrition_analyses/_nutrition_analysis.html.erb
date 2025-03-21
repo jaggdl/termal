@@ -9,12 +9,6 @@
           </p>
         </div>
         <div class="ml-2 flex-shrink-0 flex space-x-2">
-          <% if nutrition_analysis.include_meal_data? %>
-            <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-              <%= heroicon "clipboard-document-list", options: { class: "h-3 w-3 mr-1" } %> Detailed
-            </p>
-          <% end %>
-          
           <% if nutrition_analysis.pending? %>
             <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
               <%= heroicon "clock", options: { class: "h-3 w-3 mr-1 animate-spin" } %> Processing
