@@ -6,7 +6,7 @@ class NutritionSummaryService
   def initialize(user, period: 7, offset: 0)
     @user = user
     @period = period
-    @timezone = ActiveSupport::TimeZone[user.user_profile.timezone]
+    @timezone = ActiveSupport::TimeZone[user.timezone]
     @end_date = Time.current.in_time_zone(timezone).to_date - offset.days
     @start_date = @end_date - (@period - 1).days
   end
@@ -34,19 +34,13 @@ class NutritionSummaryService
   end
 
   def user_meals
-    start_datetime = timezone.local(start_date.year, start_date.month, start_date.day, 0, 0, 0)
-    end_datetime = timezone.local(end_date.year, end_date.month, end_date.day, 23, 59, 59)
-
-    @user_meals ||= user.user_meals
-      .includes(:meal)
-      .where(consumed_at: start_datetime..end_datetime)
-      .order(consumed_at: :asc)
+    @user_meals ||= user.user_meals_in_date_range(start_date, end_date)
   end
 
   private
 
   def build_meal_data
-    meals_by_date = user_meals.group_by { |um| um.date_consumed }
+    meals_by_date = user.group_meals_by_date(user_meals)
 
     (start_date..end_date).map do |date|
       meals = meals_by_date[date] || []
