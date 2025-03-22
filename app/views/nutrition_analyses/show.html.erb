@@ -14,9 +14,6 @@
         </div>
         <span class="text-sm text-gray-500 flex flex-col">
           Generated <%= time_ago_in_words(@analysis.executed_at) %> ago
-          <% if @analysis.include_meal_data? %>
-            • <span class="text-blue-600"><%= heroicon "clipboard-document-list", options: { class: "inline h-4 w-4 mr-1" } %>Detailed meal data included</span>
-          <% end %>
         </span>
       </div>
     </div>

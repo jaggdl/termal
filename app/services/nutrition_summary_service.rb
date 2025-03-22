@@ -1,4 +1,6 @@
 class NutritionSummaryService
+  NUTRIENTS = [ :calories, :proteins, :fats, :carbs ]
+
   attr_reader :user, :period, :start_date, :end_date, :timezone
 
   def initialize(user, period: 7, offset: 0)
@@ -11,22 +13,15 @@ class NutritionSummaryService
 
   def summary_data
     daily_targets = user.user_profile.daily_targets
-
-    meal_data = process_meal_data
-
+    meal_data = build_meal_data
     averages = calculate_averages(meal_data)
     percentages = calculate_percentages(averages, daily_targets)
 
     {
       chart_data: {
         dates: meal_data.map { |data| data[:date_formatted] },
-        nutrients: {
-          calories: meal_data.map { |data| data[:calories] },
-          proteins: meal_data.map { |data| data[:proteins] },
-          fats: meal_data.map { |data| data[:fats] },
-          carbs: meal_data.map { |data| data[:carbs] }
-        },
-        targets: daily_targets,
+        nutrients: NUTRIENTS.map { |nutrient| [ nutrient, meal_data.map { |data| data[nutrient] } ] }.to_h,
+        targets: daily_targets.slice(*NUTRIENTS),
         averages: averages
       },
       daily_targets: daily_targets,
@@ -43,77 +38,49 @@ class NutritionSummaryService
     end_datetime = timezone.local(end_date.year, end_date.month, end_date.day, 23, 59, 59)
 
     @user_meals ||= user.user_meals
-        .includes(:meal)
-        .where(consumed_at: start_datetime..end_datetime)
-        .order(consumed_at: :asc)
+      .includes(:meal)
+      .where(consumed_at: start_datetime..end_datetime)
+      .order(consumed_at: :asc)
   end
 
   private
 
-  def process_meal_data
-    # Initialize data hash with zero values for each date
-    meal_data = initialize_meal_data_hash
+  def build_meal_data
+    meals_by_date = user_meals.group_by { |um| um.date_consumed }
 
-    # Populate with actual data
-    user_meals.each do |user_meal|
-      meal_date = user_meal.date_consumed
-      formatted_date = meal_date.strftime("%b %d")
-
-      # Skip if outside our date range
-      next unless meal_data[formatted_date]
-
-      meal_data[formatted_date][:calories] += (user_meal.meal.calories || 0)
-      meal_data[formatted_date][:proteins] += (user_meal.meal.proteins || 0)
-      meal_data[formatted_date][:fats] += (user_meal.meal.fats || 0)
-      meal_data[formatted_date][:carbs] += (user_meal.meal.carbs || 0)
-    end
-
-    # Convert hash to array of values in date order
-    meal_data.values
-  end
-
-  def initialize_meal_data_hash
-    result = {}
-    (start_date..end_date).each do |date|
-      formatted_date = date.strftime("%b %d")
-      result[formatted_date] = {
+    (start_date..end_date).map do |date|
+      meals = meals_by_date[date] || []
+      totals = NUTRIENTS.each_with_object({}) do |nutrient, hash|
+        hash[nutrient] = meals.sum { |um| um.meal.send(nutrient) || 0 }
+      end
+      {
         date: date,
-        date_formatted: formatted_date,
-        date_param: date.strftime("%Y-%m-%d"),
-        calories: 0,
-        proteins: 0,
-        fats: 0,
-        carbs: 0
-      }
+        date_formatted: date.strftime("%b %d"),
+        date_param: date.strftime("%Y-%m-%d")
+      }.merge(totals)
     end
-    result
   end
 
   def calculate_averages(meal_data)
-    # Filter out current day and empty days (days with no meals)
-    valid_days = meal_data.reject do |d|
-      d[:date] == Time.current.in_time_zone(timezone).to_date && @period != 1 ||
-      (d[:calories] == 0 && d[:proteins] == 0 && d[:fats] == 0 && d[:carbs] == 0)
+    today = Time.current.in_time_zone(timezone).to_date
+    valid_days = meal_data.select do |d|
+      (d[:date] != today || @period == 1) &&
+      NUTRIENTS.any? { |nutrient| d[nutrient] > 0 }
     end
 
-    return { calories: 0, proteins: 0, carbs: 0, fats: 0 } if valid_days.empty?
+    return NUTRIENTS.map { |n| [ n, 0 ] }.to_h if valid_days.empty?
 
-    # Calculate averages based on valid days count instead of period
     valid_days_count = valid_days.size
-    {
-      calories: valid_days.sum { |d| d[:calories] } / valid_days_count,
-      proteins: valid_days.sum { |d| d[:proteins] } / valid_days_count,
-      carbs: valid_days.sum { |d| d[:carbs] } / valid_days_count,
-      fats: valid_days.sum { |d| d[:fats] } / valid_days_count
-    }
+    NUTRIENTS.each_with_object({}) do |nutrient, hash|
+      sum = valid_days.sum { |d| d[nutrient] }
+      hash[nutrient] = sum.fdiv(valid_days_count)
+    end
   end
 
   def calculate_percentages(averages, daily_targets)
-    {
-      calories: (averages[:calories].fdiv(daily_targets[:calories]) * 100).round,
-      proteins: (averages[:proteins].fdiv(daily_targets[:proteins]) * 100).round,
-      carbs: (averages[:carbs].fdiv(daily_targets[:carbs]) * 100).round,
-      fats: (averages[:fats].fdiv(daily_targets[:fats]) * 100).round
-    }
+    NUTRIENTS.each_with_object({}) do |nutrient, hash|
+      target = daily_targets[nutrient]
+      hash[nutrient] = target && target > 0 ? (averages[nutrient].fdiv(target) * 100).round : 0
+    end
   end
 end
