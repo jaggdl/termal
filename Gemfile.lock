@@ -145,7 +145,7 @@ GEM
     jbuilder (2.13.0)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
-    json (2.10.1)
+    json (2.10.2)
     jwt (2.10.1)
       base64
     kamal (2.5.3)
@@ -301,7 +301,8 @@ GEM
     ruby-vips (2.2.3)
       ffi (~> 1.12)
       logger
-    ruby_llm (1.0.0)
+    ruby_llm (1.0.1)
+      base64
       event_stream_parser (~> 1)
       faraday (~> 2)
       faraday-multipart (~> 1)

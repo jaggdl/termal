@@ -2,7 +2,7 @@ class LlmService
   def initialize
     @openai_api_key = GlobalSetting.get("openai_api_key")
     @anthropic_api_key = GlobalSetting.get("anthropic_api_key")
-    @model = "gpt-4o"
+    @model = "o1"
 
     unless @openai_api_key
       raise StandardError, "OpenAI API key is not set. Please set it in the global settings."
