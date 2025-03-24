@@ -8,7 +8,14 @@ class NutritionAnalysis < ApplicationRecord
   broadcasts_to ->(analysis) { [ analysis.user, "analyses" ] }, inserts_by: :replace
 
   def formatted_date_range
-    "#{date_start.strftime('%b %d')} - #{date_end.strftime('%b %d')}"
+    formatted_start = date_start.strftime("%b %d")
+    formatted_end = date_end.strftime("%b %d")
+
+    if formatted_start == formatted_end
+      formatted_start
+    else
+      "#{formatted_start} - #{formatted_end} (#{period} days)"
+    end
   end
 
   def period

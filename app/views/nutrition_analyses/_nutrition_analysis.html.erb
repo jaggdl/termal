@@ -3,23 +3,23 @@
     <div class="px-4 py-4 sm:px-6">
       <div class="flex items-center justify-between">
         <div class="flex items-center">
-          <%= heroicon "academic-cap", options: { class: "mr-2 h-5 w-5 text-blue-500" } %>
           <p class="text-md font-medium text-gray-900 truncate">
-            Analysis for <%= nutrition_analysis.formatted_date_range %>
+            <%= nutrition_analysis.formatted_date_range %>
           </p>
         </div>
         <div class="ml-2 flex-shrink-0 flex space-x-2">
           <% if nutrition_analysis.pending? %>
             <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-              <%= heroicon "clock", options: { class: "h-3 w-3 mr-1 animate-spin" } %> Processing
+              Processing...
             </p>
           <% elsif nutrition_analysis.status == "error" %>
             <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-              <%= heroicon "exclamation-circle", options: { class: "h-3 w-3 mr-1" } %> Error
+
+              <%= heroicon "exclamation-circle", options: { class: "h-4 w-4 mr-1" } %> Error
             </p>
           <% else %>
             <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-              <%= time_ago_in_words(nutrition_analysis.executed_at) %> ago
+              Ready
             </p>
           <% end %>
         </div>
@@ -28,7 +28,7 @@
         <div class="sm:flex">
           <p class="flex items-center text-sm text-gray-500 truncate">
             <%= heroicon "calendar", options: { class: "flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" } %>
-            <%= nutrition_analysis.executed_at.strftime("%B %d, %Y at %I:%M %p") %>
+            <%= time_ago_in_words(nutrition_analysis.executed_at) %> ago
           </p>
         </div>
       </div>

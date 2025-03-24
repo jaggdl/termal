@@ -18,8 +18,8 @@
   </div>
 
   <% if @analyses.present? %>
-    <div class="overflow-hidden">
-      <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+    <div class="">
+      <div class="py-5 border-b border-gray-200">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           Your Analysis History
         </h3>
@@ -27,7 +27,7 @@
       
       <%= turbo_stream_from [Current.user, "analyses"] %>
       
-      <ul class="divide-y divide-gray-200" id="analyses_list">
+      <ul class="divide-y divide-gray-200 -mx-5 md:mx-0" id="analyses_list">
         <% @analyses.each do |analysis| %>
           <%= render analysis %>
         <% end %>
