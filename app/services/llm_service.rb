@@ -1,7 +1,6 @@
 class LlmService
   def initialize
     @openai_api_key = GlobalSetting.get("openai_api_key")
-    @anthropic_api_key = GlobalSetting.get("anthropic_api_key")
     @model = "gpt-4o"
 
     unless @openai_api_key
@@ -10,8 +9,8 @@ class LlmService
 
     # Configure RubyLLM with the API key
     RubyLLM.configure do |config|
+      config.max_retries = 0
       config.openai_api_key = @openai_api_key
-      config.anthropic_api_key = @anthropic_api_key
     end
   end
 

@@ -78,3 +78,5 @@ gem "web-push"
 gem "redcarpet"
 
 gem "ruby_llm", "~> 1.0"
+
+gem "ruby-openai", "~> 8.0"
