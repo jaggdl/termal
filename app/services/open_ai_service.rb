@@ -60,36 +60,6 @@ class OpenAiService
     extract_meal_data(response)
   end
 
-  def analyze_nutrition(user_profile:, summary_data:, meal_data:)
-    prompt_template = ApplicationController.renderer.render(
-      partial: "templates/nutrition_analysis_prompt",
-      locals: { user_profile:, summary_data:, meal_data: }
-    )
-
-    puts prompt_template
-
-    messages = [
-      {
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: prompt_template
-          }
-        ]
-      }
-    ]
-
-    response = @client.chat(
-      parameters: {
-        model: "o1",
-        messages: messages
-      }
-    )
-
-    response.dig("choices", 0, "message", "content")
-  end
-
   private
 
   def meal_extraction_tool
