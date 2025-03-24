@@ -1,3 +1,5 @@
+class MealUpdateSuccess < StandardError; end
+
 class MealExtractor < RubyLLM::Tool
   description "Extract nutritional information, meal name, and brief description from an image or text"
 
@@ -47,16 +49,19 @@ class MealExtractor < RubyLLM::Tool
 
   def execute(meal_name:, description:, calories:, fats:, proteins:, carbs:, fiber:, sodium:, sugar:, cholesterol:)
     @meal.update({
-      meal_name: meal_name,
-      description: description,
-      calories: calories,
-      fats: fats,
-      proteins: proteins,
-      carbs: carbs,
-      fiber: fiber,
-      sodium: sodium,
-      sugar: sugar,
-      cholesterol: cholesterol
+      meal_name:,
+      description:,
+      calories:,
+      fats:,
+      proteins:,
+      carbs:,
+      fiber:,
+      sodium:,
+      sugar:,
+      cholesterol:
     })
+
+    # This is to avoid calling another chat completion
+    raise MealUpdateSuccess, "Meal updated successfully"
   end
 end

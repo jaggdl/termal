@@ -48,7 +48,7 @@ class UserMealsController < ApplicationController
 
     meal = @user_meal.meal
     prompt = params[:prompt].presence || meal.prompt.presence || "Analyze this meal"
-    ProcessMealImageJob.perform_later(@user_meal.id, prompt)
+    ProcessMealImageJob.perform_later(@user_meal.id)
 
     respond_to do |format|
       format.turbo_stream do
@@ -90,7 +90,7 @@ class UserMealsController < ApplicationController
 
     begin
       if @user_meal.save
-        ProcessMealImageJob.perform_later(@user_meal.id, prompt)
+        ProcessMealImageJob.perform_later(@user_meal.id)
         redirect_to user_meals_path(date: @user_meal.date_consumed), notice: "Meal was successfully created."
       else
         render :new, alert: "Something went wrong :( ..."

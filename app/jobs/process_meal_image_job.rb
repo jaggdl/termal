@@ -1,20 +1,19 @@
 class ProcessMealImageJob < ApplicationJob
   queue_as :default
 
-  def perform(user_meal_id, prompt)
+  def perform(user_meal_id)
     user_meal = UserMeal.find(user_meal_id)
     meal = user_meal.meal
 
     begin
-      get_meal_data(meal, prompt)
+      get_meal_data(meal)
+      user_meal.update(error: nil)  # This line is reached only if no error is raised
+    rescue MealUpdateSuccess
+      # Happy path: meal updated successfully
       user_meal.update(error: nil)
     rescue => e
-      if e.is_a?(Faraday::UnauthorizedError)
-        handle_error(user_meal, :invalid_openai_api_key)
-      else
-        Rails.logger.error("Meal processing error: #{e.message}")
-        handle_error(user_meal, :server_error)
-      end
+      Rails.logger.error("Meal processing error: #{e.message}")
+      handle_error(user_meal, :server_error)
     ensure
       user_meal.broadcast_user_meal
     end
@@ -22,7 +21,7 @@ class ProcessMealImageJob < ApplicationJob
 
   private
 
-  def get_meal_data(meal, prompt)
+  def get_meal_data(meal)
     llm_service = LlmService.new
     llm_service.analyze_meal_image(meal)
   end
