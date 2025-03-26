@@ -1,0 +1,8 @@
+<%= link_to "#", class: "flex gap-2 group p-2 relative", data: { controller: "back-button" } do %>
+  <%= render partial: "shared/arrow_button",
+  locals: {
+    direction: "left",
+    disabled: false,
+  } %>
+  <span>Back</span>
+<% end %>

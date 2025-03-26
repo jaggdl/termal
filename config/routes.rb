@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "user_meals#index"
 
-  resources :meals, only: [ :index, :show ] do
+  resources :meals, only: [ :index, :show, :update, :edit ] do
     collection do
       get :search
       get :normal_search

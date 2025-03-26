@@ -1,7 +1,7 @@
 class MealsController < ApplicationController
   include ApiKeyCheck
 
-  before_action :set_meal, only: [ :show, :update, :destroy ]
+  before_action :set_meal, only: [ :show, :update, :edit ]
 
   def index
     @meals_by_day = Current.user.meals.all.order(created_at: :desc).group_by do |meal|
@@ -12,13 +12,14 @@ class MealsController < ApplicationController
   def show
   end
 
+  def edit
+  end
+
   def update
     if @meal.update(meal_params)
-      respond_to do |format|
-        format.html { redirect_to meals_path, notice: "Meal updated successfully." }
-      end
+      redirect_to meal_path(@meal), notice: "Meal updated successfully."
     else
-      render :show, status: :unprocessable_entity
+      redirect_to edit_meal_path(@meal), notice: "Something went wrong..."
     end
   end
 
@@ -60,6 +61,6 @@ class MealsController < ApplicationController
   end
 
   def meal_params
-    params.require(:meal).permit(:meal_name, :calories, :fats, :proteins, :carbs, :fiber, :sodium, :sugar, :cholesterol)
+    params.require(:meal).permit(:meal_name, :description, :calories, :fats, :proteins, :carbs, :fiber, :sodium, :sugar, :cholesterol)
   end
 end
