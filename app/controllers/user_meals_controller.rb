@@ -46,8 +46,6 @@ class UserMealsController < ApplicationController
     @user_meal = Current.user_meals.find(params[:id])
     @user_meal.update(error: nil)
 
-    meal = @user_meal.meal
-    prompt = params[:prompt].presence || meal.prompt.presence || "Analyze this meal"
     ProcessMealImageJob.perform_later(@user_meal.id)
 
     respond_to do |format|
@@ -142,30 +140,23 @@ class UserMealsController < ApplicationController
   end
 
   def process_and_attach_image(meal, image_file)
-    # Convert image to JPG format
-    begin
-      # Process the image to JPG format
-      image = MiniMagick::Image.new(image_file.tempfile.path)
-      image.format "jpg"
+    image = MiniMagick::Image.new(image_file.tempfile.path)
+    image.format "jpg"
 
-      # Create a tempfile for the processed image
-      processed_tempfile = Tempfile.new([ "processed", ".jpg" ])
-      image.write(processed_tempfile.path)
-      processed_tempfile.rewind
+    processed_tempfile = Tempfile.new([ "processed", ".jpg" ])
+    image.write(processed_tempfile.path)
+    processed_tempfile.rewind
 
-      # Create a new ActionDispatch::Http::UploadedFile with the processed image
-      processed_file = ActionDispatch::Http::UploadedFile.new(
-        tempfile: processed_tempfile,
-        filename: "#{File.basename(image_file.original_filename, '.*')}.jpg",
-        type: "image/jpeg"
-      )
+    processed_file = ActionDispatch::Http::UploadedFile.new(
+      tempfile: processed_tempfile,
+      filename: "#{File.basename(image_file.original_filename, ".*")}.jpg",
+      type: "image/jpeg"
+    )
 
-      # Attach the processed image
-      meal.image.attach(processed_file)
-    rescue => e
-      Rails.logger.error("Image conversion error: #{e.message}")
-      meal.image.attach(image_file) # Fallback to original file if conversion fails
-    end
+    meal.image.attach(processed_file)
+  rescue => e
+    Rails.logger.error("Image conversion error: #{e.message}")
+    meal.image.attach(image_file) # Fallback to original file if conversion fails
   end
 
   def create_from_meal_id
