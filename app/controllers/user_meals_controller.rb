@@ -30,6 +30,7 @@ class UserMealsController < ApplicationController
   end
 
   def show
+    @user_profile = Current.user_profile
   end
 
   def update

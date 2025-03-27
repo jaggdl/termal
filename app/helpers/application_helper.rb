@@ -16,6 +16,8 @@ module ApplicationHelper
     [ "calories", "proteins", "fats", "carbs" ]
   end
 
+
+
   def markdown(text)
     return "" if text.blank?
 

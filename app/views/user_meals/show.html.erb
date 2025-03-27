@@ -1,79 +1,46 @@
 <div class="space-y-6">
   <%= render partial: "shared/back_button" %>
 
-  <div class="flex gap-6 flex-col md:flex-row items-center md:items-start">
-    <div class="round w-72 min-w-72 max-w-72 bg-gray-200">
-      <% if @user_meal.meal.image.attached? %>
-        <%= image_tag @user_meal.meal.image.variant(resize_to_limit: [576, 576]),
-        class: "w-full h-full object-cover" %>
-      <% else %>
-        <div class="w-full h-72 flex items-center justify-center">
-          <%= heroicon "photo", options: { class: "h-20 w-20 text-gray-400" } %>
-        </div>
-      <% end %>
-    </div>
-
-    <div class="w-full space-y-6">
-      <div class="inline">
-        <h1 class="text-2xl font-bold text-gray-800 mb-2"><%= @user_meal.meal.meal_name %></h1>
-      </div>
-
-      <% if @user_meal.meal.description.present? %>
-        <div class="text-gray-600 text-sm">
-          <%= @user_meal.meal.description %>
-        </div>
-      <% end %>
-
-      <div class="grid grid-cols-2 gap-4">
-        <% ["calories", "fats", "proteins", "carbs", "fiber", "sodium", "sugar", "cholesterol"].each do |attr| %>
-          <div class="flex items-center justify-between">
-            <span class="font-semibold text-gray-700"><%= attr.humanize %>:</span>
-            <span><%= @user_meal.meal[attr] %></span>
-          </div>
-        <% end %>
-      </div>
-
-      <div class="mt-6 flex justify-end gap-x-4">
-        <%= link_to edit_meal_path(@user_meal.meal) do %>
-          <%= render "shared/aqua_style",
-          text: "Edit meal",
-          variant: "secondary",
-          icon: "pencil" %>
-        <% end %>
-      </div>
-
-      <%= form_with model: @user_meal, url: user_meal_path(@user_meal), method: :patch, class: "space-y-4", data: { controller: "datetime-sync", "datetime-sync-timezone": Current.user_profile.timezone } do |f| %>
-        <div class="flex flex-col items-end gap-4">
-          <div class="flex items-center gap-4 w-full">
-            <span class="font-semibold text-gray-700">Consumed:</span>
-            <%= f.datetime_local_field :consumed_at_local,
-                                   value:
-                                     @user_meal.consumed_at_in_timezone.strftime(
-                                       "%Y-%m-%dT%H:%M",
-                                     ),
-                                   class: "border border-gray-300 p-1 rounded w-full",
-                                   placeholder: "Select date and time",
-                                   data: {
-                                     "datetime-sync-target": "localInput",
-                                     action: "input->datetime-sync#localChanged",
-                                   } %>
-            <%= f.hidden_field :consumed_at, data: { "datetime-sync-target": "utcInput" } %>
-          </div>
-          <div class="flex gap-2">
-            <%= link_to user_meal_path(@user_meal),
-            data: {
-              turbo_method: "delete",
-              turbo_confirm: "Are you sure?",
-            }  do %>
-              <%= render "shared/aqua_style", text: "Remove", variant: "danger" %>
-            <% end %>
-            <%= f.submit "Update date",
-                     class:
-                       "aqua-reflection flex items-center text-sm justify-center px-4 py-2 rounded-full bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md hover:from-sky-400 hover:to-sky-600 cursor-pointer" %>
-          </div>
-        </div>
-      <% end %>
-    </div>
+  <%= render partial: "shared/meal_details", locals: { meal: @user_meal.meal, user_profile: @user_profile } %>
+  
+  <div class="mt-6 flex justify-end gap-x-4">
+    <%= link_to edit_meal_path(@user_meal.meal) do %>
+      <%= render "shared/aqua_style",
+      text: "Edit meal",
+      variant: "secondary",
+      icon: "pencil" %>
+    <% end %>
   </div>
 
+  <%= form_with model: @user_meal, url: user_meal_path(@user_meal), method: :patch, class: "space-y-4", data: { controller: "datetime-sync", "datetime-sync-timezone": Current.user_profile.timezone } do |f| %>
+    <div class="flex flex-col items-end gap-4">
+      <div class="flex items-center gap-4 w-full">
+        <span class="font-semibold text-gray-700">Consumed:</span>
+        <%= f.datetime_local_field :consumed_at_local,
+                               value:
+                                 @user_meal.consumed_at_in_timezone.strftime(
+                                   "%Y-%m-%dT%H:%M",
+                                 ),
+                               class: "border border-gray-300 p-1 rounded w-full",
+                               placeholder: "Select date and time",
+                               data: {
+                                 "datetime-sync-target": "localInput",
+                                 action: "input->datetime-sync#localChanged",
+                               } %>
+        <%= f.hidden_field :consumed_at, data: { "datetime-sync-target": "utcInput" } %>
+      </div>
+      <div class="flex gap-2">
+        <%= link_to user_meal_path(@user_meal),
+        data: {
+          turbo_method: "delete",
+          turbo_confirm: "Are you sure?",
+        }  do %>
+          <%= render "shared/aqua_style", text: "Remove", variant: "danger" %>
+        <% end %>
+        <%= f.submit "Update date",
+                 class:
+                   "aqua-reflection flex items-center text-sm justify-center px-4 py-2 rounded-full bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md hover:from-sky-400 hover:to-sky-600 cursor-pointer" %>
+      </div>
+    </div>
+  <% end %>
 </div>

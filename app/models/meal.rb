@@ -8,4 +8,20 @@ class Meal < ApplicationRecord
   def created_at_in_timezone
     created_at.in_time_zone(Current.user_profile.timezone)
   end
+
+  def nutrient_with_unit(attr)
+    value = self[attr]
+    return nil if value.nil?
+
+    unit = case attr.to_s
+    when "sodium", "cholesterol"
+             "mg"
+    when "calories"
+             ""
+    else
+             "g"
+    end
+
+    "#{value}#{unit}"
+  end
 end

@@ -1,0 +1,49 @@
+<div class="flex gap-6 flex-col md:flex-row items-center md:items-start">
+  <div class="round w-full min-w-72 bg-gray-200">
+    <% if meal.image.attached? %>
+      <%= image_tag meal.image.variant(resize_to_limit: [576, 576]),
+      class: "w-full h-full object-cover" %>
+    <% else %>
+      <div class="w-full h-72 flex items-center justify-center">
+        <%= heroicon "photo", options: { class: "h-20 w-20 text-gray-400" } %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="w-full max-w-md space-y-2">
+    <h1 class="text-2xl font-bold text-gray-800"><%= meal.meal_name %></h1>
+
+    <% if meal.description.present? %>
+      <div class="text-gray-600 text-sm">
+        <%= meal.description %>
+      </div>
+    <% end %>
+
+    <div class="w-full mt-4">
+      <div class="w-full flex justify-between items-center pb-1 border-b-4">
+        <span class="text-xl font-extrabold">Calories</span>
+        <span class="text-3xl font-bold"><%= meal.nutrient_with_unit("calories") %></span>
+      </div>
+    </div>
+
+    <div class="g gap-4 mt-3">
+      <div class="w-full flex justify-end font-bold">
+        % Daily target
+      </div>
+      <% ["fats", "proteins", "carbs", "fiber", "sodium", "sugar", "cholesterol"].each do |attr| %>
+        <div class="flex items-center justify-between border-t-1 border-gray-300">
+          <span class="font-extrabold">
+            <%= attr.humanize %>
+          </span>
+          <span>
+            <%= meal.nutrient_with_unit(attr) %>
+            -
+            <span class="font-bold">
+              <%= user_profile.meal_nutrient_percentage(meal, attr) %>%
+            </span>
+          </span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

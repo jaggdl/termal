@@ -19,7 +19,11 @@ class NutritionCalculator
     calories: 2000,
     proteins: 50,
     carbs: 250,
-    fats: 70
+    fats: 70,
+    fiber: 25,
+    sodium: 2300,
+    sugar: 30,
+    cholesterol: 300
   }.freeze
 
   # Default values to use in calculations if profile data is missing
@@ -61,12 +65,25 @@ class NutritionCalculator
     carbs = (remaining_calories / 2) / 4  # 4 kcal/g for carbs
     fats = (remaining_calories / 2) / 9   # 9 kcal/g for fats
 
+    # Calculate fiber based on carbs (general guideline: ~10% of carbs)
+    fiber = carbs * 0.1
+
+    # Calculate other nutrients based on general guidelines and calories
+    # These are approximations based on standard recommendations
+    sodium = 2300 # mg, standard recommendation
+    sugar = calories * 0.015 # About 30g per 2000 calories
+    cholesterol = 300 # mg, standard recommendation
+
     # Return rounded results
     {
       calories: calories.round,
       proteins: protein.round,
       carbs: carbs.round,
-      fats: fats.round
+      fats: fats.round,
+      fiber: fiber.round,
+      sodium: sodium,
+      sugar: sugar.round,
+      cholesterol: cholesterol
     }
   rescue
     # Return default targets if calculation fails
