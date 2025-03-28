@@ -1,0 +1,23 @@
+<% if meals.any? %>
+  <ul class="">
+    <% meals.each do |meal| %>
+      <li
+        class="
+          flex gap-x-4 items-center w-full justify-between vintage-link pr-5
+        "
+      >
+        <%= link_to meal_path(meal), data: { turbo_frame: "_top" }, class: "w-full" do %>
+          <div class="flex gap-x-2 items-center w-full">
+            <%= meal_image_tag(meal, size: :small) %>
+            <div class="flex flex-col w-full">
+              <span class="line-clamp-1"><%= meal.meal_name %></span>
+            </div>
+          </div>
+        <% end %>
+        <%= button_to user_meals_path, params: { meal_id: meal.id, date: date }, method: :post, data: { turbo: true } do %>
+          <%= render "shared/aqua_style", text: "Add" %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
