@@ -38,17 +38,15 @@ class MealsController < ApplicationController
     else
       @meals = []
     end
-    # Store normal search meal IDs in session for deduplication
-    session[:normal_search_meal_ids] = @meals.map(&:id).join(",")
     render partial: "meals/normal_search_results", locals: { meals: @meals, date: params[:date] }
   end
 
   def search
     if params[:q].present?
-      normal_meal_ids = session[:normal_search_meal_ids] || []
+      normal_search_meals = Meal.normal_search(query: params[:q], limit: 2, user: Current.user)
 
       @meals = Meal.vector_search(query: params[:q], user: Current.user, limit: 8)
-        .reject { |meal| normal_meal_ids.split(",").include?(meal.id.to_s) }
+        .reject { |meal| normal_search_meals.include?(meal) }
     else
       @meals = []
     end
