@@ -26,7 +26,7 @@
     <% end %>
 
     <div class="w-full mt-4">
-      <div class="w-full flex justify-between items-end pb-1 border-b-4">
+      <div class="w-full flex justify-between items-end pb-1 border-b-4 border-black">
         <span class="text-xl font-extrabold">Calories</span>
         <div>
           <span class="text-3xl font-bold"><%= meal.nutrient_with_unit("calories") %></span>
@@ -44,7 +44,7 @@
       <% ["fats", "proteins", "carbs", "fiber", "sodium", "sugar", "cholesterol"].each do |attr| %>
         <div
           class="
-            flex items-center justify-between border-t-1 border-gray-400 py-0.5
+            flex items-center justify-between border-t border-gray-400 py-0.5
           "
         >
           <span class="">
