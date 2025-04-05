@@ -92,8 +92,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_22_045200) do
 
   create_table "nutrition_analyses", force: :cascade do |t|
     t.text "text"
-    t.date "date_start", null: false
-    t.date "date_end", null: false
+    t.date "date_start"
+    t.date "date_end"
     t.datetime "executed_at"
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
