@@ -1,3 +1,9 @@
+<%
+  # Get theme preference from user if logged in, otherwise use system default
+  theme_preference = Current.user&.user_profile&.dark_mode ? 'dark' : 'light' 
+  theme_color = theme_preference == 'dark' ? 'black' : 'white'
+  background_color = theme_preference == 'dark' ? 'black' : 'white'
+%>
 {
   "name": "CaloriesTracker",
   "icons": [
@@ -17,6 +23,6 @@
   "display": "standalone",
   "scope": "/",
   "description": "CaloriesTracker.",
-  "theme_color": "white",
-  "background_color": "white"
+  "theme_color": "<%= theme_color %>",
+  "background_color": "<%= background_color %>"
 }

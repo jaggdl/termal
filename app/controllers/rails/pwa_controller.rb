@@ -14,6 +14,10 @@ class Rails::PwaController < ApplicationController
   end
 
   def manifest
+    # Set the content type to JSON and disable caching to ensure theme changes are reflected
+    response.headers["Content-Type"] = "application/json"
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+
     render template: "pwa/manifest", layout: false
   end
 end

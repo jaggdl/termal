@@ -23,15 +23,18 @@ export default class extends Controller {
     // Check for stored preference
     const storedTheme = localStorage.getItem('theme')
     const wasDark = document.documentElement.classList.contains('dark')
+    let isDarkMode = false
     
     if (storedTheme === 'dark') {
       document.documentElement.classList.add('dark')
+      isDarkMode = true
       // Update checkbox if present
       if (this.hasDarkModeCheckboxTarget) {
         this.darkModeCheckboxTarget.checked = true
       }
     } else if (storedTheme === 'light') {
       document.documentElement.classList.remove('dark')
+      isDarkMode = false
       // Update checkbox if present
       if (this.hasDarkModeCheckboxTarget) {
         this.darkModeCheckboxTarget.checked = false
@@ -41,18 +44,23 @@ export default class extends Controller {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
       if (prefersDark) {
         document.documentElement.classList.add('dark')
+        isDarkMode = true
         // Update checkbox if present
         if (this.hasDarkModeCheckboxTarget) {
           this.darkModeCheckboxTarget.checked = true
         }
       } else {
         document.documentElement.classList.remove('dark')
+        isDarkMode = false
         // Update checkbox if present
         if (this.hasDarkModeCheckboxTarget) {
           this.darkModeCheckboxTarget.checked = false
         }
       }
     }
+    
+    // Update theme-color meta tag for PWA
+    this.updateThemeColorMetaTag(isDarkMode)
     
     const isDark = document.documentElement.classList.contains('dark')
     if (wasDark !== isDark) {
@@ -63,15 +71,28 @@ export default class extends Controller {
     }
   }
   
+  updateThemeColorMetaTag(isDarkMode) {
+    // Update the theme-color meta tag for PWA
+    let metaThemeColor = document.querySelector('meta[name="theme-color"]')
+    if (!metaThemeColor) {
+      metaThemeColor = document.createElement('meta')
+      metaThemeColor.name = 'theme-color'
+      document.head.appendChild(metaThemeColor)
+    }
+    metaThemeColor.content = isDarkMode ? 'black' : 'white'
+  }
+  
   toggleTheme() {
     const wasDark = document.documentElement.classList.contains('dark')
     
     if (wasDark) {
       localStorage.setItem('theme', 'light')
       document.documentElement.classList.remove('dark')
+      this.updateThemeColorMetaTag(false)
     } else {
       localStorage.setItem('theme', 'dark')
       document.documentElement.classList.add('dark')
+      this.updateThemeColorMetaTag(true)
     }
     
     // Dispatch event when theme changes so charts and other components can update
@@ -86,9 +107,11 @@ export default class extends Controller {
     if (isDark) {
       localStorage.setItem('theme', 'dark')
       document.documentElement.classList.add('dark')
+      this.updateThemeColorMetaTag(true)
     } else {
       localStorage.setItem('theme', 'light')
       document.documentElement.classList.remove('dark')
+      this.updateThemeColorMetaTag(false)
     }
     
     // Dispatch event when theme changes so charts and other components can update
