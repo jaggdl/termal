@@ -20,15 +20,15 @@ module ApplicationHelper
     base_classes = "transition-colors duration-200"
     active_classes = "font-bold text-xl text-black dark:text-dark-text"
     inactive_classes = "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-    
+
     "#{base_classes} #{is_active ? active_classes : inactive_classes}"
   end
-  
+
   def nav_icon_classes(is_active)
     base_classes = "h-6 w-6 transition-colors duration-200"
     active_classes = "text-sky-500 dark:text-dark-primary"
     inactive_classes = "text-gray-500 dark:text-gray-400"
-    
+
     "#{base_classes} #{is_active ? active_classes : inactive_classes}"
   end
 

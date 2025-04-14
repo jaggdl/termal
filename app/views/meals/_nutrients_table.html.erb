@@ -1,8 +1,8 @@
 <div class="flex md:justify-start justify-end space-x-2">
   <% main_nutrients.each do |key| %>
     <div class="text-sm flex flex-col w-10 text-right">
-      <span class="font-semibold"><%= meal[key] %></span>
-      <span class="text-gray-500"><%= key[0, 3] %></span>
+      <span class="font-semibold dark:text-dark-text"><%= meal[key] %></span>
+      <span class="text-gray-500 dark:text-gray-400"><%= key[0, 3] %></span>
     </div>
   <% end %>
 </div>

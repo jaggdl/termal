@@ -6,11 +6,11 @@
   <div class="flex w-full flex-col space-y-4">
     <div class="flex md:flex-row flex-col space-x-4 justify-between items-center space-y-4 md:space-y-0"> 
       <div class="flex justify-between items-center space-x-2">
-        <%= link_to user_meals_path(date: (@date - 1).to_s), class: "group relative inline-flex items-center justify-center w-10 h-10 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2", title: "Previous day" do %>
+        <%= link_to user_meals_path(date: (@date - 1).to_s), class: "group relative inline-flex items-center justify-center w-10 h-10 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-dark-primary focus:ring-offset-2 dark:focus:ring-offset-dark-background", title: "Previous day" do %>
           <%= render partial: "shared/arrow_button", locals: { direction: "left", disabled: false } %>
         <% end %>
 
-        <h2 class="font-semibold w-32 text-center">
+        <h2 class="font-semibold w-32 text-center dark:text-dark-text">
           <% date_string = case @date
           when @today
             "Today"
@@ -23,7 +23,7 @@
         </h2>
 
         <% if @date < @today %>
-          <%= link_to user_meals_path(date: (@date + 1).to_s), class: "group relative inline-flex items-center justify-center w-10 h-10 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2", title: "Next day" do %>
+          <%= link_to user_meals_path(date: (@date + 1).to_s), class: "group relative inline-flex items-center justify-center w-10 h-10 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-dark-primary focus:ring-offset-2 dark:focus:ring-offset-dark-background", title: "Next day" do %>
             <%= render partial: "shared/arrow_button", locals: { direction: "right", disabled: false } %>
           <% end %>
         <% else %>
@@ -49,7 +49,7 @@
     </div>
     <% if @meals_by_day[@date].none? %>
       <div id="no-meals-message" class="w-full flex items-center justify-center pt-12 flex-col gap-6">
-        <p>No meals for this day</p>
+        <p class="dark:text-dark-text">No meals for this day</p>
       </div>
     <% end %>
   </div>

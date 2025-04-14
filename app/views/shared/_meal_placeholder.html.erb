@@ -1,9 +1,9 @@
 <% if size == :small %>
-  <div class="md:max-w-16 md:max-h-16 md:min-w-16 md:min-h-16 min-w-16 min-h-16 max-w-16 max-h-16 bg-gray-200 flex items-center justify-center">
-    <%= heroicon "photo", options: { class: "h-8 w-8 text-gray-400" } %>
+  <div class="md:max-w-16 md:max-h-16 md:min-w-16 md:min-h-16 min-w-16 min-h-16 max-w-16 max-h-16 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+    <%= heroicon "photo", options: { class: "h-8 w-8 text-gray-400 dark:text-gray-500" } %>
   </div>
 <% else %> <!-- medium size -->
-  <div class="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center">
-    <%= heroicon "photo", options: { class: "h-12 w-12 text-gray-400" } %>
+  <div class="absolute inset-0 w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+    <%= heroicon "photo", options: { class: "h-12 w-12 text-gray-400 dark:text-gray-500" } %>
   </div>
 <% end %>

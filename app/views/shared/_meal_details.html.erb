@@ -5,32 +5,32 @@
 >
   <div
     class="
-      w-full bg-gray-200 min-h-96 flex items-center justify-center relative
+      w-full bg-gray-200 dark:bg-gray-700 min-h-96 flex items-center justify-center relative
     "
   >
     <% if meal.image.attached? %>
       <%= image_tag meal.image.variant(resize_to_limit: [576, 576]),
       class: "object-cover inset-0 absolute h-full w-full" %>
     <% else %>
-      <%= heroicon "photo", options: { class: "h-20 w-20 text-gray-400" } %>
+      <%= heroicon "photo", options: { class: "h-20 w-20 text-gray-400 dark:text-gray-500" } %>
     <% end %>
   </div>
 
   <div class="w-full sm:max-w-md space-y-2 sm:px-0 px-5">
-    <h1 class="text-2xl font-bold"><%= meal.meal_name %></h1>
+    <h1 class="text-2xl font-bold dark:text-dark-text"><%= meal.meal_name %></h1>
 
     <% if meal.description.present? %>
-      <div class="text-gray-600 text-sm">
+      <div class="text-gray-600 dark:text-gray-400 text-sm">
         <%= meal.description %>
       </div>
     <% end %>
 
     <div class="w-full mt-4">
-      <div class="w-full flex justify-between items-end pb-1 border-b-4 border-black">
-        <span class="text-xl font-extrabold">Calories</span>
+      <div class="w-full flex justify-between items-end pb-1 border-b-4 border-black dark:border-gray-200">
+        <span class="text-xl font-extrabold dark:text-dark-text">Calories</span>
         <div>
-          <span class="text-3xl font-bold"><%= meal.nutrient_with_unit("calories") %></span>
-          <span>
+          <span class="text-3xl font-bold dark:text-dark-text"><%= meal.nutrient_with_unit("calories") %></span>
+          <span class="dark:text-dark-text">
             (<%= user_profile.meal_nutrient_percentage(meal, :calories) %>%)
           </span>
         </div>
@@ -38,22 +38,22 @@
     </div>
 
     <div class="g gap-4">
-      <div class="w-full flex justify-end font-bold mb-1">
+      <div class="w-full flex justify-end font-bold mb-1 dark:text-gray-300">
         % Daily target
       </div>
       <% ["fats", "proteins", "carbs", "fiber", "sodium", "sugar", "cholesterol"].each do |attr| %>
         <div
           class="
-            flex items-center justify-between border-t border-gray-400 py-0.5
+            flex items-center justify-between border-t border-gray-400 dark:border-gray-600 py-0.5
           "
         >
-          <span class="">
+          <span class="dark:text-dark-text">
             <strong class="font-extrabold">
               <%= attr.humanize %>
             </strong>
             <%= meal.nutrient_with_unit(attr) %>
           </span>
-          <span>
+          <span class="dark:text-dark-text">
             <span class="font-bold">
               <%= user_profile.meal_nutrient_percentage(meal, attr) %>%
             </span>

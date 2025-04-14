@@ -1,7 +1,7 @@
 <div id="meal-<%= meal.id %>" class="flex md:flex-row flex-col justify-between w-full">
   <div class="flex flex-col">
-    <%= link_to meal.meal_name, meal_path(meal), class: 'md:text-lg' %>
-    <span class="text-sm text-gray-500"><%= meal.created_at_in_timezone.strftime("%I:%M %p") %></span>
+    <%= link_to meal.meal_name, meal_path(meal), class: 'md:text-lg dark:text-dark-text' %>
+    <span class="text-sm text-gray-500 dark:text-gray-400"><%= meal.created_at_in_timezone.strftime("%I:%M %p") %></span>
   </div>
 
   <%= render partial: 'meals/nutrients_table', locals: { meal: meal } %>
