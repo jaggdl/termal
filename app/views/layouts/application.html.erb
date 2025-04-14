@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="" data-controller="theme">
   <head>
     <title><%= content_for(:title) || "Calories Tracker" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -29,7 +29,7 @@
     </script>
   </head>
 
-  <body>
+  <body class="bg-white dark:bg-dark-background text-black dark:text-dark-text transition-colors duration-200">
     <main class="container relative mx-auto md:mt-20 mt-6 px-5 md:mb-8 mb-20 flex flex-col font-mono max-w-4xl">
       <% if authenticated? %>
       <!-- Desktop Navigation -->
@@ -48,7 +48,7 @@
       </nav>
       
       <!-- Mobile Navigation -->
-      <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-t border-gray-200 flex justify-around items-center py-3 pb-[var(--nav-b-padding)] z-40" data-controller="pwa-detection">
+      <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-dark-surface/80 backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 flex justify-around items-center py-3 pb-[var(--nav-b-padding)] z-40" data-controller="pwa-detection">
         <%= link_to root_path, class: "flex flex-col items-center" do %>
           <%= heroicon "home", options: { class: "h-6 w-6 #{current_page?(root_path) || request.path.start_with?('/user_meals') ? 'text-sky-500' : 'text-gray-500'}" } %>
         <% end %>
@@ -76,6 +76,19 @@
       <div class="fixed z-50 top-0 md:top-4 left-0 right-0 pointer-events-none">
         <%= render "shared/flash", flash: flash %>
       </div>
+      
+      <!-- Dark Mode Toggle -->
+      <div class="fixed bottom-24 md:bottom-4 right-4 z-50">
+        <button data-action="theme#toggleTheme" class="p-2 rounded-full bg-gray-200 dark:bg-dark-surface shadow-md">
+          <div class="dark:hidden">
+            <%= heroicon "moon", options: { class: "h-6 w-6 text-gray-800" } %>
+          </div>
+          <div class="hidden dark:block">
+            <%= heroicon "sun", options: { class: "h-6 w-6 text-yellow-400" } %>
+          </div>
+        </button>
+      </div>
+      
       <%= yield %>
     </main>
   </body>
