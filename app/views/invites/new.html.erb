@@ -1,15 +1,15 @@
 <div class="max-w-md mx-auto py-6 px-4 sm:px-6 lg:px-8">
   <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">Create Invite</h1>
-    <p class="mt-2 text-sm text-gray-600">Send an invite to a new user</p>
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-dark-text">Create Invite</h1>
+    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Send an invite to a new user</p>
   </div>
   
-  <div class="bg-white rounded-lg shadow p-6">
+  <div class="bg-white dark:bg-dark-surface rounded-lg shadow p-6">
     <%= form_with(model: @invite, local: true) do |form| %>
       <% if @invite.errors.any? %>
         <div class="mb-4 p-4 bg-red-50 rounded border border-red-200">
-          <h2 class="text-red-700 font-medium">Errors prevented this invite from being saved:</h2>
-          <ul class="list-disc pl-5 mt-2 text-red-600 text-sm">
+          <h2 class="text-red-700 dark:text-red-400 font-medium">Errors prevented this invite from being saved:</h2>
+          <ul class="list-disc pl-5 mt-2 text-red-600 dark:text-red-400 text-sm">
             <% @invite.errors.full_messages.each do |message| %>
               <li><%= message %></li>
             <% end %>
@@ -18,14 +18,14 @@
       <% end %>
       
       <div class="mb-4">
-        <%= form.label :email, class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <%= form.email_field :email, class: "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md", required: true, placeholder: "Enter email address" %>
-        <p class="mt-1 text-sm text-gray-500">The invite will be valid for 7 days</p>
+        <%= form.label :email, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+        <%= form.email_field :email, class: "shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-dark-primary dark:focus:border-dark-primary block w-full sm:text-sm border-gray-300 dark:border-gray-700 dark:bg-dark-surface dark:text-dark-text rounded-md", required: true, placeholder: "Enter email address" %>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">The invite will be valid for 7 days</p>
       </div>
       
       <div class="flex justify-between mt-6">
-        <%= link_to "Cancel", invites_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
-        <%= form.submit "Create Invite", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+        <%= link_to "Cancel", invites_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-surface hover:bg-gray-50 dark:hover:bg-gray-800" %>
+        <%= form.submit "Create Invite", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-dark-primary" %>
       </div>
     <% end %>
   </div>

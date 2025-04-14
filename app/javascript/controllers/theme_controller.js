@@ -1,6 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
+  static targets = ["darkModeCheckbox"]
+
   connect() {
     this.updateTheme()
     
@@ -24,15 +26,31 @@ export default class extends Controller {
     
     if (storedTheme === 'dark') {
       document.documentElement.classList.add('dark')
+      // Update checkbox if present
+      if (this.hasDarkModeCheckboxTarget) {
+        this.darkModeCheckboxTarget.checked = true
+      }
     } else if (storedTheme === 'light') {
       document.documentElement.classList.remove('dark')
+      // Update checkbox if present
+      if (this.hasDarkModeCheckboxTarget) {
+        this.darkModeCheckboxTarget.checked = false
+      }
     } else {
       // Use system preference if no stored preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
       if (prefersDark) {
         document.documentElement.classList.add('dark')
+        // Update checkbox if present
+        if (this.hasDarkModeCheckboxTarget) {
+          this.darkModeCheckboxTarget.checked = true
+        }
       } else {
         document.documentElement.classList.remove('dark')
+        // Update checkbox if present
+        if (this.hasDarkModeCheckboxTarget) {
+          this.darkModeCheckboxTarget.checked = false
+        }
       }
     }
     
@@ -60,5 +78,24 @@ export default class extends Controller {
     window.dispatchEvent(new CustomEvent('themeChanged', { 
       detail: { isDarkMode: !wasDark }
     }))
+  }
+
+  toggleAndSavePreference(event) {
+    const isDark = event.target.checked
+    
+    if (isDark) {
+      localStorage.setItem('theme', 'dark')
+      document.documentElement.classList.add('dark')
+    } else {
+      localStorage.setItem('theme', 'light')
+      document.documentElement.classList.remove('dark')
+    }
+    
+    // Dispatch event when theme changes so charts and other components can update
+    window.dispatchEvent(new CustomEvent('themeChanged', { 
+      detail: { isDarkMode: isDark }
+    }))
+    
+    // Leave the form submission to handle saving the preference to the user profile
   }
 }

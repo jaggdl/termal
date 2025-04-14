@@ -2,17 +2,17 @@
   <div class="space-y-4">
     <%= link_to analyses_path, class: "flex gap-2 group p-2 relative" do %>
       <%= render partial: "shared/arrow_button", locals: { direction: "left", disabled: false } %>
-      <span>Back</span>
+      <span class="dark:text-dark-text">Back</span>
     <% end %>
 
     <div class="mb-6">
       <div class="flex items-center justify-between">
         <div class="flex items-center">
-          <h3 class="text-lg leading-6 font-medium text-gray-900">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-dark-text">
             Analysis for <strong><%= @analysis.formatted_date_range %></strong>
           </h3>
         </div>
-        <span class="text-sm text-gray-500 flex flex-col">
+        <span class="text-sm text-gray-500 dark:text-gray-400 flex flex-col">
           Generated <%= time_ago_in_words(@analysis.executed_at) %> ago
         </span>
       </div>
@@ -30,7 +30,7 @@
                } %>
     <% end %>
     
-    <div class="prose mt-12" id="nutrition_analysis_content">
+    <div class="prose dark:prose-invert mt-12" id="nutrition_analysis_content">
       <%= markdown(@analysis.text) %>
     </div>
   </div>
