@@ -20,6 +20,7 @@ export default class extends Controller {
   updateTheme() {
     // Check for stored preference
     const storedTheme = localStorage.getItem('theme')
+    const wasDark = document.documentElement.classList.contains('dark')
     
     if (storedTheme === 'dark') {
       document.documentElement.classList.add('dark')
@@ -34,15 +35,30 @@ export default class extends Controller {
         document.documentElement.classList.remove('dark')
       }
     }
+    
+    const isDark = document.documentElement.classList.contains('dark')
+    if (wasDark !== isDark) {
+      // Dispatch event when theme changes so charts and other components can update
+      window.dispatchEvent(new CustomEvent('themeChanged', { 
+        detail: { isDarkMode: isDark }
+      }))
+    }
   }
   
   toggleTheme() {
-    if (document.documentElement.classList.contains('dark')) {
+    const wasDark = document.documentElement.classList.contains('dark')
+    
+    if (wasDark) {
       localStorage.setItem('theme', 'light')
       document.documentElement.classList.remove('dark')
     } else {
       localStorage.setItem('theme', 'dark')
       document.documentElement.classList.add('dark')
     }
+    
+    // Dispatch event when theme changes so charts and other components can update
+    window.dispatchEvent(new CustomEvent('themeChanged', { 
+      detail: { isDarkMode: !wasDark }
+    }))
   }
 }

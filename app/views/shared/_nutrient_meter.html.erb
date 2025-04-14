@@ -3,13 +3,13 @@
   <% total_value = defined?(value) ? value : user_meals.sum { |user_meal| user_meal.meal.send(unit) || 0 } %>
   <% nutrient_percentage = (total_value.to_f / base_number) * 100 %>
   <% meter_color = if unit == 'proteins' %>
-    <% nutrient_percentage > 110 ? "bg-gradient-to-r from-green-300 to-green-500 shadow-green-400/40" : (nutrient_percentage < 90 ? "bg-gradient-to-r from-amber-300 to-amber-500 shadow-amber-400/40" : "bg-gradient-to-r from-green-300 to-green-500 shadow-green-400/40") %>
+    <% nutrient_percentage > 110 ? "bg-gradient-to-r from-green-300 to-green-500 dark:from-green-700 dark:to-green-500 shadow-green-400/40" : (nutrient_percentage < 90 ? "bg-gradient-to-r from-amber-300 to-amber-500 dark:from-amber-700 dark:to-amber-500 shadow-amber-400/40" : "bg-gradient-to-r from-green-300 to-green-500 dark:from-green-700 dark:to-green-500 shadow-green-400/40") %>
   <% else %>
-    <% nutrient_percentage > 110 ? "bg-gradient-to-r from-red-300 to-red-500 shadow-red-400/40" : (nutrient_percentage < 90 ? "bg-gradient-to-r from-amber-300 to-amber-500 shadow-amber-400/40" : "bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/40") %>
+    <% nutrient_percentage > 110 ? "bg-gradient-to-r from-red-300 to-red-500 dark:from-red-700 dark:to-red-500 shadow-red-400/40" : (nutrient_percentage < 90 ? "bg-gradient-to-r from-amber-300 to-amber-500 dark:from-amber-700 dark:to-amber-500 shadow-amber-400/40" : "bg-gradient-to-r from-sky-300 to-sky-400 dark:from-sky-700 dark:to-sky-500 shadow-sky-400/40") %>
   <% end %>
 
   <div class="text-center mb-1">
-    <span class="text-sm text-nowrap">
+    <span class="text-sm text-nowrap text-black dark:text-dark-text">
     <% if defined?(show_nutrient) %>
       <span><%= unit[0..2] %></span>
     <% end %>  
@@ -18,7 +18,7 @@
   </div>
 
   <!-- Outer container for the bar -->
-  <div class="w-full bg-gray-200 rounded-full h-3 shadow-inner">
+  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 shadow-inner">
     <!-- Inner progress bar with animation -->
     <div class="h-3 rounded-full <%= meter_color %> relative shadow-md aqua-reflection animate-fill" style="--final-width: <%= [nutrient_percentage, 100].min %>%;"></div>
   </div>

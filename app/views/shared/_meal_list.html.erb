@@ -1,9 +1,9 @@
 <% if meals.any? %>
-  <ul class="">
+  <ul class="bg-white dark:bg-dark-surface rounded-md overflow-hidden transition-colors duration-200">
     <% meals.each do |meal| %>
       <li
         class="
-          flex gap-x-4 items-center w-full justify-between vintage-link pr-5
+          flex gap-x-4 items-center w-full justify-between vintage-link pr-5 text-black dark:text-dark-text
         "
       >
         <%= link_to meal_path(meal), data: { turbo_frame: "_top" }, class: "w-full" do %>

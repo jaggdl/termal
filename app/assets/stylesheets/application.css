@@ -27,8 +27,17 @@ html {
   pointer-events: none;
 }
 
+/* Reduce the intensity of the reflection in dark mode */
+:root.dark .aqua-reflection::after {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+}
+
 .vintage-link:hover {
   background: repeating-linear-gradient(0deg, #F8F8F8, #F8F8F8 3px, #eee 1px, #eee 5px);
+}
+
+:root.dark .vintage-link:hover {
+  background: repeating-linear-gradient(0deg, #1e1e1e, #1e1e1e 3px, #2a2a2a 1px, #2a2a2a 5px);
 }
 
 .animate-fill {

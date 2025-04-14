@@ -5,11 +5,11 @@
      data-nutrition-charts-active-type-value="<%= selected_nutrient %>"
 >
   <div class="mb-4 flex justify-between items-end">
-    <h3 class="">Daily average</h3>
+    <h3 class="text-black dark:text-dark-text">Daily average</h3>
     
     <% if show_period_selector %>
       <div>
-        <select onchange="window.location=this.value" class="bg-white border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-sky-500">
+        <select onchange="window.location=this.value" class="bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-dark-primary text-black dark:text-dark-text">
           <% periods = [7, 14, 28, 60, 90] %>
           <% periods.each do |days| %>
             <option value="<%= nutrition_summary_path(period: days, nutrient: selected_nutrient) %>" <%= period == days ? 'selected' : '' %>>
@@ -24,8 +24,8 @@
     <% main_nutrients.each do |nutrient| %>
       <% average = averages[nutrient.to_sym] %>
     
-      <div data-nutrition-charts-target="card" data-type="<%= nutrient %>" data-action="click->nutrition-charts#showNutrient" class="bg-white rounded-lg shadow-md p-4 pb-2 hover:shadow-lg transition-shadow cursor-pointer">
-        <h3 class="text-lg text-center mb-2"><%= nutrient.capitalize %></h3>
+      <div data-nutrition-charts-target="card" data-type="<%= nutrient %>" data-action="click->nutrition-charts#showNutrient" class="bg-white dark:bg-dark-surface rounded-lg shadow-md p-4 pb-2 hover:shadow-lg transition-all duration-200 cursor-pointer border border-transparent hover:border-gray-200 dark:hover:border-gray-700">
+        <h3 class="text-lg text-center mb-2 text-black dark:text-dark-text"><%= nutrient.capitalize %></h3>
         
         <%= render partial: 'shared/nutrient_meter', 
                   locals: { 

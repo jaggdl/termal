@@ -1,24 +1,39 @@
 <div id="flash" class="p-4 m-auto max-w-4xl flex flex-col items-end justify-end w-full space-y-2">
   <% flash.each do |key, message| %>
-    <% border_color = case key.to_s
-       when 'notice' then 'border-green-500'
-       when 'alert' then 'border-red-500'
-       when 'warning' then 'border-amber-500'
-       else 'border-blue-500'
-       end %>
-    
-    <% text_color = case key.to_s
-       when 'notice' then 'text-green-700'
-       when 'alert' then 'text-red-700'
-       when 'warning' then 'text-amber-700'
-       else 'text-blue-700'
-       end %>
+    <% 
+      colors = case key.to_s
+      when 'notice'
+        {
+          border: 'border-green-500 dark:border-green-600',
+          text: 'text-green-700 dark:text-green-400',
+          bg: 'bg-white/80 dark:bg-dark-surface/90'
+        }
+      when 'alert'
+        {
+          border: 'border-red-500 dark:border-red-600',
+          text: 'text-red-700 dark:text-red-400',
+          bg: 'bg-white/80 dark:bg-dark-surface/90'
+        }
+      when 'warning'
+        {
+          border: 'border-amber-500 dark:border-amber-600',
+          text: 'text-amber-700 dark:text-amber-400',
+          bg: 'bg-white/80 dark:bg-dark-surface/90'
+        }
+      else
+        {
+          border: 'border-blue-500 dark:border-blue-600',
+          text: 'text-blue-700 dark:text-blue-400',
+          bg: 'bg-white/80 dark:bg-dark-surface/90'
+        }
+      end
+    %>
     
     <div class="flex justify-between items-center mb-2 p-4 rounded-lg backdrop-blur-sm w-auto max-w-md
-                bg-white/80 shadow-lg border-2 <%= border_color %> <%= text_color %> pointer-events-auto"
+                <%= colors[:bg] %> shadow-lg border-2 <%= colors[:border] %> <%= colors[:text] %> pointer-events-auto"
          data-controller="flash" data-flash-key="<%= key %>">
       <span><%= message %></span>
-      <button type="button" class="ml-4 p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400" 
+      <button type="button" class="ml-4 p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-600" 
               aria-label="Close notification" 
               data-action="click->flash#close">
         <%= heroicon "x-mark", options: { class: "h-5 w-5" } %>

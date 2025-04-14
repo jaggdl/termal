@@ -1,15 +1,22 @@
-<% 
-  variant = local_assigns.fetch(:variant, "primary")
-  icon = local_assigns[:icon]
-  color_classes = {
-    "primary" => "from-sky-300 to-sky-500 hover:from-sky-400 hover:to-sky-600",
-    "secondary" => "from-gray-400/80 to-gray-400 hover:from-gray-400 hover:to-gray-500",
-    "danger" => "from-red-300 to-red-500 hover:from-red-400 hover:to-red-600"
-  }
-  gradient_classes = color_classes[variant] || color_classes["primary"]
-%>
+<% variant = local_assigns.fetch(:variant, "primary")
+icon = local_assigns[:icon]
+color_classes = {
+  "primary" =>
+    "from-sky-300 to-sky-500 hover:from-sky-400 hover:to-sky-600 dark:from-sky-500 dark:to-sky-700 dark:hover:from-sky-600 dark:hover:to-sky-800",
+  "secondary" =>
+    "from-gray-400/80 to-gray-400 hover:from-gray-400 hover:to-gray-500 dark:from-gray-500 dark:to-gray-600 dark:hover:from-gray-600 dark:hover:to-gray-700",
+  "danger" =>
+    "from-red-300 to-red-500 hover:from-red-400 hover:to-red-600 dark:from-red-500 dark:to-red-700 dark:hover:from-red-600 dark:hover:to-red-800",
+}
+gradient_classes = color_classes[variant] || color_classes["primary"] %>
 <div class="relative cursor-pointer">
-  <span class="aqua-reflection flex items-center text-sm justify-center px-4 py-2 rounded-full bg-gradient-to-b <%= gradient_classes %> text-white shadow-md">
+  <span
+    class="
+      aqua-reflection flex items-center text-sm justify-center px-4 py-2 rounded-full
+      bg-gradient-to-b <%= gradient_classes %> text-white shadow-md
+      transition-all duration-200
+    "
+  >
     <% if icon.present? %>
       <span class="mr-2"><%= heroicon icon, options: { class: "size-4" } %></span>
     <% end %>

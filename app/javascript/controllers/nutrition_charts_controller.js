@@ -22,9 +22,20 @@ export default class extends Controller {
     // Add active class to the selected card
     this.cardTargets.forEach(card => {
       if (card.dataset.type === this.activeTypeValue) {
-        card.classList.add("ring-2", "ring-sky-400")
+        card.classList.add("ring-2", "ring-sky-400", "dark:ring-dark-primary")
       }
     })
+    
+    // Listen for theme changes to redraw chart
+    this.themeChangedHandler = () => this.createChart(this.activeTypeValue)
+    window.addEventListener('themeChanged', this.themeChangedHandler)
+  }
+  
+  disconnect() {
+    // Clean up event listener when controller is disconnected
+    if (this.themeChangedHandler) {
+      window.removeEventListener('themeChanged', this.themeChangedHandler)
+    }
   }
 
   loadChartJs() {
@@ -50,9 +61,9 @@ export default class extends Controller {
     // Update active card styling
     this.cardTargets.forEach(card => {
       if (card.dataset.type === type) {
-        card.classList.add("ring-2", "ring-sky-400")
+        card.classList.add("ring-2", "ring-sky-400", "dark:ring-dark-primary")
       } else {
-        card.classList.remove("ring-2", "ring-sky-400")
+        card.classList.remove("ring-2", "ring-sky-400", "dark:ring-dark-primary")
       }
     })
 
@@ -73,6 +84,9 @@ export default class extends Controller {
     if (this.chart) {
       this.chart.destroy()
     }
+    
+    // Set up color scheme based on dark mode
+    const isDarkMode = document.documentElement.classList.contains('dark')
 
     // Prepare data based on nutrient type
     let data, target, color, unit, title
@@ -145,6 +159,9 @@ export default class extends Controller {
         plugins: {
           legend: {
             position: 'top',
+            labels: {
+              color: isDarkMode ? '#e0e0e0' : '#000000'
+            }
           },
           tooltip: {
             mode: 'index',
@@ -168,12 +185,22 @@ export default class extends Controller {
             beginAtZero: true,
             title: {
               display: true,
-              text: title
+              text: title,
+              color: isDarkMode ? '#e0e0e0' : '#000000'
+            },
+            ticks: {
+              color: isDarkMode ? '#e0e0e0' : '#000000'
+            },
+            grid: {
+              color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
             }
           },
           x: {
             grid: {
               display: false
+            },
+            ticks: {
+              color: isDarkMode ? '#e0e0e0' : '#000000'
             }
           }
         }
