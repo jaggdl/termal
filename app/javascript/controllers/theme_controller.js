@@ -6,6 +6,11 @@ export default class extends Controller {
   connect() {
     this.loadThemePreference();
     this.setupSystemPreferenceListener();
+    
+    // Handle page navigation with Turbo
+    document.addEventListener("turbo:load", () => {
+      this.loadThemePreference();
+    });
   }
 
   loadThemePreference() {

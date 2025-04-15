@@ -34,6 +34,8 @@
         if (isDark) {
           document.documentElement.classList.add("dark");
           document.querySelector('meta[name="theme-color"]').setAttribute("content", "black");
+        } else {
+          document.querySelector('meta[name="theme-color"]').setAttribute("content", "white");
         }
       })();
       
