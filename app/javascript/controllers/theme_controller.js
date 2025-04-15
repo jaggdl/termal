@@ -1,13 +1,12 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = ["darkModeCheckbox", "modeSelector"];
+  static targets = ["modeSelector"];
 
   connect() {
     this.loadThemePreference();
     this.setupSystemPreferenceListener();
-    
-    // Handle page navigation with Turbo
+
     document.addEventListener("turbo:load", () => {
       this.loadThemePreference();
     });
@@ -17,20 +16,14 @@ export default class extends Controller {
     const storedPreference =
       localStorage.getItem("themePreference") || "system";
 
-    if (this.hasModeSelector) {
+    if (this.modeSelectorTarget) {
       this.modeSelectorTarget.value = storedPreference;
-    }
-
-    if (this.hasDarkModeCheckbox) {
-      const isDark = this.calculateCurrentMode(storedPreference);
-      this.darkModeCheckboxTarget.checked = isDark;
     }
 
     this.applyTheme(storedPreference);
   }
 
   setupSystemPreferenceListener() {
-    // Listen for system preference changes
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", () => {
@@ -92,4 +85,3 @@ export default class extends Controller {
     }
   }
 }
-
