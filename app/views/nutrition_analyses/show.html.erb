@@ -1,7 +1,11 @@
 <div class="w-full">
-  <div class="space-y-4">
-    <%= link_to analyses_path, class: "flex gap-2 group p-2 relative" do %>
-      <%= render partial: "shared/arrow_button", locals: { direction: "left", disabled: false } %>
+  <div class="gap-8">
+    <%= link_to analyses_path, class: "flex gap-2 group p-2 relative mb-6" do %>
+      <%= render partial: "shared/arrow_button",
+      locals: {
+        direction: "left",
+        disabled: false,
+      } %>
       <span class="dark:text-dark-text">Back</span>
     <% end %>
 
@@ -9,28 +13,32 @@
       <div class="flex items-center justify-between">
         <div class="flex items-center">
           <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-dark-text">
-            Analysis for <strong><%= @analysis.formatted_date_range %></strong>
+            Analysis for
+            <strong><%= @analysis.formatted_date_range %></strong>
           </h3>
         </div>
         <span class="text-sm text-gray-500 dark:text-gray-400 flex flex-col">
-          Generated <%= time_ago_in_words(@analysis.executed_at) %> ago
+          Generated
+          <%= time_ago_in_words(@analysis.executed_at) %>
+          ago
         </span>
       </div>
     </div>
-    
-    <% if @summary_data %>
-      <%= render partial: 'shared/nutrient_summary_charts', 
-               locals: { 
-                 chart_data: @summary_data[:chart_data],
-                 period: @period,
-                 selected_nutrient: @selected_nutrient,
-                 averages: @summary_data[:averages],
-                 daily_targets: @summary_data[:daily_targets],
-                 show_period_selector: false
-               } %>
-    <% end %>
-    
-    <div class="prose dark:prose-invert mt-12" id="nutrition_analysis_content">
+
+    <%= render partial: "shared/nutrient_summary_charts",
+    locals: {
+      chart_data: @summary_data[:chart_data],
+      period: @period,
+      selected_nutrient: @selected_nutrient,
+      averages: @summary_data[:averages],
+      daily_targets: @summary_data[:daily_targets],
+      show_period_selector: false,
+    } %>
+
+    <div
+      class="prose md:prose-lg dark:prose-invert max-w-4xl mt-12"
+      id="nutrition_analysis_content"
+    >
       <%= markdown(@analysis.text) %>
     </div>
   </div>
