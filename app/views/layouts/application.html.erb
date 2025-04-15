@@ -1,25 +1,18 @@
 <!DOCTYPE html>
-<html class="" data-controller="theme">
+<html data-controller="theme">
   <head>
     <title><%= content_for(:title) || "Calories Tracker" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    
-    <%# Dynamic theme-color meta tag based on user theme preference %>
-    <% theme_color = (authenticated? && Current.user_profile&.dark_mode?) ? "black" : "white" %>
-    <meta name="theme-color" content="<%= theme_color %>">
-    
+    <meta name="theme-color" content="white">
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
     <% if Rails.configuration.respond_to?(:x) && Rails.configuration.x.respond_to?(:vapid) && Rails.configuration.x.vapid[:public_key] %>
       <%= tag.meta name: "vapid-public-key",
                content: Rails.configuration.x.vapid[:public_key] %>
-    <% end %>
-
-    <% if authenticated? && Current.user_profile&.dark_mode? %>
-      <%= tag.meta name: "user-theme-preference", content: "dark" %>
     <% end %>
 
     <%= yield :head %>
@@ -31,27 +24,27 @@
 
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <!-- Initialize theme before DOM loads to prevent flash -->
     <script>
+      (function() {
+        var preference = localStorage.getItem("themePreference") || "system";
+        var isDark = preference === "dark" || 
+                    (preference === "system" && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        
+        if (isDark) {
+          document.documentElement.classList.add("dark");
+          document.querySelector('meta[name="theme-color"]').setAttribute("content", "black");
+        }
+      })();
+      
       document.addEventListener("DOMContentLoaded", function () {
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         document.cookie = `timezone=${timezone}; path=/`;
-        
-        // Initialize theme from user profile setting if available
-        const userThemePreference = document.querySelector('meta[name="user-theme-preference"]');
-        if (userThemePreference && userThemePreference.content === "dark") {
-          localStorage.setItem('theme', 'dark');
-          document.documentElement.classList.add('dark');
-        }
       });
     </script>
   </head>
 
-  <body
-    class="
-      bg-white dark:bg-dark-background text-black dark:text-dark-text
-      transition-colors duration-200
-    "
-  >
+  <body class=" bg-white dark:bg-dark-background text-black dark:text-dark-text ">
     <main
       class="
         container relative mx-auto md:mt-20 mt-6 px-5 md:mb-8 mb-20 flex flex-col

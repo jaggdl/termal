@@ -1,124 +1,90 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = ["darkModeCheckbox"]
+  static targets = ["darkModeCheckbox", "modeSelector"];
 
   connect() {
-    this.updateTheme()
-    
-    // Watch for system preference changes
-    this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    this.mediaQuery.addEventListener('change', this.updateTheme.bind(this))
-    
-    // Listen for stored preference changes
-    window.addEventListener('storage', this.updateTheme.bind(this))
+    this.loadThemePreference();
+    this.setupSystemPreferenceListener();
   }
-  
-  disconnect() {
-    this.mediaQuery.removeEventListener('change', this.updateTheme.bind(this))
-    window.removeEventListener('storage', this.updateTheme.bind(this))
+
+  loadThemePreference() {
+    const storedPreference =
+      localStorage.getItem("themePreference") || "system";
+
+    if (this.hasModeSelector) {
+      this.modeSelectorTarget.value = storedPreference;
+    }
+
+    if (this.hasDarkModeCheckbox) {
+      const isDark = this.calculateCurrentMode(storedPreference);
+      this.darkModeCheckboxTarget.checked = isDark;
+    }
+
+    this.applyTheme(storedPreference);
   }
-  
-  updateTheme() {
-    // Check for stored preference
-    const storedTheme = localStorage.getItem('theme')
-    const wasDark = document.documentElement.classList.contains('dark')
-    let isDarkMode = false
-    
-    if (storedTheme === 'dark') {
-      document.documentElement.classList.add('dark')
-      isDarkMode = true
-      // Update checkbox if present
-      if (this.hasDarkModeCheckboxTarget) {
-        this.darkModeCheckboxTarget.checked = true
-      }
-    } else if (storedTheme === 'light') {
-      document.documentElement.classList.remove('dark')
-      isDarkMode = false
-      // Update checkbox if present
-      if (this.hasDarkModeCheckboxTarget) {
-        this.darkModeCheckboxTarget.checked = false
-      }
-    } else {
-      // Use system preference if no stored preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      if (prefersDark) {
-        document.documentElement.classList.add('dark')
-        isDarkMode = true
-        // Update checkbox if present
-        if (this.hasDarkModeCheckboxTarget) {
-          this.darkModeCheckboxTarget.checked = true
+
+  setupSystemPreferenceListener() {
+    // Listen for system preference changes
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", () => {
+        const storedPreference =
+          localStorage.getItem("themePreference") || "system";
+        if (storedPreference === "system") {
+          this.applyTheme("system");
         }
-      } else {
-        document.documentElement.classList.remove('dark')
-        isDarkMode = false
-        // Update checkbox if present
-        if (this.hasDarkModeCheckboxTarget) {
-          this.darkModeCheckboxTarget.checked = false
-        }
-      }
-    }
-    
-    // Update theme-color meta tag for PWA
-    this.updateThemeColorMetaTag(isDarkMode)
-    
-    const isDark = document.documentElement.classList.contains('dark')
-    if (wasDark !== isDark) {
-      // Dispatch event when theme changes so charts and other components can update
-      window.dispatchEvent(new CustomEvent('themeChanged', { 
-        detail: { isDarkMode: isDark }
-      }))
-    }
+      });
   }
-  
-  updateThemeColorMetaTag(isDarkMode) {
-    // Update the theme-color meta tag for PWA
-    let metaThemeColor = document.querySelector('meta[name="theme-color"]')
-    if (!metaThemeColor) {
-      metaThemeColor = document.createElement('meta')
-      metaThemeColor.name = 'theme-color'
-      document.head.appendChild(metaThemeColor)
-    }
-    metaThemeColor.content = isDarkMode ? 'black' : 'white'
+
+  calculateCurrentMode(preference) {
+    if (preference === "dark") return true;
+    if (preference === "light") return false;
+    // If system, use system preference
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
   }
-  
-  toggleTheme() {
-    const wasDark = document.documentElement.classList.contains('dark')
-    
-    if (wasDark) {
-      localStorage.setItem('theme', 'light')
-      document.documentElement.classList.remove('dark')
-      this.updateThemeColorMetaTag(false)
+
+  applyTheme(preference) {
+    const isDark = this.calculateCurrentMode(preference);
+
+    // Set or remove the dark class on html element
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+      document
+        .querySelector('meta[name="theme-color"]')
+        .setAttribute("content", "black");
     } else {
-      localStorage.setItem('theme', 'dark')
-      document.documentElement.classList.add('dark')
-      this.updateThemeColorMetaTag(true)
+      document.documentElement.classList.remove("dark");
+      document
+        .querySelector('meta[name="theme-color"]')
+        .setAttribute("content", "white");
     }
-    
-    // Dispatch event when theme changes so charts and other components can update
-    window.dispatchEvent(new CustomEvent('themeChanged', { 
-      detail: { isDarkMode: !wasDark }
-    }))
   }
 
   toggleAndSavePreference(event) {
-    const isDark = event.target.checked
-    
-    if (isDark) {
-      localStorage.setItem('theme', 'dark')
-      document.documentElement.classList.add('dark')
-      this.updateThemeColorMetaTag(true)
-    } else {
-      localStorage.setItem('theme', 'light')
-      document.documentElement.classList.remove('dark')
-      this.updateThemeColorMetaTag(false)
+    // This will be called when the checkbox is toggled
+    const isDark = event.target.checked;
+    const preference = isDark ? "dark" : "light";
+
+    localStorage.setItem("themePreference", preference);
+    this.applyTheme(preference);
+
+    if (this.hasModeSelector) {
+      this.modeSelectorTarget.value = preference;
     }
-    
-    // Dispatch event when theme changes so charts and other components can update
-    window.dispatchEvent(new CustomEvent('themeChanged', { 
-      detail: { isDarkMode: isDark }
-    }))
-    
-    // Leave the form submission to handle saving the preference to the user profile
+  }
+
+  changeMode(event) {
+    // This will be called when the select is changed
+    const preference = event.target.value;
+
+    localStorage.setItem("themePreference", preference);
+    this.applyTheme(preference);
+
+    if (this.hasDarkModeCheckbox) {
+      const isDark = this.calculateCurrentMode(preference);
+      this.darkModeCheckboxTarget.checked = isDark;
+    }
   }
 }
+

@@ -1,28 +1,43 @@
 <div class="max-w-xl mx-auto space-y-6 py-6">
   <%= form_with model: @profile, url: profile_path(@profile), method: :patch, class: "space-y-6" do |f| %>
-  <div class="mb-10 border-b border-gray-300 dark:border-gray-700 pb-6">
+  <div class="mb-10 border-b border-gray-300 dark:border-gray-700 pb-6" data-controller="theme">
     <h2 class="text-lg font-medium text-sky-700 dark:text-sky-400 mb-4">Display & Notifications</h2>
     
     <div class="flex items-center justify-between mb-4">
       <div>
-        <p class="font-medium text-gray-700 dark:text-gray-300">Dark Mode</p>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Save your theme preference</p>
+        <p class="font-medium text-gray-700 dark:text-gray-300">Theme</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Choose your preferred theme</p>
       </div>
       
-      <%= f.label :dark_mode, class: "relative inline-flex items-center cursor-pointer" do %>
-        <%= f.check_box :dark_mode, 
-            class: "sr-only peer", 
-            checked: @profile.dark_mode,
-            data: { 
-              action: "change->theme#toggleAndSavePreference",
-              theme_target: "darkModeCheckbox"
-            } %>
+      <div class="w-1/2">
+        <select 
+          class="border border-gray-300 dark:border-gray-700 p-2 rounded-lg w-full focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-700 focus:border-sky-500 dark:focus:border-sky-700 focus:outline-none dark:bg-dark-surface dark:text-dark-text"
+          data-theme-target="modeSelector"
+          data-action="change->theme#changeMode">
+          <option value="system">System Default</option>
+          <option value="light">Light Mode</option>
+          <option value="dark">Dark Mode</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <p class="font-medium text-gray-700 dark:text-gray-300">Dark Mode Toggle</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Quick switch between light/dark</p>
+      </div>
+      
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input type="checkbox" 
+            class="sr-only peer"
+            data-action="change->theme#toggleAndSavePreference"
+            data-theme-target="darkModeCheckbox">
         <div class="w-14 h-7 bg-gray-200 dark:bg-gray-700 rounded-full peer peer-focus:ring-2 peer-focus:ring-sky-300 dark:peer-focus:ring-sky-700 
                     after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white dark:after:bg-gray-200 
                     after:border-gray-300 dark:after:border-gray-600 after:border after:rounded-full after:h-6 after:w-6 after:transition-all
                     peer-checked:after:translate-x-7 peer-checked:after:border-white 
                     peer-checked:bg-sky-400 dark:peer-checked:bg-sky-600 shadow-lg blur-[0.5px] peer-checked:blur-[1px] peer-checked:shadow-sky-200 dark:peer-checked:shadow-sky-900"></div>
-      <% end %>
+      </label>
     </div>
     
     <div class="flex items-center justify-between" data-controller="push-notifications">
