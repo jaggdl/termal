@@ -1,7 +1,7 @@
 module ApplicationHelper
   SIZE_CLASSES = {
-    small: "w-16 h-16 object-cover bg-gray-200 aspect-square",
-    medium: "absolute inset-0 w-full h-full object-cover bg-gray-200"
+    small: "w-16 h-16 object-cover bg-gray-200 dark:bg-gray-700 aspect-square",
+    medium: "absolute inset-0 w-full h-full object-cover bg-gray-200 dark:bg-gray-700"
   }
 
   def meal_image_tag(meal, size: :medium)
