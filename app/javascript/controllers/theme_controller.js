@@ -16,7 +16,7 @@ export default class extends Controller {
     const storedPreference =
       localStorage.getItem("themePreference") || "system";
 
-    if (this.modeSelectorTarget) {
+    if (this.hasModeSelectorTarget) {
       this.modeSelectorTarget.value = storedPreference;
     }
 
