@@ -50,7 +50,7 @@ class OpenAiService
 
     response = @client.chat(
       parameters: {
-        model: "o1",
+        model: "o4-mini",
         messages: messages,
         tools: [ meal_extraction_tool ],
         tool_choice: "required"
