@@ -109,7 +109,7 @@ GEM
     et-orbi (1.2.11)
       tzinfo
     event_stream_parser (1.0.0)
-    faraday (2.12.2)
+    faraday (2.13.0)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
@@ -117,7 +117,7 @@ GEM
       multipart-post (~> 2.0)
     faraday-net_http (3.4.0)
       net-http (>= 0.5.0)
-    faraday-retry (2.2.1)
+    faraday-retry (2.3.1)
       faraday (~> 2.0)
     ffi (1.17.1-arm64-darwin)
     ffi (1.17.1-x86_64-linux-gnu)
@@ -161,7 +161,7 @@ GEM
       zeitwerk (>= 2.6.18, < 3.0)
     language_server-protocol (3.17.0.4)
     lint_roller (1.1.0)
-    logger (1.6.6)
+    logger (1.7.0)
     loofah (2.24.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -305,11 +305,12 @@ GEM
     ruby-vips (2.2.3)
       ffi (~> 1.12)
       logger
-    ruby_llm (1.0.1)
+    ruby_llm (1.2.0)
       base64
       event_stream_parser (~> 1)
       faraday (~> 2)
       faraday-multipart (~> 1)
+      faraday-net_http (~> 3)
       faraday-retry (~> 2)
       zeitwerk (~> 2)
     rubyzip (2.4.1)
@@ -408,7 +409,7 @@ DEPENDENCIES
   redcarpet
   rubocop-rails-omakase
   ruby-openai (~> 8.0)
-  ruby_llm (~> 1.0)
+  ruby_llm (~> 1.2)
   selenium-webdriver
   solid_cable
   solid_cache
