@@ -10,9 +10,9 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-    <% if Rails.configuration.respond_to?(:x) && Rails.configuration.x.respond_to?(:vapid) && Rails.configuration.x.vapid[:public_key] %>
+    <% if GlobalSetting.get("vapid_public_key").present? %>
       <%= tag.meta name: "vapid-public-key",
-               content: Rails.configuration.x.vapid[:public_key] %>
+               content: GlobalSetting.get("vapid_public_key") %>
     <% end %>
 
     <%= yield :head %>

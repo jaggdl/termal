@@ -18,9 +18,9 @@ class WebPushJob < ApplicationJob
         p256dh: p256dh_key,
         auth: auth_key,
         vapid: {
-          subject: "mailto:#{Rails.configuration.x.vapid[:contact_email]}",
-          public_key: Rails.configuration.x.vapid[:public_key],
-          private_key: Rails.configuration.x.vapid[:private_key]
+          subject: "mailto:#{User.first.email_address}",
+          public_key: GlobalSetting.get("vapid_public_key"),
+          private_key: GlobalSetting.get("vapid_private_key")
         }
       )
 

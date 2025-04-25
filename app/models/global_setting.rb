@@ -1,7 +1,7 @@
 class GlobalSetting < ApplicationRecord
   validates :name, uniqueness: true
 
-  SETTING_KEYS = %w[openai_api_key]
+  SETTING_KEYS = %w[openai_api_key vapid_public_key vapid_private_key vapid_contact_email]
 
   SETTING_KEYS.each do |key|
     define_method key do
