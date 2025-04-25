@@ -1,8 +1,8 @@
 <div class="mx-auto py-6 w-full">
   <!-- Invite Section -->
   <div class="mb-8 w-full">
-    <div class="py-4 border-b border-gray-200 dark:border-gray-700">
-      <h2 class="text-lg font-medium text-gray-900 dark:text-dark-text">Invite Link</h2>
+    <div class="py-4 border-b border-gray-300 dark:border-gray-700">
+      <h2 class="text-lg font-medium text-sky-700 dark:text-sky-400 mb-4">Invite Link</h2>
     </div>
 
     <div class="py-4">
@@ -14,8 +14,10 @@
             value="<%= join_url(@invite.token) %>"
             id="invite-link"
             class="
-              shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm
-              border-gray-300 dark:border-gray-700 rounded-md py-2 px-3 bg-gray-50 dark:bg-dark-surface dark:text-dark-text
+              block w-full rounded-md bg-white dark:bg-dark-surface py-1.5 px-3
+              text-base text-gray-900 dark:text-dark-text outline outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-700
+              placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline focus:outline-2 focus:-outline-offset-2
+              focus:outline-sky-400 dark:focus:outline-dark-primary sm:text-sm/6 transition-colors duration-200
             "
             data-clipboard-target="source"
           >
@@ -23,8 +25,8 @@
             data-action="click->clipboard#copy"
             class="
               ml-2 inline-flex items-center p-2 border border-transparent rounded-md
-              text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2
-              focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-dark-primary
+              text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
+              focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-sky-400 dark:focus:outline-dark-primary
             "
             title="Copy to clipboard"
           >
@@ -52,8 +54,8 @@
   </div>
   <!-- Family Members Section -->
   <div class="w-full">
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-      <h2 class="text-lg font-medium text-gray-900 dark:text-dark-text">Family Members</h2>
+    <div class="px-6 py-4 border-b border-gray-300 dark:border-gray-700">
+      <h2 class="text-lg font-medium text-sky-700 dark:text-sky-400 mb-4">Family Members</h2>
     </div>
 
     <div class="divide-y divide-gray-200 dark:divide-gray-700 w-full">

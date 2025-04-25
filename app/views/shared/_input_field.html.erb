@@ -1,0 +1,31 @@
+<% 
+  # Shared input field partial
+  # Usage:
+  # render 'shared/input_field', form: form, field_type: 'text', field_name: :name, placeholder: 'Enter your name', required: true, autofocus: true, autocomplete: nil, value: nil, additional_classes: ''
+  
+  field_type ||= 'text'
+  placeholder ||= ''
+  required ||= false
+  autofocus ||= false
+  autocomplete ||= nil
+  value ||= nil
+  additional_classes ||= ''
+  
+  base_classes = "
+    block w-full rounded-md bg-white dark:bg-dark-surface py-1.5 px-3
+    text-base text-gray-900 dark:text-dark-text outline outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-700
+    placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline focus:outline-2 focus:-outline-offset-2
+    focus:outline-sky-400 dark:focus:outline-dark-primary sm:text-sm/6 transition-colors duration-200 
+    #{additional_classes}
+  "
+%>
+
+<%= form.send("#{field_type}_field", 
+   field_name,
+   required: required, 
+   autofocus: autofocus, 
+   autocomplete: autocomplete, 
+   placeholder: placeholder,
+   value: value,
+   class: base_classes
+) %>

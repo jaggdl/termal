@@ -1,0 +1,80 @@
+<% if authenticated? %>
+  <!-- Desktop Navigation -->
+  <nav class="hidden md:flex space-x-8 items-end mb-4">
+    <%= link_to "Meals",
+    root_path,
+    class:
+      nav_link_classes(
+        current_page?(root_path) || request.path.start_with?("/user_meals"),
+      ) %>
+    <%= link_to "Summary",
+    nutrition_summary_path,
+    class: nav_link_classes(current_page?(nutrition_summary_path)) %>
+    <% if Current.user.is_admin? %>
+      <%# Analysis coming soon %>
+      <%# <%= link_to "Analysis",
+      analyses_path,
+      class: nav_link_classes(request.path.start_with?("/analysis")) %>
+    <% end %>
+    <div class="w-full flex justify-end items-center space-x-8">
+      <% if Current.user.is_admin? %>
+        <%= link_to "Family",
+        family_path,
+        class: nav_link_classes(request.path.start_with?("/family")) %>
+      <% end %>
+      <%= link_to "Profile",
+      profile_path,
+      class: nav_link_classes(current_page?(profile_path)) %>
+    </div>
+  </nav>
+  <!-- Mobile Navigation -->
+  <nav
+    class="
+      md:hidden fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-dark-surface/80
+      backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 flex
+      justify-around items-center py-3 pb-[var(--nav-b-padding)] z-40
+    "
+    data-controller="pwa-detection"
+  >
+    <%= link_to root_path, class: "flex flex-col items-center" do %>
+      <%= heroicon "home",
+      options: {
+        class:
+          nav_icon_classes(
+            current_page?(root_path) || request.path.start_with?("/user_meals"),
+          ),
+      } %>
+    <% end %>
+
+    <%= link_to nutrition_summary_path, class: "flex flex-col items-center" do %>
+      <%= heroicon "chart-bar",
+      options: {
+        class: nav_icon_classes(current_page?(nutrition_summary_path)),
+      } %>
+    <% end %>
+
+    <% if Current.user.is_admin? %>
+      <%# Analysis coming soon %>
+      <%# <%= link_to analyses_path, class: "flex flex-col items-center" do %>
+      <%#   <%= heroicon "magnifying-glass",
+      <%#   options: {
+      <%#     class: nav_icon_classes(request.path.start_with?("/analysis")),
+      <%#   } %>
+      <%# <% end %>
+      <%= link_to family_path, class: "flex flex-col items-center" do %>
+        <%= heroicon "user-group",
+        options: {
+          class: nav_icon_classes(request.path.start_with?("/family")),
+        } %>
+      <% end %>
+    <% end %>
+
+    <%= link_to profile_path, class: "flex flex-col items-center" do %>
+      <%= heroicon "user-circle",
+      options: {
+        class: nav_icon_classes(current_page?(profile_path)),
+      } %>
+    <% end %>
+  </nav>
+<% end %>
+
