@@ -1,11 +1,11 @@
 <%
-  # Get theme preference from user if logged in, otherwise use system default
-  theme_preference = Current.user&.user_profile&.dark_mode ? 'dark' : 'light' 
+  theme_preference = Current.user&.user_profile&.dark_mode ? 'dark' : 'light'
   theme_color = theme_preference == 'dark' ? 'black' : 'white'
   background_color = theme_preference == 'dark' ? 'black' : 'white'
 %>
+
 {
-  "name": "CaloriesTracker",
+  "name": "Termal",
   "icons": [
     {
       "src": "/icon.png",
@@ -22,7 +22,7 @@
   "start_url": "/",
   "display": "standalone",
   "scope": "/",
-  "description": "CaloriesTracker.",
+  "description": "Calorie tracker",
   "theme_color": "<%= theme_color %>",
   "background_color": "<%= background_color %>"
 }
