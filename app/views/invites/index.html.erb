@@ -1,4 +1,4 @@
-<div class="mx-auto py-6 w-full">
+<div class="mx-auto py-6 w-full max-w-2xl">
   <!-- Invite Section -->
   <div class="mb-8 w-full">
     <div class="py-4 border-b border-gray-300 dark:border-gray-700">
@@ -14,10 +14,12 @@
             value="<%= join_url(@invite.token) %>"
             id="invite-link"
             class="
-              block w-full rounded-md bg-white dark:bg-dark-surface py-1.5 px-3
-              text-base text-gray-900 dark:text-dark-text outline outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-700
-              placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline focus:outline-2 focus:-outline-offset-2
-              focus:outline-sky-400 dark:focus:outline-dark-primary sm:text-sm/6 transition-colors duration-200
+              block w-full rounded-md bg-white dark:bg-dark-surface py-1.5 px-3 text-base
+              text-gray-900 dark:text-dark-text outline outline-1 -outline-offset-1
+              outline-gray-300 dark:outline-gray-700 placeholder:text-gray-400
+              dark:placeholder:text-gray-500 focus:outline focus:outline-2
+              focus:-outline-offset-2 focus:outline-sky-400 dark:focus:outline-dark-primary
+              sm:text-sm/6 transition-colors duration-200
             "
             data-clipboard-target="source"
           >
@@ -25,8 +27,9 @@
             data-action="click->clipboard#copy"
             class="
               ml-2 inline-flex items-center p-2 border border-transparent rounded-md
-              text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
-              focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-sky-400 dark:focus:outline-dark-primary
+              text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700
+              focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-sky-400
+              dark:focus:outline-dark-primary
             "
             title="Copy to clipboard"
           >
@@ -69,7 +72,8 @@
             <div class="">
               <div
                 class="
-                  w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center
+                  w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center
+                  justify-center
                 "
               >
                 <span class="text-blue-600 dark:text-blue-400 font-medium"><%= user.email_address[0].upcase %></span>
