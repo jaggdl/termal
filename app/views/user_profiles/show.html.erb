@@ -229,7 +229,7 @@
             <div class="flex items-start gap-4">
               <div class="font-medium text-gray-700 dark:text-gray-300 min-w-40"><%= setting.name.humanize %></div>
               <div class="text-gray-800 dark:text-gray-200 flex-1">
-                <% if setting.name == "openai_api_key" && setting.value.present? %>
+                <% if setting.value.present? %>
                   <span
                     class="
                       bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 px-2 py-1
@@ -239,8 +239,6 @@
                     <%= heroicon "check-circle", options: { class: "inline w-3 h-3 mr-1" } %>
                     API Key Set
                   </span>
-                <% else %>
-                  <span class="text-gray-500 dark:text-gray-400 italic"><%= setting.value.present? ? setting.value : "Not set" %></span>
                 <% end %>
               </div>
             </div>
