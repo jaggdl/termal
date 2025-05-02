@@ -1,23 +1,23 @@
-<%= render layout: 'shared/auth_layout', locals: { title: 'Create your account', subtitle: "You've been invited to join Calories Tracker" } do %>
+<%= render layout: 'shared/auth_layout', locals: { title: 'Create your account', subtitle: "You've been invited to join Termal: Calorie Tracker" } do %>
   <%= form_with(url: create_user_path(@token), method: :post, class: "contents") do |form| %>
     <div class="my-5">
-      <%= render 'shared/input_field', 
-          form: form, 
-          field_type: 'email', 
-          field_name: :email_address, 
-          placeholder: 'Your email address', 
-          required: true,
-          autofocus: true %>
+      <%= render "shared/input_field",
+      form: form,
+      field_type: "email",
+      field_name: :email_address,
+      placeholder: "Your email address",
+      required: true,
+      autofocus: true %>
     </div>
 
     <div class="my-5">
-      <%= render 'shared/input_field', 
-          form: form, 
-          field_type: 'password', 
-          field_name: :password, 
-          placeholder: 'Choose a secure password', 
-          required: true,
-          additional_classes: 'min-length-8' %>
+      <%= render "shared/input_field",
+      form: form,
+      field_type: "password",
+      field_name: :password,
+      placeholder: "Choose a secure password",
+      required: true,
+      additional_classes: "min-length-8" %>
       <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Password must be at least 8 characters</p>
     </div>
 
@@ -34,3 +34,4 @@
     document.cookie = `timezone=${Intl.DateTimeFormat().resolvedOptions().timeZone}; path=/`;
   });
 </script>
+
