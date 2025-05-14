@@ -1,4 +1,4 @@
-<%= render layout: 'shared/auth_layout', locals: { title: 'Welcome!', subtitle: '' } do %>
+<%= render layout: 'shared/auth_layout', locals: { title: 'Welcome to Termal!', subtitle: 'Create your account to start tracking your nutrition' } do %>
   <%= form_with url: onboarding_url, class: "contents" do |form| %>
     <div class="my-5">
       <%= render 'shared/input_field', 
@@ -19,12 +19,16 @@
           field_name: :password, 
           placeholder: 'Enter your password', 
           required: true, 
-          autocomplete: 'current-password' %>
+          autocomplete: 'new-password' %>
+    </div>
+
+    <div class="mb-6 text-center text-sm text-gray-600">
+      By creating an account, you'll be able to track your meals, analyze nutrition, and monitor your daily caloric intake.
     </div>
 
     <div class="flex justify-center">
       <button type="submit">
-        <%= render "shared/aqua_style", text: "Sign in" %>
+        <%= render "shared/aqua_style", text: "Create Account" %>
       </button>
     </div>
   <% end %>
