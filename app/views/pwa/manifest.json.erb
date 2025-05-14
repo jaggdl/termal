@@ -1,9 +1,3 @@
-<%
-  theme_preference = Current.user&.user_profile&.dark_mode ? 'dark' : 'light'
-  theme_color = theme_preference == 'dark' ? 'black' : 'white'
-  background_color = theme_preference == 'dark' ? 'black' : 'white'
-%>
-
 {
   "name": "Termal",
   "icons": [
@@ -23,6 +17,6 @@
   "display": "standalone",
   "scope": "/",
   "description": "Termal",
-  "theme_color": "<%= theme_color %>",
-  "background_color": "<%= background_color %>"
+  "theme_color": "white",
+  "background_color": "white"
 }
