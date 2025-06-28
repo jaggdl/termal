@@ -27,3 +27,5 @@ Error codes are managed through the `ErrorMessages` concern. When adding new err
 1. Add the error code and message to `ERROR_CODES` hash in `app/models/concerns/error_messages.rb`
 2. In job classes, store error codes using `handle_error(object, :error_code)`
 3. Error messages are displayed using the `error_message` method which translates error codes to human-readable messages
+
+/file:.claude-on-rails/context.md
