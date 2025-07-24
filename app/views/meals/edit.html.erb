@@ -8,7 +8,10 @@
         class: "w-full h-full object-cover" %>
       <% else %>
         <div class="w-full h-72 flex items-center justify-center">
-          <%= heroicon "photo", options: { class: "h-20 w-20 text-gray-400 dark:text-gray-500" } %>
+          <%= heroicon "photo",
+          options: {
+            class: "h-20 w-20 text-gray-400 dark:text-gray-500",
+          } %>
         </div>
       <% end %>
     </div>
@@ -16,11 +19,15 @@
     <div class="w-full">
       <%= form_with model: @meal, url: meal_path(@meal), method: :patch, class: "space-y-4" do |f| %>
         <h1 class="text-2xl font-bold text-gray-800 dark:text-dark-text mb-2">
-          <%= f.text_field :meal_name, class: "border border-gray-300 dark:border-gray-700 p-1 rounded w-16 w-full dark:bg-dark-surface dark:text-dark-text" %>
+          <%= f.text_field :meal_name,
+                       class:
+                         "border border-gray-300 dark:border-gray-700 p-1 rounded w-16 w-full dark:bg-dark-surface dark:text-dark-text" %>
         </h1>
 
         <div class="text-gray-600 dark:text-gray-400 mb-6 text-sm">
-          <%= f.textarea :description, class: "border border-gray-300 dark:border-gray-700 p-1 rounded w-16 w-full dark:bg-dark-surface dark:text-dark-text" %>
+          <%= f.textarea :description,
+                     class:
+                       "border border-gray-300 dark:border-gray-700 p-1 rounded w-16 w-full dark:bg-dark-surface dark:text-dark-text" %>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
@@ -28,7 +35,10 @@
             <div class="flex items-center justify-between">
               <span class="font-semibold text-gray-700 dark:text-gray-300"><%= attr.humanize %>:</span>
               <%= f.number_field attr,
-                             class: "border border-gray-300 dark:border-gray-700 p-1 rounded w-16 text-center dark:bg-dark-surface dark:text-dark-text" %>
+                             min: 0,
+                             step: 0.1,
+                             class:
+                               "border border-gray-300 dark:border-gray-700 p-1 rounded w-16 text-center dark:bg-dark-surface dark:text-dark-text" %>
             </div>
           <% end %>
 
