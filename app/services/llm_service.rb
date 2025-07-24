@@ -1,13 +1,12 @@
 class LlmService
   def initialize
     @openai_api_key = GlobalSetting.get("openai_api_key")
-    @model = "gpt-4o"
+    @model = "o4-mini"
 
     unless @openai_api_key
       raise StandardError, "OpenAI API key is not set. Please set it in the global settings."
     end
 
-    # Configure RubyLLM with the API key
     RubyLLM.configure do |config|
       config.max_retries = 0
       config.openai_api_key = @openai_api_key
@@ -20,18 +19,17 @@ class LlmService
     response.vectors
   end
 
-  def analyze_meal_image(meal)
+  def analyze_meal(meal)
     instruction_text = "Analyze this meal image and provide brief information including nutritional content, meal name, and a very concise description of the meal (max 15 words). Only include the most essential information about the primary ingredients."
 
-    meal_extractor = MealExtractor.new(meal)
-
-    chat.with_tool(meal_extractor)
-    chat.with_temperature(1)
+    chat.with_schema(Schema::Meal)
     chat.add_message role: :user, content: instruction_text
 
     user_message = meal.prompt || "Analyze this meal:"
 
-    chat.ask user_message, with: { image: meal.image_path }
+    response = chat.ask(user_message, with: { image: meal.image_path })
+
+    response.content
   end
 
   def analyze_nutrition(user_profile:, summary_data:, meal_data:)

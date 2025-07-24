@@ -20,8 +20,7 @@ class ProcessMealImageJob < ApplicationJob
   private
 
   def get_meal_data(meal)
-    openai_service = OpenAiService.new
-    openai_service.analyze_meal_image(base64_image: meal.base64_image, prompt: meal.prompt)
+    LlmService.new.analyze_meal(meal)
   end
 
   def handle_error(user_meal, error_code)
