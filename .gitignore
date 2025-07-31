@@ -37,8 +37,3 @@
 !/app/assets/builds/.keep
 
 .DS_Store
-
-# ClaudeOnRails
-.claude-on-rails/sessions/
-.claude-swarm/
-claude-swarm.log
