@@ -5,8 +5,9 @@ module ApplicationHelper
   }
 
   def meal_image_tag(meal, size: :medium)
-    if meal.primary_image&.attached?
-      image_tag meal.primary_image.variant(resize_to_limit: [ 256, 256 ]), class: SIZE_CLASSES[size]
+    primary_img = meal.primary_image
+    if primary_img
+      image_tag primary_img.variant(resize_to_limit: [ 256, 256 ]), class: SIZE_CLASSES[size]
     else
       render partial: "shared/meal_placeholder", locals: { size: size }
     end

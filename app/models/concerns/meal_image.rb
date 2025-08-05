@@ -19,7 +19,7 @@ module MealImage
   end
 
   def primary_image
-    image.attached? ? image : images.first
+    image.attached? ? image : (images.attached? ? images.first : nil)
   end
 
   def all_images
