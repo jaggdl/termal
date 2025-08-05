@@ -8,8 +8,8 @@
       w-full bg-gray-200 dark:bg-gray-700 min-h-96 flex items-center justify-center relative
     "
   >
-    <% if meal.image.attached? %>
-      <%= image_tag meal.image.variant(resize_to_limit: [576, 576]),
+    <% if meal.primary_image&.attached? %>
+      <%= image_tag meal.primary_image.variant(resize_to_limit: [576, 576]),
       class: "object-cover inset-0 absolute h-full w-full" %>
     <% else %>
       <%= heroicon "photo", options: { class: "h-20 w-20 text-gray-400 dark:text-gray-500" } %>

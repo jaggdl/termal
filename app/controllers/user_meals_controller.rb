@@ -73,8 +73,8 @@ class UserMealsController < ApplicationController
   def create
     return create_from_meal_id if params[:meal_id]
 
-    unless params[:user_meal][:file].present? || params[:user_meal][:prompt].present?
-      render_flash_message("Please provide either an image or a meal description.") and return
+    unless params[:user_meal][:files].present? || params[:user_meal][:prompt].present?
+      render_flash_message("Please provide either images or a meal description.") and return
     end
 
     consumed_at = calculate_consumed_at(params[:date])
@@ -82,9 +82,11 @@ class UserMealsController < ApplicationController
     prompt = params[:user_meal][:prompt]
     @meal = @user_meal.build_meal(prompt: prompt)
 
-    # Attach image if provided
-    if params[:user_meal][:file].present?
-      process_and_attach_image(@meal, params[:user_meal][:file])
+    # Attach images if provided
+    images_files = params[:user_meal][:files]
+
+    if images_files.present?
+      @meal.images.attach(images_files)
     end
 
     begin
@@ -138,26 +140,6 @@ class UserMealsController < ApplicationController
         format.html { redirect_to new_user_meal_path, alert: message }
       end
     end
-  end
-
-  def process_and_attach_image(meal, image_file)
-    image = MiniMagick::Image.new(image_file.tempfile.path)
-    image.format "jpg"
-
-    processed_tempfile = Tempfile.new([ "processed", ".jpg" ])
-    image.write(processed_tempfile.path)
-    processed_tempfile.rewind
-
-    processed_file = ActionDispatch::Http::UploadedFile.new(
-      tempfile: processed_tempfile,
-      filename: "#{File.basename(image_file.original_filename, ".*")}.jpg",
-      type: "image/jpeg"
-    )
-
-    meal.image.attach(processed_file)
-  rescue => e
-    Rails.logger.error("Image conversion error: #{e.message}")
-    meal.image.attach(image_file) # Fallback to original file if conversion fails
   end
 
   def create_from_meal_id

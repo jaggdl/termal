@@ -1,2 +1,2 @@
-web: bin/rails server --port 42069
+web: bin/rails server --port 42070
 css: bin/rails tailwindcss:watch

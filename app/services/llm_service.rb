@@ -27,7 +27,7 @@ class LlmService
 
     user_message = meal.prompt || "Analyze this meal:"
 
-    response = chat.ask(user_message, with: { image: meal.image_path })
+    response = chat.ask(user_message, with: { image: meal.image_paths })
 
     response.content
   end
