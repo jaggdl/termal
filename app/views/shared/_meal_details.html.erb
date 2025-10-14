@@ -2,14 +2,23 @@
   class="
     flex gap-6 flex-col sm:flex-row items-center md:items-start -mx-5 sm:-mx-0
   "
+  data-controller="image-modal"
+  data-action="keydown@window->image-modal#handleKeydown"
 >
   <div class="w-full bg-gray-200 dark:bg-gray-700 min-h-96 relative" data-controller="image-carousel">
     <% if meal.all_images.any? %>
       <!-- Image slides -->
       <% meal.all_images.each_with_index do |image, index| %>
         <div data-image-carousel-target="slide" class="<%= 'hidden' if index > 0 %> absolute inset-0">
-          <%= image_tag image.variant(resize_to_limit: [576, 576]),
-              class: "object-cover w-full h-full" %>
+          <button
+            type="button"
+            data-image-index="<%= index %>"
+            data-action="click->image-modal#open"
+            class="w-full h-full cursor-zoom-in"
+          >
+            <%= image_tag image.variant(resize_to_limit: [576, 576]),
+                class: "object-cover w-full h-full" %>
+          </button>
         </div>
       <% end %>
       
@@ -100,6 +109,51 @@
               <%= user_profile.meal_nutrient_percentage(meal, attr) %>%
             </span>
           </span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div
+    data-image-modal-target="modal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+    data-action="click->image-modal#closeOnBackdrop"
+  >
+    <button
+      type="button"
+      data-action="click->image-modal#close"
+      class="absolute top-4 right-4 text-white hover:text-gray-300 z-10 transition-colors"
+    >
+      <%= heroicon "x-mark", options: { class: "w-8 h-8" } %>
+    </button>
+
+    <% if meal.all_images.length > 1 %>
+      <button
+        type="button"
+        data-action="click->image-modal#previous"
+        class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full z-10 transition-colors"
+      >
+        <%= heroicon "chevron-left", options: { class: "w-6 h-6" } %>
+      </button>
+
+      <button
+        type="button"
+        data-action="click->image-modal#next"
+        class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full z-10 transition-colors"
+      >
+        <%= heroicon "chevron-right", options: { class: "w-6 h-6" } %>
+      </button>
+
+      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded text-sm z-10">
+        <span data-image-modal-target="counter">1 / <%= meal.all_images.length %></span>
+      </div>
+    <% end %>
+
+    <div class="max-w-screen-xl max-h-screen w-full h-full p-8">
+      <% meal.all_images.each_with_index do |image, index| %>
+        <div data-image-modal-target="slide" class="<%= 'hidden' if index > 0 %> w-full h-full flex items-center justify-center">
+          <%= image_tag image,
+              class: "max-w-full max-h-full object-contain" %>
         </div>
       <% end %>
     </div>
