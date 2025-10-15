@@ -115,7 +115,7 @@ class UserMealsController < ApplicationController
   end
 
   def user_meal_params
-    params.require(:user_meal).permit(:consumed_at)
+    params.require(:user_meal).permit(:consumed_at, :latitude, :longitude)
   end
 
   def calculate_consumed_at(date_param)

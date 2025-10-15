@@ -65,6 +65,44 @@
             "
           ></div>
         </div>
+      <% else %>
+        <div class="w-full" data-controller="add-location">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold text-gray-700 dark:text-gray-300">Location:</span>
+          </div>
+          <div
+            class="
+              w-full p-4 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50
+              dark:bg-gray-800
+            "
+          >
+            <p
+              class="text-sm text-gray-600 dark:text-gray-400 mb-3"
+              data-add-location-target="message"
+            >
+              No location data for this meal
+            </p>
+            <%= form_with model: @user_meal,
+                      url: user_meal_path(@user_meal),
+                      method: :patch do |f| %>
+              <%= f.hidden_field :latitude, data: { add_location_target: "latitude" } %>
+              <%= f.hidden_field :longitude, data: { add_location_target: "longitude" } %>
+              <button
+                type="button"
+                data-action="click->add-location#captureAndSubmit"
+                class="
+                  flex items-center gap-2 text-sm px-4 py-2 rounded-full bg-gradient-to-b
+                  from-sky-300 to-sky-500 text-white shadow-md hover:from-sky-400 hover:to-sky-600
+                  dark:from-sky-600 dark:to-sky-800 dark:hover:from-sky-500 dark:hover:to-sky-700
+                  cursor-pointer
+                "
+              >
+                <%= heroicon "map-pin", options: { class: "h-4 w-4" } %>
+                <span>Add Current Location</span>
+              </button>
+            <% end %>
+          </div>
+        </div>
       <% end %>
     </div>
   <% end %>
