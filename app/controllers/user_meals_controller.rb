@@ -79,10 +79,15 @@ class UserMealsController < ApplicationController
 
     consumed_at = calculate_consumed_at(params[:date])
     @user_meal = Current.user.user_meals.build(consumed_at: consumed_at)
+
+    if params[:user_meal][:latitude].present? && params[:user_meal][:longitude].present?
+      @user_meal.latitude = params[:user_meal][:latitude]
+      @user_meal.longitude = params[:user_meal][:longitude]
+    end
+
     prompt = params[:user_meal][:prompt]
     @meal = @user_meal.build_meal(prompt: prompt)
 
-    # Attach images if provided
     images_files = params[:user_meal][:files]
 
     if images_files.present?
@@ -146,6 +151,11 @@ class UserMealsController < ApplicationController
     meal_id = params[:meal_id]
     consumed_at = calculate_consumed_at(params[:date])
     @user_meal = Current.user_meals.new(meal_id: meal_id, consumed_at: consumed_at)
+
+    if params[:latitude].present? && params[:longitude].present?
+      @user_meal.latitude = params[:latitude]
+      @user_meal.longitude = params[:longitude]
+    end
 
     if @user_meal.save
       date = @user_meal.date_consumed

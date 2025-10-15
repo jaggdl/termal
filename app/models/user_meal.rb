@@ -5,6 +5,9 @@ class UserMeal < ApplicationRecord
   belongs_to :meal
 
   validates :consumed_at, presence: true
+  validates :latitude, numericality: { greater_than_or_equal_to: -90, less_than_or_equal_to: 90 }, allow_nil: true
+  validates :longitude, numericality: { greater_than_or_equal_to: -180, less_than_or_equal_to: 180 }, allow_nil: true
+  validate :both_coordinates_present_or_absent
 
   def consumed_at_in_timezone
     consumed_at.in_time_zone(user.user_profile.timezone)
@@ -32,5 +35,17 @@ class UserMeal < ApplicationRecord
       partial: "shared/nutrient_meters",
       locals: { user_meals: user.user_meals_on_date(date_consumed), date: date_consumed, user_profile: user.user_profile }
     )
+  end
+
+  def has_location?
+    latitude.present? && longitude.present?
+  end
+
+  private
+
+  def both_coordinates_present_or_absent
+    if latitude.present? ^ longitude.present?
+      errors.add(:base, "Both latitude and longitude must be present or both must be absent")
+    end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_31_064956) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_15_193327) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -39,6 +39,29 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_064956) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "chat_messages", force: :cascade do |t|
+    t.integer "chat_id", null: false
+    t.string "role"
+    t.text "content"
+    t.string "model_id"
+    t.integer "input_tokens"
+    t.integer "output_tokens"
+    t.integer "tool_call_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_id"], name: "index_chat_messages_on_chat_id"
+    t.index ["tool_call_id"], name: "index_chat_messages_on_tool_call_id"
+  end
+
+  create_table "chats", force: :cascade do |t|
+    t.string "model_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "chatable_type", null: false
+    t.integer "chatable_id", null: false
+    t.index ["chatable_type", "chatable_id"], name: "index_chats_on_chatable"
+  end
+
   create_table "global_settings", force: :cascade do |t|
     t.string "name", null: false
     t.string "value"
@@ -55,6 +78,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_064956) do
     t.index ["token"], name: "index_invites_on_token", unique: true
     t.index ["user_id"], name: "index_invites_on_user_id"
   end
+
+# Could not dump table "meal_vectors_vector_chunks00" because of following StandardError
+#   Unknown type '' for column 'rowid'
+
 
   create_table "meals", force: :cascade do |t|
     t.string "meal_name"
@@ -104,6 +131,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_064956) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "tool_calls", force: :cascade do |t|
+    t.integer "chat_message_id", null: false
+    t.string "tool_call_id", null: false
+    t.string "name", null: false
+    t.json "arguments", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_message_id"], name: "index_tool_calls_on_chat_message_id"
+    t.index ["tool_call_id"], name: "index_tool_calls_on_tool_call_id"
+  end
+
   create_table "user_meals", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "meal_id", null: false
@@ -111,6 +149,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_064956) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "error"
+    t.decimal "latitude", precision: 10, scale: 6
+    t.decimal "longitude", precision: 10, scale: 6
     t.index ["meal_id"], name: "index_user_meals_on_meal_id"
     t.index ["user_id"], name: "index_user_meals_on_user_id"
   end
@@ -127,6 +167,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_064956) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "timezone"
+    t.boolean "enable_location_tracking", default: false
     t.index ["user_id"], name: "index_user_profiles_on_user_id"
   end
 
@@ -140,10 +181,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_064956) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "chat_messages", "chats"
   add_foreign_key "invites", "users"
   add_foreign_key "nutrition_analyses", "users"
   add_foreign_key "push_subscriptions", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "tool_calls", "chat_messages"
   add_foreign_key "user_meals", "meals"
   add_foreign_key "user_meals", "users"
   add_foreign_key "user_profiles", "users"

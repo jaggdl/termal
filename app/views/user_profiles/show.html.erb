@@ -60,6 +60,42 @@
           ></div>
         </label>
       </div>
+
+      <div
+        class="flex items-center justify-between"
+        data-controller="location-tracking"
+        data-location-tracking-enabled-value="<%= @profile.enable_location_tracking %>"
+      >
+        <div>
+          <p class="font-medium text-gray-700 dark:text-gray-300">Location Tracking</p>
+          <p
+            class="text-sm text-gray-500 dark:text-gray-400"
+            data-location-tracking-target="status"
+          ></p>
+        </div>
+
+        <label class="relative inline-flex items-center cursor-pointer">
+          <%= f.check_box :enable_location_tracking,
+                      data: {
+                        action: "location-tracking#toggleLocationTracking",
+                        location_tracking_target: "checkbox"
+                      },
+                      class: "sr-only peer" %>
+          <div
+            class="
+              w-14 h-7 bg-gray-200 dark:bg-gray-700 rounded-full peer peer-focus:ring-2
+              peer-focus:ring-sky-300 dark:peer-focus:ring-sky-700 after:content-['']
+              after:absolute after:top-0.5 after:left-0.5 after:bg-white
+              dark:after:bg-gray-200 after:border-gray-300 dark:after:border-gray-600
+              after:border after:rounded-full after:h-6 after:w-6 after:transition-all
+              peer-checked:after:translate-x-7 peer-checked:after:border-white
+              peer-checked:bg-sky-400 dark:peer-checked:bg-sky-600 shadow-lg blur-[0.5px]
+              peer-checked:blur-[1px] peer-checked:shadow-sky-200
+              dark:peer-checked:shadow-sky-900
+            "
+          ></div>
+        </label>
+      </div>
     </div>
     <div class="">
       <h2 class="text-lg font-medium text-sky-700 dark:text-sky-400 mb-4">Personal Information</h2>

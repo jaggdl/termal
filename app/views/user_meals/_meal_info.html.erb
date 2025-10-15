@@ -6,7 +6,19 @@
     <div class="flex items-center">
       <span class="md:text-lg line-clamp-1 dark:text-dark-text"><%= user_meal.meal&.meal_name || "" %></span>
     </div>
-    <span class="text-sm text-gray-500 dark:text-gray-400"><%= user_meal.consumed_at_in_timezone.strftime("%I:%M %p") %></span>
+    <div class="flex items-center gap-1">
+      <span class="text-sm text-gray-500 dark:text-gray-400">
+        <%= user_meal.consumed_at_in_timezone.strftime("%I:%M %p") %>
+        <% if user_meal.has_location? %>
+          •
+          <%= heroicon "globe-alt",
+          variant: :outline,
+          options: {
+            class: "h-4 w-4 inline-block",
+          } %>
+        <% end %>
+      </span>
+    </div>
     <% if user_meal.error.present? %>
       <span class="text-sm text-red-600 dark:text-red-400 mt-1">Error:
         <%= user_meal.error_message %></span>
@@ -32,7 +44,8 @@
     <div class="flex items-center space-x-2 text-gray-500 dark:text-gray-400">
       <div
         class="
-          w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-gray-500 dark:border-t-gray-400 rounded-full animate-spin
+          w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-gray-500
+          dark:border-t-gray-400 rounded-full animate-spin
         "
       ></div>
       <span>Processing...</span>
