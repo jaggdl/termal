@@ -1,9 +1,16 @@
 <% if meals.any? %>
-  <ul class="bg-white dark:bg-dark-surface rounded-md overflow-hidden transition-colors duration-200">
+  <ul
+    class="
+      bg-white dark:bg-dark-surface rounded-md overflow-hidden transition-colors
+      duration-200
+    "
+    data-controller="meal-location"
+  >
     <% meals.each do |meal| %>
       <li
         class="
-          flex gap-x-4 items-center w-full justify-between vintage-link pr-5 text-black dark:text-dark-text
+          flex gap-x-4 items-center w-full justify-between vintage-link pr-5 text-black
+          dark:text-dark-text
         "
       >
         <%= link_to meal_path(meal), data: { turbo_frame: "_top" }, class: "w-full" do %>
@@ -14,7 +21,18 @@
             </div>
           </div>
         <% end %>
-        <%= button_to user_meals_path, params: { meal_id: meal.id, date: date }, method: :post, data: { turbo: true } do %>
+        <%= button_to user_meals_path,
+                  params: { meal_id: meal.id, date: date },
+                  method: :post,
+                  data: {
+                    turbo: true,
+                    action: "click->meal-location#addLocation",
+                  },
+                  form: {
+                    data: {
+                      meal_location_target: "form",
+                    },
+                  } do %>
           <%= render "shared/aqua_style", text: "Add" %>
         <% end %>
       </li>
