@@ -61,9 +61,12 @@
         user_profile: Current.user_profile,
       } %>
     </div>
-    <div class="mx-auto mb-6">
+    <div class="mx-auto mb-6 flex gap-4">
       <%= link_to new_user_meal_path(date: @date) do %>
         <%= render "shared/aqua_style", text: "New Meal", icon: "plus" %>
+      <% end %>
+      <%= button_to suggest_meals_path(date: @date), method: :get, data: { turbo_stream: true } do %>
+        <%= render "shared/aqua_style", text: "Suggest Meals", icon: "light-bulb" %>
       <% end %>
     </div>
 
@@ -82,5 +85,8 @@
         <p class="dark:text-dark-text">No meals for this day</p>
       </div>
     <% end %>
+
+    <div id="meal-suggestions" class="mt-8">
+    </div>
   </div>
 </div>
