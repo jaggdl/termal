@@ -5,6 +5,7 @@ pin "@hotwired/turbo-rails", to: "turbo.min.js"
 pin "@hotwired/stimulus", to: "stimulus.min.js"
 pin "@hotwired/stimulus-loading", to: "stimulus-loading.js"
 pin_all_from "app/javascript/controllers", under: "controllers"
+pin_all_from "app/javascript/utils", under: "utils"
 pin "heic2any", preload: false # @0.0.4
 pin "chart.js" # @4.4.8
 pin "@kurkle/color", to: "@kurkle--color.js" # @0.3.4

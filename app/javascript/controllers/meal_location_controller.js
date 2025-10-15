@@ -1,4 +1,8 @@
 import { Controller } from "@hotwired/stimulus";
+import {
+  getCurrentLocation,
+  isLocationTrackingEnabled,
+} from "utils/location_helper";
 
 export default class extends Controller {
   static targets = ["latitude", "longitude", "form"];
@@ -10,14 +14,12 @@ export default class extends Controller {
   }
 
   async captureLocation() {
-    const locationEnabled = this.isLocationTrackingEnabled();
-
-    if (!locationEnabled) {
+    if (!isLocationTrackingEnabled()) {
       return;
     }
 
     try {
-      const location = await this.getCurrentLocation();
+      const location = await getCurrentLocation();
       this.latitudeTarget.value = location.latitude;
       this.longitudeTarget.value = location.longitude;
     } catch (error) {
@@ -26,9 +28,7 @@ export default class extends Controller {
   }
 
   async addLocation(event) {
-    const locationEnabled = this.isLocationTrackingEnabled();
-
-    if (!locationEnabled) {
+    if (!isLocationTrackingEnabled()) {
       return;
     }
 
@@ -37,7 +37,7 @@ export default class extends Controller {
     const form = event.target.closest("form");
 
     try {
-      const location = await this.getCurrentLocation();
+      const location = await getCurrentLocation();
 
       const latInput = document.createElement("input");
       latInput.type = "hidden";
@@ -56,36 +56,5 @@ export default class extends Controller {
       console.log("Could not get location:", error.message);
       form.requestSubmit();
     }
-  }
-
-  getCurrentLocation() {
-    return new Promise((resolve, reject) => {
-      if (!("geolocation" in navigator)) {
-        reject(new Error("Geolocation not supported"));
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          resolve({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        },
-        (error) => {
-          reject(error);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 300000,
-        },
-      );
-    });
-  }
-
-  isLocationTrackingEnabled() {
-    const storedPreference = localStorage.getItem("locationTrackingEnabled");
-    return storedPreference === "true";
   }
 }

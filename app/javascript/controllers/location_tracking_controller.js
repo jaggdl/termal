@@ -1,4 +1,9 @@
 import { Controller } from "@hotwired/stimulus";
+import {
+  getCurrentLocation,
+  isLocationTrackingEnabled,
+  setLocationTrackingEnabled,
+} from "utils/location_helper";
 
 export default class extends Controller {
   static targets = ["checkbox", "status"];
@@ -42,38 +47,23 @@ export default class extends Controller {
         return;
       }
       this.updateStatus("enabled");
-      this.storeLocationPreference(true);
+      setLocationTrackingEnabled(true);
     } else {
       this.updateStatus("disabled");
-      this.storeLocationPreference(false);
+      setLocationTrackingEnabled(false);
     }
   }
 
   async requestLocationPermission() {
     try {
-      return new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-          () => {
-            resolve("granted");
-          },
-          (error) => {
-            if (error.code === error.PERMISSION_DENIED) {
-              resolve("denied");
-            } else {
-              resolve("error");
-            }
-          },
-          { timeout: 10000 },
-        );
-      });
+      await getCurrentLocation({ timeout: 10000 });
+      return "granted";
     } catch (error) {
-      console.error("Error requesting location permission:", error);
+      if (error.code === 1 || error.code === error.PERMISSION_DENIED) {
+        return "denied";
+      }
       return "error";
     }
-  }
-
-  storeLocationPreference(enabled) {
-    localStorage.setItem("locationTrackingEnabled", enabled ? "true" : "false");
   }
 
   updateStatus(status) {
