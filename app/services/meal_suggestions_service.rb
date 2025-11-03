@@ -99,12 +99,20 @@ class MealSuggestionsService
 
     base_query = Meal.joins(:user_meals)
                      .where(user_meals: { user_id: @user.id })
-                     .where.not(id: recently_eaten_ids)
-                     .group("meals.id")
-                     .select("meals.*, COUNT(user_meals.id) as usage_count,
-                             SUM(CASE WHEN user_meals.meal_id IN (?) THEN 2 ELSE 1 END) as time_score",
-                             time_preferred_meal_ids.any? ? time_preferred_meal_ids : [ 0 ])
-                     .order("time_score DESC, usage_count DESC")
+
+    base_query = base_query.where.not(id: recently_eaten_ids) if recently_eaten_ids.any?
+
+    if time_preferred_meal_ids.any?
+      time_preferred_ids_str = time_preferred_meal_ids.join(",")
+      base_query = base_query.group("meals.id")
+                             .select("meals.*, COUNT(user_meals.id) as usage_count,
+                                     SUM(CASE WHEN user_meals.meal_id IN (#{time_preferred_ids_str}) THEN 2 ELSE 1 END) as time_score")
+                             .order("time_score DESC, usage_count DESC")
+    else
+      base_query = base_query.group("meals.id")
+                             .select("meals.*, COUNT(user_meals.id) as usage_count, 1 as time_score")
+                             .order("usage_count DESC")
+    end
 
     remaining_cals = remaining_nutrients[:calories]
 
