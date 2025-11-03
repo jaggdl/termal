@@ -103,7 +103,7 @@ class MealSuggestionsService
                      .group("meals.id")
                      .select("meals.*, COUNT(user_meals.id) as usage_count,
                              SUM(CASE WHEN user_meals.meal_id IN (?) THEN 2 ELSE 1 END) as time_score",
-                             time_preferred_meal_ids.any? ? time_preferred_meal_ids : [0])
+                             time_preferred_meal_ids.any? ? time_preferred_meal_ids : [ 0 ])
                      .order("time_score DESC, usage_count DESC")
 
     remaining_cals = remaining_nutrients[:calories]
