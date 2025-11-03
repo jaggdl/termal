@@ -11,7 +11,7 @@ class MealSuggestionsService
 
     candidate_meals = fetch_candidate_meals(remaining_nutrients)
 
-    return nil if candidate_meals.empty?
+    return nil if candidate_meals.values.all?(&:empty?)
 
     llm_response = generate_suggestions_with_llm(candidate_meals, remaining_nutrients)
 
@@ -38,9 +38,9 @@ class MealSuggestionsService
   end
 
   def build_meal_suggestions_prompt(candidate_meals, remaining_nutrients)
-    meals_data = candidate_meals.map do |meal|
-      "ID: #{meal.id}, Name: #{meal.meal_name}, Calories: #{meal.calories}, Proteins: #{meal.proteins}g, Carbs: #{meal.carbs}g, Fats: #{meal.fats}g"
-    end.join("\n")
+    low_calorie_data = format_meals_data(candidate_meals[:low])
+    medium_calorie_data = format_meals_data(candidate_meals[:medium])
+    high_calorie_data = format_meals_data(candidate_meals[:high])
 
     <<~PROMPT
       You are a nutrition assistant helping to suggest meal combinations for the rest of the day.
@@ -51,24 +51,48 @@ class MealSuggestionsService
       - Carbs: #{remaining_nutrients[:carbs]}g
       - Fats: #{remaining_nutrients[:fats]}g
 
-      Available meals:
-      #{meals_data}
+      Available meals are grouped by calorie level:
+
+      LOW CALORIE MEALS:
+      #{low_calorie_data}
+
+      MEDIUM CALORIE MEALS:
+      #{medium_calorie_data}
+
+      HIGH CALORIE MEALS:
+      #{high_calorie_data}
 
       Generate 1 meal set that contains the meal IDs that work well together to meet the remaining nutrition targets.
 
       Consider:
       - Nutritional balance across the meals in the set
-      - Variety in meal types
+      - Variety in meal types and calorie levels
       - Meeting (but not significantly exceeding) the remaining targets
+      - Mix meals from different calorie groups for better variety
     PROMPT
   end
 
-  def fetch_candidate_meals(remaining_nutrients)
-    max_calories_per_meal = remaining_nutrients[:calories] * 1.1
-    min_calories_per_meal = remaining_nutrients[:calories] * 0.1
+  def format_meals_data(meals)
+    return "None available" if meals.empty?
 
-    Meal.where("calories BETWEEN ? AND ?", min_calories_per_meal, max_calories_per_meal)
-        .limit(50)
+    meals.map do |meal|
+      "ID: #{meal.id}, Name: #{meal.meal_name}, Calories: #{meal.calories}, Proteins: #{meal.proteins}g, Carbs: #{meal.carbs}g, Fats: #{meal.fats}g"
+    end.join("\n")
+  end
+
+  def fetch_candidate_meals(remaining_nutrients)
+    base_query = Meal.joins(:user_meals)
+                     .where(user_meals: { user_id: @user.id })
+                     .group("meals.id")
+                     .order("COUNT(user_meals.id) DESC")
+
+    remaining_cals = remaining_nutrients[:calories]
+
+    {
+      low: base_query.where("meals.calories BETWEEN ? AND ?", remaining_cals * 0.1, remaining_cals * 0.4).limit(20),
+      medium: base_query.where("meals.calories BETWEEN ? AND ?", remaining_cals * 0.3, remaining_cals * 0.7).limit(20),
+      high: base_query.where("meals.calories BETWEEN ? AND ?", remaining_cals * 0.6, remaining_cals * 1.1).limit(20)
+    }
   end
 
   def calculate_remaining_nutrients(daily_targets)
