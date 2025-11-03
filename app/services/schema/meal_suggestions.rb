@@ -1,5 +1,8 @@
 class Schema::MealSuggestions < RubyLLM::Schema
-  object :meal_set do
-    array :meal_ids, of: :integer
+  array :meal_sets do
+    object do
+      array :meal_ids, of: :integer
+      string :description
+    end
   end
 end

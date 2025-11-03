@@ -15,12 +15,17 @@ class MealSuggestionsService
 
     llm_response = generate_suggestions_with_llm(candidate_meals, remaining_nutrients)
 
-    meal_ids = llm_response["meal_set"]["meal_ids"]
-    meals = Meal.where(id: meal_ids).index_by(&:id)
+    meal_sets = llm_response["meal_sets"].map do |meal_set|
+      meal_ids = meal_set["meal_ids"]
+      meals = Meal.where(id: meal_ids).index_by(&:id)
 
-    {
-      meals: meal_ids.map { |id| meals[id] }.compact
-    }
+      {
+        meals: meal_ids.map { |id| meals[id] }.compact,
+        description: meal_set["description"]
+      }
+    end
+
+    { meal_sets: meal_sets }
   end
 
   private
@@ -62,13 +67,20 @@ class MealSuggestionsService
       HIGH CALORIE MEALS:
       #{high_calorie_data}
 
-      Generate 1 meal set that contains the meal IDs that work well together to meet the remaining nutrition targets.
+      Generate 3 DIFFERENT meal sets, each containing meal IDs that work well together to meet the remaining nutrition targets.
+      Each set should offer a different approach or combination.
+
+      For each meal set, provide:
+      1. An array of meal_ids
+      2. A brief description (e.g., "High protein focus", "Balanced variety", "Light options")
 
       Consider:
-      - Nutritional balance across the meals in the set
-      - Variety in meal types and calorie levels
+      - Nutritional balance across the meals in each set
+      - Variety in meal types and calorie levels within each set
       - Meeting (but not significantly exceeding) the remaining targets
       - Mix meals from different calorie groups for better variety
+      - Make each of the 3 sets meaningfully different from each other
+      - Vary the number of meals in each set (some sets can have 1-2 meals, others 3-4 meals)
     PROMPT
   end
 
@@ -81,10 +93,18 @@ class MealSuggestionsService
   end
 
   def fetch_candidate_meals(remaining_nutrients)
+    recently_eaten_ids = recently_eaten_meal_ids
+    time_period = current_time_period
+    time_preferred_meal_ids = time_preferred_meal_ids(time_period)
+
     base_query = Meal.joins(:user_meals)
                      .where(user_meals: { user_id: @user.id })
+                     .where.not(id: recently_eaten_ids)
                      .group("meals.id")
-                     .order("COUNT(user_meals.id) DESC")
+                     .select("meals.*, COUNT(user_meals.id) as usage_count,
+                             SUM(CASE WHEN user_meals.meal_id IN (?) THEN 2 ELSE 1 END) as time_score",
+                             time_preferred_meal_ids.any? ? time_preferred_meal_ids : [0])
+                     .order("time_score DESC, usage_count DESC")
 
     remaining_cals = remaining_nutrients[:calories]
 
@@ -93,6 +113,48 @@ class MealSuggestionsService
       medium: base_query.where("meals.calories BETWEEN ? AND ?", remaining_cals * 0.3, remaining_cals * 0.7).limit(20),
       high: base_query.where("meals.calories BETWEEN ? AND ?", remaining_cals * 0.6, remaining_cals * 1.1).limit(20)
     }
+  end
+
+  def recently_eaten_meal_ids
+    days_to_exclude = 3
+    cutoff_date = @date - days_to_exclude.days
+
+    UserMeal.where(user_id: @user.id)
+            .where("DATE(consumed_at) > ? AND DATE(consumed_at) <= ?", cutoff_date, @date)
+            .pluck(:meal_id)
+            .uniq
+  end
+
+  def current_time_period
+    current_hour = Time.current.in_time_zone(@user_profile.timezone).hour
+
+    case current_hour
+    when 6..10 then :morning
+    when 11..15 then :afternoon
+    when 16..21 then :evening
+    else :late_night
+    end
+  end
+
+  def time_preferred_meal_ids(time_period)
+    hour_ranges = {
+      morning: (6..10),
+      afternoon: (11..15),
+      evening: (16..21),
+      late_night: [ (22..23).to_a, (0..5).to_a ].flatten
+    }
+
+    hours = hour_ranges[time_period]
+
+    user_meals = UserMeal.where(user_id: @user.id).includes(:meal)
+
+    meal_counts = Hash.new(0)
+    user_meals.each do |user_meal|
+      hour_in_timezone = user_meal.consumed_at.in_time_zone(@user_profile.timezone).hour
+      meal_counts[user_meal.meal_id] += 1 if hours.include?(hour_in_timezone)
+    end
+
+    meal_counts.select { |_meal_id, count| count >= 2 }.keys
   end
 
   def calculate_remaining_nutrients(daily_targets)
