@@ -4,6 +4,14 @@ import heic2any from "heic2any";
 export default class extends Controller {
   static targets = ["input", "previewCanvas", "previewContainer"];
 
+  connect() {
+    this.files = [];
+  }
+
+  triggerFileInput() {
+    this.inputTarget.click();
+  }
+
   async previewImage(event) {
     const file = event.target.files[0];
     const ctx = this.previewCanvasTarget.getContext("2d");
@@ -59,16 +67,23 @@ export default class extends Controller {
   }
 
   async previewImages(event) {
-    const files = Array.from(event.target.files);
-    
+    const newFiles = Array.from(event.target.files);
+
+    this.files = [...this.files, ...newFiles];
+
+    this.updateFileInput();
+    this.renderPreviews();
+  }
+
+  async renderPreviews() {
     this.clearAllPreviews();
 
-    if (files.length === 0) {
+    if (this.files.length === 0) {
       return;
     }
 
-    for (let i = 0; i < files.length; i++) {
-      await this.createPreviewForFile(files[i], i);
+    for (let i = 0; i < this.files.length; i++) {
+      await this.createPreviewForFile(this.files[i], i);
     }
   }
 
@@ -91,14 +106,28 @@ export default class extends Controller {
       }
     }
 
+    const wrapper = document.createElement("div");
+    wrapper.className = "relative w-full aspect-square";
+    wrapper.dataset.index = index;
+
     const canvas = document.createElement("canvas");
     canvas.width = 1000;
     canvas.height = 1000;
-    canvas.className = "w-48 h-48 object-cover rounded-lg shadow-sm bg-gray-100 dark:bg-gray-800";
-    
+    canvas.className = "w-full h-full object-cover rounded-lg shadow-sm bg-gray-100 dark:bg-gray-800";
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.className = "absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-lg transition-colors";
+    removeButton.innerHTML = "×";
+    removeButton.dataset.action = "click->image-preview#removeImage";
+    removeButton.dataset.index = index;
+
+    wrapper.appendChild(canvas);
+    wrapper.appendChild(removeButton);
+
     const ctx = canvas.getContext("2d");
-    
-    this.previewContainerTarget.appendChild(canvas);
+
+    this.previewContainerTarget.appendChild(wrapper);
 
     const reader = new FileReader();
 
@@ -114,7 +143,7 @@ export default class extends Controller {
       };
       img.onerror = () => {
         console.error("Failed to load image");
-        canvas.remove();
+        wrapper.remove();
       };
 
       img.src = e.target.result;
@@ -123,9 +152,23 @@ export default class extends Controller {
     reader.readAsDataURL(imageFile);
   }
 
+  removeImage(event) {
+    const index = parseInt(event.currentTarget.dataset.index);
+    this.files.splice(index, 1);
+
+    this.updateFileInput();
+    this.renderPreviews();
+  }
+
+  updateFileInput() {
+    const dt = new DataTransfer();
+    this.files.forEach(file => dt.items.add(file));
+    this.inputTarget.files = dt.files;
+  }
+
   clearAllPreviews() {
-    const canvases = this.previewContainerTarget.querySelectorAll("canvas:not([data-image-preview-target='previewCanvas'])");
-    canvases.forEach(canvas => canvas.remove());
+    const wrappers = this.previewContainerTarget.querySelectorAll("div[data-index]");
+    wrappers.forEach(wrapper => wrapper.remove());
   }
 
   clearCanvas(ctx) {
