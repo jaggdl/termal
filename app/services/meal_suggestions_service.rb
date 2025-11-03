@@ -11,19 +11,16 @@ class MealSuggestionsService
 
     candidate_meals = fetch_candidate_meals(remaining_nutrients)
 
-    return [] if candidate_meals.empty?
+    return nil if candidate_meals.empty?
 
     llm_response = generate_suggestions_with_llm(candidate_meals, remaining_nutrients)
 
-    llm_response["meal_sets"].map.with_index(1) do |meal_set, index|
-      meal_ids = meal_set["meal_ids"]
-      meals = Meal.where(id: meal_ids).index_by(&:id)
+    meal_ids = llm_response["meal_set"]["meal_ids"]
+    meals = Meal.where(id: meal_ids).index_by(&:id)
 
-      {
-        meals: meal_ids.map { |id| meals[id] }.compact,
-        set_number: index
-      }
-    end
+    {
+      meals: meal_ids.map { |id| meals[id] }.compact
+    }
   end
 
   private
@@ -57,22 +54,20 @@ class MealSuggestionsService
       Available meals:
       #{meals_data}
 
-      Generate 3 different meal sets. Each set should contain 5 meal IDs that work well together to meet the remaining nutrition targets.
+      Generate 1 meal set that contains the meal IDs that work well together to meet the remaining nutrition targets.
 
       Consider:
-      - Nutritional balance across the 5 meals in each set
+      - Nutritional balance across the meals in the set
       - Variety in meal types
       - Meeting (but not significantly exceeding) the remaining targets
-      - Each of the 3 sets should be different from each other
     PROMPT
   end
 
   def fetch_candidate_meals(remaining_nutrients)
-    max_calories_per_meal = remaining_nutrients[:calories] * 0.5
+    max_calories_per_meal = remaining_nutrients[:calories] * 1.1
     min_calories_per_meal = remaining_nutrients[:calories] * 0.1
 
     Meal.where("calories BETWEEN ? AND ?", min_calories_per_meal, max_calories_per_meal)
-        .order("RANDOM()")
         .limit(50)
   end
 
@@ -88,13 +83,13 @@ class MealSuggestionsService
   end
 
   def consumed_nutrients_for_date
-    user_meals = @user.user_meals_on_date(@date).includes(:meal)
+    user_meals = @user.user_meals_on_date(@date)
 
     {
-      calories: user_meals.sum { |um| um.meal&.calories || 0 },
-      proteins: user_meals.sum { |um| um.meal&.proteins || 0 },
-      carbs: user_meals.sum { |um| um.meal&.carbs || 0 },
-      fats: user_meals.sum { |um| um.meal&.fats || 0 }
+      calories: user_meals.sum { |um| um.meal.calories || 0 },
+      proteins: user_meals.sum { |um| um.meal.proteins || 0 },
+      carbs: user_meals.sum { |um| um.meal.carbs || 0 },
+      fats: user_meals.sum { |um| um.meal.fats || 0 }
     }
   end
 end

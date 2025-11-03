@@ -8,19 +8,12 @@ class UserMealsController < ApplicationController
   before_action :check_api_key, only: [ :new, :create ]
 
   def index
-    user_timezone = Current.user_profile.timezone
-    tz = ActiveSupport::TimeZone[user_timezone]
-
-    local_now = Time.current.in_time_zone(tz)
-    @today = local_now.to_date
+    @today = Current.user.user_today
     @yesterday = @today - 1.day
 
     @date = params[:date] ? Date.parse(params[:date]) : @today
 
-    local_start = tz.local(@date.year, @date.month, @date.day, 0, 0, 0)
-    local_end = tz.local(@date.year, @date.month, @date.day, 23, 59, 59)
-
-    @meals = Current.user_meals.where(consumed_at: local_start..local_end).order(consumed_at: :desc)
+    @meals = Current.user.user_meals_on_date(@date).order(consumed_at: :desc)
     @meals_by_day = { @date => @meals }
   end
 

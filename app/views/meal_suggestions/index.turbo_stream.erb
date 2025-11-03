@@ -1,12 +1,11 @@
 <%= turbo_stream.update "meal-suggestions" do %>
   <div class="space-y-6">
     <h2 class="text-xl font-bold dark:text-dark-text mb-4">Meal Suggestions</h2>
-    <% @suggestion_sets.each do |set| %>
+    <% if @suggestion_set %>
       <%= render partial: "meal_suggestions/suggestion_set",
                  locals: {
-                   meals: set[:meals],
-                   date: @date,
-                   set_number: set[:set_number]
+                   meals: @suggestion_set[:meals],
+                   date: @date
                  } %>
     <% end %>
   </div>
