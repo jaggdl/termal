@@ -94,24 +94,57 @@ class MealSuggestionsService
 
   def fetch_candidate_meals(remaining_nutrients)
     recently_eaten_ids = recently_eaten_meal_ids
+
+    results = fetch_candidate_meals_with_filters(remaining_nutrients, recently_eaten_ids)
+
+    if results.values.all?(&:empty?) && recently_eaten_ids.any?
+      results = fetch_candidate_meals_with_filters(remaining_nutrients, [])
+    end
+
+    results
+  end
+
+  def fetch_candidate_meals_with_filters(remaining_nutrients, excluded_ids)
     time_period = current_time_period
     time_preferred_meal_ids = time_preferred_meal_ids(time_period)
+
+    total_remaining_macros = remaining_nutrients[:proteins] + remaining_nutrients[:carbs] + remaining_nutrients[:fats]
+
+    if total_remaining_macros > 0
+      target_protein_pct = remaining_nutrients[:proteins].to_f / total_remaining_macros
+      target_carb_pct = remaining_nutrients[:carbs].to_f / total_remaining_macros
+      target_fat_pct = remaining_nutrients[:fats].to_f / total_remaining_macros
+    else
+      target_protein_pct = 0.3
+      target_carb_pct = 0.4
+      target_fat_pct = 0.3
+    end
+
+    macro_score_sql = <<-SQL
+      (100 - (
+        ABS((COALESCE(meals.proteins, 0) / NULLIF(COALESCE(meals.proteins, 0) + COALESCE(meals.carbs, 0) + COALESCE(meals.fats, 0), 0)) - #{target_protein_pct}) * 100 +
+        ABS((COALESCE(meals.carbs, 0) / NULLIF(COALESCE(meals.proteins, 0) + COALESCE(meals.carbs, 0) + COALESCE(meals.fats, 0), 0)) - #{target_carb_pct}) * 100 +
+        ABS((COALESCE(meals.fats, 0) / NULLIF(COALESCE(meals.proteins, 0) + COALESCE(meals.carbs, 0) + COALESCE(meals.fats, 0), 0)) - #{target_fat_pct}) * 100
+      ))
+    SQL
 
     base_query = Meal.joins(:user_meals)
                      .where(user_meals: { user_id: @user.id })
 
-    base_query = base_query.where.not(id: recently_eaten_ids) if recently_eaten_ids.any?
+    base_query = base_query.where.not(id: excluded_ids) if excluded_ids.any?
 
     if time_preferred_meal_ids.any?
       time_preferred_ids_str = time_preferred_meal_ids.join(",")
       base_query = base_query.group("meals.id")
                              .select("meals.*, COUNT(user_meals.id) as usage_count,
-                                     SUM(CASE WHEN user_meals.meal_id IN (#{time_preferred_ids_str}) THEN 2 ELSE 1 END) as time_score")
-                             .order("time_score DESC, usage_count DESC")
+                                     SUM(CASE WHEN user_meals.meal_id IN (#{time_preferred_ids_str}) THEN 2 ELSE 1 END) as time_score,
+                                     #{macro_score_sql} as macro_score")
+                             .order("macro_score DESC, time_score DESC, usage_count DESC")
     else
       base_query = base_query.group("meals.id")
-                             .select("meals.*, COUNT(user_meals.id) as usage_count, 1 as time_score")
-                             .order("usage_count DESC")
+                             .select("meals.*, COUNT(user_meals.id) as usage_count, 1 as time_score,
+                                     #{macro_score_sql} as macro_score")
+                             .order("macro_score DESC, usage_count DESC")
     end
 
     remaining_cals = remaining_nutrients[:calories]
