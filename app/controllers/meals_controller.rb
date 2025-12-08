@@ -32,21 +32,9 @@ class MealsController < ApplicationController
     end
   end
 
-  def normal_search
-    if params[:q].present?
-      @meals = Meal.normal_search(query: params[:q], limit: 2, user: Current.user)
-    else
-      @meals = []
-    end
-    render partial: "meals/normal_search_results", locals: { meals: @meals, date: params[:date] }
-  end
-
   def search
     if params[:q].present?
-      normal_search_meals = Meal.normal_search(query: params[:q], limit: 2, user: Current.user)
-
-      @meals = Meal.vector_search(query: params[:q], user: Current.user, limit: 8)
-        .reject { |meal| normal_search_meals.include?(meal) }
+      @meals = Meal.vector_search(query: params[:q], user: Current.user, limit: 12)
     else
       @meals = []
     end
