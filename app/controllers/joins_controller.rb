@@ -8,11 +8,6 @@ class JoinsController < ApplicationController
   end
 
   def create
-    unless @invite
-      redirect_to root_path, alert: "Invalid invite link"
-      return
-    end
-
     unless user = User.new(params.permit(:email_address, :password))
       render :new, status: :unprocessable_entity, alert: "Try another email address or password."
       return
