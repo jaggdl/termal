@@ -23,15 +23,37 @@ module VectorSearch
   end
 
   class_methods do
-    def vector_search(query:, user:, limit: 5, offset: 0, alpha: 0.1, beta: 0.01)
+    def interaction_score_sql
+      time_decay = "((CAST(strftime('%s', 'now') AS REAL) - CAST(strftime('%s', user_meals.consumed_at) AS REAL)) / 86400.0)"
+      hour_diff = "MIN(ABS(CAST(strftime('%H', 'now') AS INTEGER) - CAST(strftime('%H', user_meals.consumed_at) AS INTEGER)), 24 - ABS(CAST(strftime('%H', 'now') AS INTEGER) - CAST(strftime('%H', user_meals.consumed_at) AS INTEGER)))"
+      "SUM(exp(-? * #{time_decay} - ? * #{hour_diff}))"
+    end
+
+    def most_common_meals(user:, limit: 5, offset: 0, alpha: 0.1, gamma: 0.15)
+      sql = <<~SQL
+        SELECT meals.*,
+               COUNT(user_meals.id) AS consumption_count,
+               #{interaction_score_sql} AS interaction_score
+        FROM meals
+        INNER JOIN user_meals ON meals.id = user_meals.meal_id
+        WHERE user_meals.user_id = ?
+        GROUP BY meals.id
+        ORDER BY interaction_score DESC
+        LIMIT ? OFFSET ?
+      SQL
+
+      find_by_sql([ sql, alpha, gamma, user.id, limit, offset ])
+    end
+
+    def vector_search(query:, user:, limit: 5, offset: 0, alpha: 0.1, beta: 0.01, gamma: 0.15)
       query_embedding = QueryEmbedding.find_or_create_embedding(query)
       embedding = query_embedding.embedding
 
       sql = <<~SQL
         SELECT meals.*,
                distance,
-               SUM(exp(-? * ((CAST(strftime('%s', 'now') AS REAL) - CAST(strftime('%s', user_meals.consumed_at) AS REAL)) / 86400.0))) AS interaction_score,
-               (1.0 / (1.0 + distance)) + ? * SUM(exp(-? * ((CAST(strftime('%s', 'now') AS REAL) - CAST(strftime('%s', user_meals.consumed_at) AS REAL)) / 86400.0))) AS combined_score
+               #{interaction_score_sql} AS interaction_score,
+               (1.0 / (1.0 + distance)) + ? * #{interaction_score_sql} AS combined_score
         FROM meals
         INNER JOIN meal_vectors ON meals.id = meal_vectors.meal_id
         INNER JOIN user_meals ON meals.id = user_meals.meal_id
@@ -42,7 +64,7 @@ module VectorSearch
         LIMIT ? OFFSET ?
       SQL
 
-      find_by_sql([ sql, alpha, beta, alpha, user.id, embedding.to_s, limit * 10, limit, offset ])
+      find_by_sql([ sql, alpha, gamma, beta, alpha, gamma, user.id, embedding.to_s, limit * 10, limit, offset ])
     end
   end
 end
