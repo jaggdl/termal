@@ -54,7 +54,12 @@
     >
       <%= render "shared/navbar" %>
 
-      <div class="fixed z-50 top-0 md:top-4 left-0 right-0 pointer-events-none">
+      <div
+        class="
+          fixed z-50 top-auto bottom-[calc(1.75rem_+_var(--nav-b-padding))] md:bottom-auto
+          md:top-4 left-0 right-0 pointer-events-none
+        "
+      >
         <%= render "shared/flash", flash: flash %>
       </div>
 
