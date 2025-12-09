@@ -24,7 +24,8 @@ module VectorSearch
 
   class_methods do
     def vector_search(query:, user:, limit: 5, alpha: 0.1, beta: 0.01)
-      embedding = Embedding.create(query)
+      query_embedding = QueryEmbedding.find_or_create_embedding(query)
+      embedding = query_embedding.embedding
 
       sql = <<~SQL
         SELECT meals.*,

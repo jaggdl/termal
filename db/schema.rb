@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_15_193327) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_09_044951) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -194,4 +194,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_193327) do
   # Virtual tables defined in this database.
   # Note that virtual tables may not work with other database engines. Be careful if changing database.
   create_virtual_table "meal_vectors", "vec0", ["meal_id integer primary key", "embedding float[1536] distance_metric=cosine"]
+  create_virtual_table "query_embeddings", "vec0", ["query_text text primary key", "embedding float[1536] distance_metric=cosine"]
 end
