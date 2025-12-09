@@ -45,7 +45,7 @@ module VectorSearch
       find_by_sql([ sql, time_decay_rate, hour_penalty, user.id, limit, offset ])
     end
 
-    def vector_search(query:, user:, limit: 5, offset: 0, time_decay_rate: 0.1, interaction_weight: 0.2, hour_penalty: 0.05)
+    def vector_search(query:, user:, limit: 5, offset: 0, time_decay_rate: 0.1, interaction_weight: 0.075, hour_penalty: 0.05)
       query_embedding = QueryEmbedding.find_or_create_embedding(query)
       embedding = query_embedding.embedding
 
