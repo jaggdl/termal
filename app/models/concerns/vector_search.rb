@@ -29,7 +29,7 @@ module VectorSearch
       "SUM(exp(-? * #{time_decay} - ? * #{hour_diff}))"
     end
 
-    def most_common_meals(user:, limit: 5, offset: 0, alpha: 0.1, gamma: 0.05)
+    def most_common_meals(user:, limit: 5, offset: 0, time_decay_rate: 0.1, hour_penalty: 0.05)
       sql = <<~SQL
         SELECT meals.*,
                COUNT(user_meals.id) AS consumption_count,
@@ -42,17 +42,16 @@ module VectorSearch
         LIMIT ? OFFSET ?
       SQL
 
-      find_by_sql([ sql, alpha, gamma, user.id, limit, offset ])
+      find_by_sql([ sql, time_decay_rate, hour_penalty, user.id, limit, offset ])
     end
 
-    def vector_search(query:, user:, limit: 5, offset: 0, alpha: 0.1, beta: 0.01, gamma: 0.05)
+    def vector_search(query:, user:, limit: 5, offset: 0, time_decay_rate: 0.1, interaction_weight: 0.2, hour_penalty: 0.05)
       query_embedding = QueryEmbedding.find_or_create_embedding(query)
       embedding = query_embedding.embedding
 
       sql = <<~SQL
         SELECT meals.*,
                distance,
-               #{interaction_score_sql} AS interaction_score,
                (1.0 / (1.0 + distance)) + ? * #{interaction_score_sql} AS combined_score
         FROM meals
         INNER JOIN meal_vectors ON meals.id = meal_vectors.meal_id
@@ -64,7 +63,7 @@ module VectorSearch
         LIMIT ? OFFSET ?
       SQL
 
-      find_by_sql([ sql, alpha, gamma, beta, alpha, gamma, user.id, embedding.to_s, limit * 10, limit, offset ])
+      find_by_sql([ sql, interaction_weight, time_decay_rate, hour_penalty, user.id, embedding.to_s, limit * 10, limit, offset ])
     end
   end
 end
