@@ -23,7 +23,7 @@ module VectorSearch
   end
 
   class_methods do
-    def vector_search(query:, user:, limit: 5, alpha: 0.1, beta: 0.01)
+    def vector_search(query:, user:, limit: 5, offset: 0, alpha: 0.1, beta: 0.01)
       query_embedding = QueryEmbedding.find_or_create_embedding(query)
       embedding = query_embedding.embedding
 
@@ -39,10 +39,10 @@ module VectorSearch
           AND meal_vectors.embedding MATCH ? AND k = ?
         GROUP BY meals.id, distance
         ORDER BY combined_score DESC
-        LIMIT ?
+        LIMIT ? OFFSET ?
       SQL
 
-      find_by_sql([ sql, alpha, beta, alpha, user.id, embedding.to_s, limit * 10, limit ])
+      find_by_sql([ sql, alpha, beta, alpha, user.id, embedding.to_s, limit * 10, limit, offset ])
     end
   end
 end

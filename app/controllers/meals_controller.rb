@@ -33,12 +33,23 @@ class MealsController < ApplicationController
   end
 
   def search
+    offset = params[:offset].to_i
+
     if params[:q].present?
-      @meals = Meal.vector_search(query: params[:q], user: Current.user, limit: 12)
+      @meals = Meal.vector_search(query: params[:q], user: Current.user, limit: 10, offset: offset)
     else
       @meals = []
     end
-    render partial: "meals/search_results", locals: { meals: @meals, date: params[:date] }
+
+    respond_to do |format|
+      format.html { render partial: "meals/search_results", locals: { meals: @meals, date: params[:date], query: params[:q], offset: offset } }
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.append("meal_list", partial: "shared/meal_list", locals: { meals: @meals, date: params[:date] }),
+          turbo_stream.replace("show_more_container", partial: "meals/show_more_button", locals: { query: params[:q], date: params[:date], offset: offset, show_button: @meals.any? && @meals.size == 10 })
+        ]
+      end
+    end
   end
 
   private

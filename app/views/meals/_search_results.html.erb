@@ -1,3 +1,14 @@
 <turbo-frame id="search_results">
-  <%= render partial: "shared/meal_list", locals: { meals: meals, date: date } %>
+  <div id="meal_list">
+    <%= render partial: "shared/meal_list", locals: { meals: meals, date: date } %>
+  </div>
+
+  <%= render partial: "meals/show_more_button",
+  locals: {
+    query: query,
+    date: date,
+    offset: offset,
+    show_button: meals.any? && meals.size == 10,
+  } %>
 </turbo-frame>
+
