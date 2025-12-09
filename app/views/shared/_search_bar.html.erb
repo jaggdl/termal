@@ -13,6 +13,7 @@
       <input
         type="text"
         name="q"
+        autocomplete="off"
         placeholder="Search meals..."
         data-search-target="input"
         data-action="input->search#search input->search#toggleClearButton"
@@ -65,9 +66,10 @@
 
   <div
     class="
-      fixed md:absolute md:top-10 top-16 shadow-lg bg-white/80 dark:bg-dark-surface/80
-      z-10 backdrop-blur-lg w-screen md:w-full hidden left-0 right-0 rounded-md border
+      absolute top-10 shadow-lg bg-white/80 dark:bg-dark-surface/80 z-10 md:left-auto
+      -left-5 backdrop-blur-lg w-screen md:w-full hidden right-0 rounded-md border
       border-sky-300 dark:border-sky-700 transition-colors duration-200
+      max-h-[calc(100vh_-_7rem)] md:max-h-max overflow-y-scroll md:overflow-y-auto
     "
     data-search-target="resultsContainer"
   >
