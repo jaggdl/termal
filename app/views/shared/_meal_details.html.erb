@@ -5,11 +5,17 @@
   data-controller="image-modal"
   data-action="keydown@window->image-modal#handleKeydown"
 >
-  <div class="w-full bg-gray-200 dark:bg-gray-700 min-h-96 relative" data-controller="image-carousel">
+  <div
+    class="w-full bg-gray-200 dark:bg-gray-700 min-h-96 relative"
+    data-controller="image-carousel"
+  >
     <% if meal.all_images.any? %>
       <!-- Image slides -->
       <% meal.all_images.each_with_index do |image, index| %>
-        <div data-image-carousel-target="slide" class="<%= 'hidden' if index > 0 %> absolute inset-0">
+        <div
+          data-image-carousel-target="slide"
+          class="<%= 'hidden' if index > 0 %> absolute inset-0"
+        >
           <button
             type="button"
             data-image-index="<%= index %>"
@@ -17,52 +23,68 @@
             class="w-full h-full cursor-zoom-in"
           >
             <%= image_tag image.variant(resize_to_limit: [576, 576]),
-                class: "object-cover w-full h-full" %>
+            class: "object-cover w-full h-full" %>
           </button>
         </div>
       <% end %>
-      
       <!-- Navigation buttons (only show if more than 1 image) -->
       <% if meal.all_images.length > 1 %>
         <!-- Previous button -->
-        <button 
+        <button
           data-image-carousel-target="prevButton"
           data-action="click->image-carousel#previous"
-          class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full z-10 transition-colors"
+          class="
+            absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70
+            text-white p-2 rounded-full z-10 transition-colors
+          "
         >
           <%= heroicon "chevron-left", options: { class: "w-5 h-5" } %>
         </button>
-        
         <!-- Next button -->
-        <button 
+        <button
           data-image-carousel-target="nextButton"
           data-action="click->image-carousel#next"
-          class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full z-10 transition-colors"
+          class="
+            absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50
+            hover:bg-black/70 text-white p-2 rounded-full z-10 transition-colors
+          "
         >
           <%= heroicon "chevron-right", options: { class: "w-5 h-5" } %>
         </button>
-        
         <!-- Indicators -->
-        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+        <div
+          class="
+            absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10
+          "
+        >
           <% meal.all_images.each_with_index do |_, index| %>
-            <button 
+            <button
               data-image-carousel-target="indicator"
               data-action="click->image-carousel#goToSlide"
               data-index="<%= index %>"
-              class="w-2 h-2 rounded-full bg-white/50 hover:bg-white/80 transition-colors"
+              class="
+                w-2 h-2 rounded-full bg-white/50 hover:bg-white/80 transition-colors
+              "
             ></button>
           <% end %>
         </div>
-        
         <!-- Image counter -->
-        <div class="absolute top-4 right-4 bg-black/50 text-white px-2 py-1 rounded text-sm z-10">
-          <span data-image-carousel-target="counter">1 / <%= meal.all_images.length %></span>
+        <div
+          class="
+            absolute top-4 right-4 bg-black/50 text-white px-2 py-1 rounded text-sm z-10
+          "
+        >
+          <span data-image-carousel-target="counter">1 /
+            <%= meal.all_images.length %></span>
         </div>
       <% end %>
     <% else %>
       <!-- No image placeholder -->
       <div class="absolute inset-0 flex items-center justify-center">
-        <%= heroicon "photo", options: { class: "h-20 w-20 text-gray-400 dark:text-gray-500" } %>
+        <%= heroicon "photo",
+        options: {
+          class: "h-20 w-20 text-gray-400 dark:text-gray-500",
+        } %>
       </div>
     <% end %>
   </div>
@@ -77,7 +99,12 @@
     <% end %>
 
     <div class="w-full mt-4">
-      <div class="w-full flex justify-between items-end pb-1 border-b-4 border-black dark:border-gray-200">
+      <div
+        class="
+          w-full flex justify-between items-end pb-1 border-b-4 border-black
+          dark:border-gray-200
+        "
+      >
         <span class="text-xl font-extrabold dark:text-dark-text">Calories</span>
         <div>
           <span class="text-3xl font-bold dark:text-dark-text"><%= meal.nutrient_with_unit("calories") %></span>
@@ -92,10 +119,11 @@
       <div class="w-full flex justify-end font-bold mb-1 dark:text-gray-300">
         % Daily target
       </div>
-      <% ["fats", "proteins", "carbs", "fiber", "sodium", "sugar", "cholesterol"].each do |attr| %>
+      <% ["fats", "proteins", "carbs"].each do |attr| %>
         <div
           class="
-            flex items-center justify-between border-t border-gray-400 dark:border-gray-600 py-0.5
+            flex items-center justify-between border-t border-gray-400 dark:border-gray-600
+            py-0.5
           "
         >
           <span class="dark:text-dark-text">
@@ -116,13 +144,17 @@
 
   <div
     data-image-modal-target="modal"
-    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+    class="
+      hidden fixed inset-0 z-50 flex items-center justify-center bg-black/90
+    "
     data-action="click->image-modal#closeOnBackdrop"
   >
     <button
       type="button"
       data-action="click->image-modal#close"
-      class="absolute top-4 right-4 text-white hover:text-gray-300 z-10 transition-colors"
+      class="
+        absolute top-4 right-4 text-white hover:text-gray-300 z-10 transition-colors
+      "
     >
       <%= heroicon "x-mark", options: { class: "w-8 h-8" } %>
     </button>
@@ -131,7 +163,10 @@
       <button
         type="button"
         data-action="click->image-modal#previous"
-        class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full z-10 transition-colors"
+        class="
+          absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70
+          text-white p-3 rounded-full z-10 transition-colors
+        "
       >
         <%= heroicon "chevron-left", options: { class: "w-6 h-6" } %>
       </button>
@@ -139,21 +174,35 @@
       <button
         type="button"
         data-action="click->image-modal#next"
-        class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full z-10 transition-colors"
+        class="
+          absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50
+          hover:bg-black/70 text-white p-3 rounded-full z-10 transition-colors
+        "
       >
         <%= heroicon "chevron-right", options: { class: "w-6 h-6" } %>
       </button>
 
-      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded text-sm z-10">
-        <span data-image-modal-target="counter">1 / <%= meal.all_images.length %></span>
+      <div
+        class="
+          absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white
+          px-3 py-1 rounded text-sm z-10
+        "
+      >
+        <span data-image-modal-target="counter">1 /
+          <%= meal.all_images.length %></span>
       </div>
     <% end %>
 
     <div class="max-w-screen-xl max-h-screen w-full h-full p-8">
       <% meal.all_images.each_with_index do |image, index| %>
-        <div data-image-modal-target="slide" class="<%= 'hidden' if index > 0 %> w-full h-full flex items-center justify-center">
-          <%= image_tag image,
-              class: "max-w-full max-h-full object-contain" %>
+        <div
+          data-image-modal-target="slide"
+          class="
+            <%= 'hidden' if index > 0 %> w-full h-full flex items-center
+            justify-center
+          "
+        >
+          <%= image_tag image, class: "max-w-full max-h-full object-contain" %>
         </div>
       <% end %>
     </div>

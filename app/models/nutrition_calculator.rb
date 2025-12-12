@@ -28,11 +28,7 @@ class NutritionCalculator
     calories: 2000,
     proteins: 56,  # RDA 0.8g/kg for 70kg
     carbs: 275,
-    fats: 67,
-    fiber: 28,
-    sodium: 2300,
-    sugar: 25,
-    cholesterol: 300
+    fats: 67
   }.freeze
 
   # Default values to use in calculations if profile data is missing
@@ -102,38 +98,12 @@ class NutritionCalculator
       carbs = 0
     end
 
-    # Calculate fiber based on sex and age (fixed recommendations)
-    # Source: https://www.dietaryguidelines.gov/sites/default/files/2020-12/Dietary_Guidelines_for_Americans_2020-2025.pdf - Dietary Guidelines for Americans, 2020-2025
-    # Men <=50: 38g, >50: 30g; Women <=50: 25g, >50: 21g
-    # Additional source: https://health.clevelandclinic.org/how-much-fiber-per-day - How Much Fiber Do You Need per Day?
-    fiber = calculate_fiber
-
-    # Sodium: 2300 mg limit
-    # Source: https://www.heart.org/en/healthy-living/healthy-eating/eat-smart/sodium/sodium-and-salt - Get the Scoop on Sodium and Salt
-    # AHA recommends <2300 mg, ideally 1500 mg.
-    sodium = 2300 # mg
-
-    # Sugar: Limit to <5% of calories as ideal recommendation
-    # Source: https://www.who.int/publications/i/item/9789241549028 - Guideline: sugars intake for adults and children (WHO <10%, ideally <5%)
-    # Additional source: https://www.who.int/tools/elena/interventions/free-sugars-adults-ncds - Reducing free sugars intake in adults to reduce the risk of NCDs
-    sugar_calories = (calories * 0.05).round
-    sugar = (sugar_calories / 4).round
-
-    # Cholesterol: <300 mg, though recent guidelines emphasize patterns over limit
-    # Source: https://www.ahajournals.org/doi/10.1161/CIR.0000000000000743 - Dietary Cholesterol and Cardiovascular Risk: A Science Advisory From the American Heart Association
-    # Previous limit 300 mg/day, now focus on minimizing.
-    cholesterol = 300 # mg
-
     # Return rounded results
     {
       calories: calories.round,
       proteins: protein.round,
       carbs: carbs.round,
-      fats: fats.round,
-      fiber: fiber.round,
-      sodium: sodium,
-      sugar: sugar.round,
-      cholesterol: cholesterol
+      fats: fats.round
     }
   rescue
     # Return default targets if calculation fails
@@ -178,16 +148,5 @@ class NutritionCalculator
       multiplier = 1.2
     end
     weight * multiplier
-  end
-
-  def calculate_fiber
-    sex = @user_profile.sex || DEFAULT_VALUES[:sex]
-    age = @user_profile.age || DEFAULT_VALUES[:age]
-
-    if sex == "male"
-      age <= 50 ? 38 : 30
-    else
-      age <= 50 ? 25 : 21
-    end
   end
 end

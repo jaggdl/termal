@@ -5,8 +5,4 @@ class Schema::Meal < RubyLLM::Schema
   number :fats, description: "Total grams of fat"
   number :proteins, description: "Total grams of protein"
   number :carbs, description: "Total grams of carbohydrates"
-  number :fiber, description: "Total grams of dietary fiber"
-  number :sodium, description: "Total milligrams of sodium"
-  number :sugar, description: "Total grams of sugar"
-  number :cholesterol, description: "Total milligrams of cholesterol"
 end

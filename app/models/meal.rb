@@ -14,8 +14,6 @@ class Meal < ApplicationRecord
     return nil if value.nil?
 
     unit = case attr.to_s
-    when "sodium", "cholesterol"
-             "mg"
     when "calories"
              ""
     else

@@ -62,6 +62,6 @@ class MealsController < ApplicationController
   end
 
   def meal_params
-    params.require(:meal).permit(:meal_name, :description, :calories, :fats, :proteins, :carbs, :fiber, :sodium, :sugar, :cholesterol)
+    params.require(:meal).permit(:meal_name, :description, :calories, :fats, :proteins, :carbs)
   end
 end
