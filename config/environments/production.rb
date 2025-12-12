@@ -24,11 +24,15 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
+  # Set DISABLE_SSL=true to disable all SSL options, rather than specify each individually
+  ssl_enabled = "true" unless ENV["DISABLE_SSL"] == "true"
+
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  config.assume_ssl = ENV["DISABLE_SSL"] != "true"
+  # Can be used together with config.force_ssl for Strict-Transport-Security and secure cookies.
+  config.assume_ssl = ENV.fetch("ASSUME_SSL", ssl_enabled) == "true"
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = ENV["DISABLE_SSL"] != "true"
+  config.force_ssl = ENV.fetch("FORCE_SSL", ssl_enabled) == "true"
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
