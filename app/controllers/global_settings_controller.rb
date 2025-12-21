@@ -11,6 +11,13 @@ class GlobalSettingsController < ApplicationController
     settings_params.each do |key, value|
       GlobalSetting.set(key, value)
     end
+
+    if !LlmConfig.current_meal_analysis_api_key_set?
+      provider = LlmConfig.provider_for(LlmConfig.meal_analysis_model)&.titleize
+      redirect_to global_settings_path, alert: "#{provider} API key is required for the selected model."
+      return
+    end
+
     redirect_to after_setting_api_key_url || global_settings_path, notice: "Settings were successfully updated."
   rescue => e
     redirect_to global_settings_path, alert: "An error occurred: #{e.message}"

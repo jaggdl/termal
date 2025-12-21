@@ -1,13 +1,79 @@
-<h1>Global Settings</h1>
+<div class="w-full max-w-2xl mx-auto space-y-6 py-6">
+  <h1 class="text-lg font-medium text-sky-700 dark:text-sky-400 mb-4">Global Settings</h1>
 
-<%= form_with(url: update_global_settings_path, method: :patch, local: true) do |form| %>
-  <% GlobalSetting::SETTING_KEYS.each do |key| %>
-    <div class="field">
-      <%= form.label key %>
-      <%= form.text_field "global_settings[#{key}]", value: GlobalSetting.get(key) %>
+  <%= form_with(url: update_global_settings_path, method: :patch, local: true, class: "space-y-6 w-full") do |form| %>
+    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+      <h2 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-4">Meal Analysis</h2>
+
+      <div class="flex items-center justify-between">
+        <%= form.label :meal_analysis_model, "Model", class: "font-medium text-gray-700 dark:text-gray-300" %>
+        <div class="w-2/3">
+          <%= form.select "global_settings[meal_analysis_model]",
+                      options_for_select(LlmConfig.models_for_select, GlobalSetting.get(:meal_analysis_model) || LlmConfig::DEFAULT_MODEL),
+                      {},
+                      class: "border border-gray-300 dark:border-gray-700 p-2 rounded-lg w-full focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-700 focus:border-sky-500 dark:focus:border-sky-700 focus:outline-none dark:bg-dark-surface dark:text-dark-text" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+      <h2 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-4">API Keys</h2>
+
+      <div class="grid gap-y-4">
+        <div class="flex items-center justify-between">
+          <%= form.label :openai_api_key, "OpenAI", class: "font-medium text-gray-700 dark:text-gray-300" %>
+          <div class="w-2/3 flex items-center gap-2">
+            <%= form.password_field "global_settings[openai_api_key]",
+                            value: GlobalSetting.get(:openai_api_key),
+                            placeholder: GlobalSetting.get(:openai_api_key).present? ? "••••••••" : "",
+                            class: "border border-gray-300 dark:border-gray-700 p-2 rounded-lg w-full focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-700 focus:border-sky-500 dark:focus:border-sky-700 focus:outline-none dark:bg-dark-surface dark:text-dark-text" %>
+            <% if GlobalSetting.get(:openai_api_key).present? %>
+              <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 px-2 py-1 rounded text-xs whitespace-nowrap">
+                <%= heroicon "check-circle", options: { class: "inline w-3 h-3 mr-1" } %>
+                Set
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <%= form.label :anthropic_api_key, "Anthropic", class: "font-medium text-gray-700 dark:text-gray-300" %>
+          <div class="w-2/3 flex items-center gap-2">
+            <%= form.password_field "global_settings[anthropic_api_key]",
+                            value: GlobalSetting.get(:anthropic_api_key),
+                            placeholder: GlobalSetting.get(:anthropic_api_key).present? ? "••••••••" : "",
+                            class: "border border-gray-300 dark:border-gray-700 p-2 rounded-lg w-full focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-700 focus:border-sky-500 dark:focus:border-sky-700 focus:outline-none dark:bg-dark-surface dark:text-dark-text" %>
+            <% if GlobalSetting.get(:anthropic_api_key).present? %>
+              <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 px-2 py-1 rounded text-xs whitespace-nowrap">
+                <%= heroicon "check-circle", options: { class: "inline w-3 h-3 mr-1" } %>
+                Set
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <%= form.label :gemini_api_key, "Gemini", class: "font-medium text-gray-700 dark:text-gray-300" %>
+          <div class="w-2/3 flex items-center gap-2">
+            <%= form.password_field "global_settings[gemini_api_key]",
+                            value: GlobalSetting.get(:gemini_api_key),
+                            placeholder: GlobalSetting.get(:gemini_api_key).present? ? "••••••••" : "",
+                            class: "border border-gray-300 dark:border-gray-700 p-2 rounded-lg w-full focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-700 focus:border-sky-500 dark:focus:border-sky-700 focus:outline-none dark:bg-dark-surface dark:text-dark-text" %>
+            <% if GlobalSetting.get(:gemini_api_key).present? %>
+              <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 px-2 py-1 rounded text-xs whitespace-nowrap">
+                <%= heroicon "check-circle", options: { class: "inline w-3 h-3 mr-1" } %>
+                Set
+              </span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-8 flex justify-center">
+      <button type="submit">
+        <%= render "shared/aqua_style", text: "Update Settings" %>
+      </button>
     </div>
   <% end %>
-  <div class="actions">
-    <%= form.submit 'Update Settings' %>
-  </div>
-<% end %>
+</div>
