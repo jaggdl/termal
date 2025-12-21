@@ -8,9 +8,11 @@ module ApiKeyCheck
   private
 
   def check_api_key
-    unless GlobalSetting.get("openai_api_key").present?
+    unless LlmConfig.current_meal_analysis_api_key_set?
       session[:return_to_after_setting_api_key] = request.url
-      redirect_to global_settings_path, alert: "The OpenAI API key is not set. Please set it in the global settings."
+      model = LlmConfig.meal_analysis_model
+      provider = LlmConfig.provider_for(model)&.titleize || "Provider"
+      redirect_to global_settings_path, alert: "The #{provider} API key is not set. Please set it in the global settings."
     end
   end
 

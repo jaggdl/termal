@@ -1,15 +1,17 @@
 class LlmService
-  def initialize
-    @openai_api_key = GlobalSetting.get("openai_api_key")
-    @model = "o4-mini"
+  def initialize(model: nil)
+    @model = model || LlmConfig.meal_analysis_model
 
-    unless @openai_api_key
-      raise StandardError, "OpenAI API key is not set. Please set it in the global settings."
+    unless LlmConfig.api_key_for(@model)
+      provider = LlmConfig.provider_for(@model)
+      raise StandardError, "#{provider&.titleize || 'Provider'} API key is not set. Please set it in the global settings."
     end
 
     RubyLLM.configure do |config|
       config.max_retries = 0
-      config.openai_api_key = @openai_api_key
+      config.openai_api_key = LlmConfig.openai_api_key
+      config.anthropic_api_key = LlmConfig.anthropic_api_key
+      config.gemini_api_key = LlmConfig.gemini_api_key
     end
   end
 
