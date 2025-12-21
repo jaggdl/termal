@@ -7,7 +7,8 @@ module ErrorMessages
     image_processing_error: "Failed to process image",
     not_found: "Resource not found",
     unauthorized: "Unauthorized access",
-    server_error: "Internal server error"
+    server_error: "Internal server error",
+    quota_exceeded: "API quota exceeded. Please check your plan and billing details."
   }.freeze
 
   module ClassMethods

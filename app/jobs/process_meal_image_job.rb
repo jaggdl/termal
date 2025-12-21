@@ -11,7 +11,8 @@ class ProcessMealImageJob < ApplicationJob
       user_meal.update(error: nil)  # This line is reached only if no error is raised
     rescue => e
       Rails.logger.error("Meal processing error: #{e.message}")
-      handle_error(user_meal, :server_error)
+      error_code = determine_error_code(e)
+      handle_error(user_meal, error_code)
     ensure
       user_meal.broadcast_user_meal
     end
@@ -21,6 +22,15 @@ class ProcessMealImageJob < ApplicationJob
 
   def get_meal_data(meal)
     LlmService.new.analyze_meal(meal)
+  end
+
+  def determine_error_code(error)
+    message = error.message.downcase
+    if message.include?("quota") || message.include?("rate limit")
+      :quota_exceeded
+    else
+      :server_error
+    end
   end
 
   def handle_error(user_meal, error_code)

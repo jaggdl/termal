@@ -1,9 +1,6 @@
 class LlmConfig
-  PROVIDERS = %w[openai anthropic gemini].freeze
-
   MODELS = {
     "openai" => %w[o4-mini],
-    "anthropic" => %w[claude-sonnet-4-5],
     "gemini" => %w[gemini-2.5-pro]
   }.freeze
 
@@ -16,7 +13,7 @@ class LlmConfig
 
     def models_for_select
       MODELS.flat_map do |provider, models|
-        models.map { |model| [model, model] }
+        models.map { |model| [ model, model ] }
       end
     end
 
