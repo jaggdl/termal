@@ -22,7 +22,7 @@ class OnboardingController < ApplicationController
       generate_vapid_keys if vapid_keys_missing?
 
       start_new_session_for user
-      redirect_to after_authentication_url
+      redirect_to profile_path, notice: "Welcome! Please complete your profile to continue."
     else
       redirect_to onboarding_path, alert: "Try another email address or password."
     end

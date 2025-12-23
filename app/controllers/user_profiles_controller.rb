@@ -1,4 +1,5 @@
 class UserProfilesController < ApplicationController
+  skip_before_action :require_profile_completion
   before_action :set_user_profile, only: [ :show, :update ]
 
   def show

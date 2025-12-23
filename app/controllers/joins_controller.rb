@@ -19,7 +19,7 @@ class JoinsController < ApplicationController
 
     if user.save
       start_new_session_for user
-      redirect_to root_path, notice: "Account created successfully"
+      redirect_to profile_path, notice: "Welcome! Please complete your profile to continue."
     else
       @token = @invite.token
       render :new, status: :unprocessable_entity, alert: "Unable to create account"
