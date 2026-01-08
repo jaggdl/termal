@@ -15,6 +15,7 @@ class UserMealsController < ApplicationController
 
     @meals = Current.user.user_meals_on_date(@date).order(consumed_at: :desc)
     @meals_by_day = { @date => @meals }
+    @total_meals_count = Current.user.meals.count
   end
 
   def new
