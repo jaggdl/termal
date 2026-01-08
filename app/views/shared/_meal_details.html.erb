@@ -90,7 +90,9 @@
   </div>
 
   <div class="w-full sm:max-w-md space-y-2 sm:px-0 px-5">
-    <h1 class="text-2xl font-bold dark:text-dark-text"><%= meal.meal_name %></h1>
+    <h1 class="text-2xl font-bold dark:text-dark-text">
+      <%= link_to meal.meal_name, meal_path(meal), class: "hover:underline" %>
+    </h1>
 
     <% if meal.description.present? %>
       <div class="text-gray-600 dark:text-gray-400 text-sm">
