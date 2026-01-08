@@ -1,23 +1,48 @@
 <div class="space-y-6">
   <%= render partial: "shared/back_button" %>
 
-  <div class="flex gap-6 flex-col md:flex-row items-center md:items-start">
-    <div class="round w-72 min-w-72 max-w-72 bg-gray-200 dark:bg-gray-700">
-      <% if @meal.image.attached? %>
-        <%= image_tag @meal.image.variant(resize_to_limit: [576, 576]),
-        class: "w-full h-full object-cover" %>
-      <% else %>
-        <div class="w-full h-72 flex items-center justify-center">
-          <%= heroicon "photo",
-          options: {
-            class: "h-20 w-20 text-gray-400 dark:text-gray-500",
-          } %>
-        </div>
-      <% end %>
-    </div>
+  <%= form_with model: @meal, url: meal_path(@meal), method: :patch, class: "space-y-6", data: { controller: "image-preview" } do |f| %>
+    <div class="flex gap-6 flex-col items-center md:items-start">
+      <div class="flex flex-col gap-4">
+        <% if @meal.all_images.any? %>
+          <div class="grid grid-cols-2 gap-4">
+            <% @meal.all_images.each do |img| %>
+              <div class="relative group w-full aspect-square">
+                <%= image_tag img.variant(resize_to_limit: [576, 576]),
+                class: "w-full h-full object-cover rounded-lg shadow-sm bg-gray-100 dark:bg-gray-800" %>
+                <%= button_to purge_image_meal_path(@meal, attachment_id: img.id),
+                              method: :delete,
+                              class: "absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-lg transition-colors cursor-pointer",
+                              data: { turbo_confirm: "Are you sure you want to delete this image?" } do %>
+                  <span>&times;</span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
 
-    <div class="w-full">
-      <%= form_with model: @meal, url: meal_path(@meal), method: :patch, class: "space-y-4" do |f| %>
+        <div class="space-y-2">
+          <%= f.file_field :images,
+              accept: "image/*",
+              multiple: true,
+              class: "hidden",
+              data: { action: "change->image-preview#previewImages", "image-preview-target": "input" } %>
+
+          <div class="grid grid-cols-2 gap-4" data-image-preview-target="previewContainer">
+          </div>
+
+          <button type="button"
+                  class="mt-4 inline-flex items-center px-4 py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-blue-500 dark:hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  data-action="click->image-preview#triggerFileInput">
+            <%= heroicon "photo", options: { class: "w-5 h-5 mr-2" } %>
+            Add Photos
+          </button>
+
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Select images to add to this meal.</p>
+        </div>
+      </div>
+
+      <div class="w-full space-y-4">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-dark-text mb-2">
           <%= f.text_field :meal_name,
                        class:
@@ -41,7 +66,6 @@
                                "border border-gray-300 dark:border-gray-700 p-1 rounded w-16 text-center dark:bg-dark-surface dark:text-dark-text" %>
             </div>
           <% end %>
-
         </div>
 
         <div class="mt-6 flex justify-end gap-x-4">
@@ -49,7 +73,7 @@
                    class:
                      "aqua-reflection flex items-center text-sm justify-center px-4 py-2 rounded-full bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md hover:from-sky-400 hover:to-sky-600 dark:from-sky-600 dark:to-sky-800 dark:hover:from-sky-500 dark:hover:to-sky-700 cursor-pointer" %>
         </div>
-      <% end %>
+      </div>
     </div>
-  </div>
+  <% end %>
 </div>

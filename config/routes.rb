@@ -14,9 +14,12 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "user_meals#index"
 
-  resources :meals, only: [ :index, :show, :update, :edit ] do
+  resources :meals, only: [ :index, :show, :update, :edit, :destroy ] do
     collection do
       get :search
+    end
+    member do
+      delete :purge_image
     end
   end
 

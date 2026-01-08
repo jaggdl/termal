@@ -1,7 +1,7 @@
 class MealsController < ApplicationController
   include ApiKeyCheck
 
-  before_action :set_meal, only: [ :show, :update, :edit ]
+  before_action :set_meal, only: [ :show, :update, :edit, :purge_image ]
 
   def index
     @meals_by_day = Current.user.meals.all.order(created_at: :desc).group_by do |meal|
@@ -17,6 +17,8 @@ class MealsController < ApplicationController
   end
 
   def update
+    @meal.images.attach(params[:meal][:images]) if params[:meal][:images].present?
+
     if @meal.update(meal_params)
       redirect_to meal_path(@meal), notice: "Meal updated successfully."
     else
@@ -29,6 +31,16 @@ class MealsController < ApplicationController
       redirect_to meals_path, notice: "Meal was successfully deleted."
     else
       redirect_to meals_path, alert: "Failed to delete meal."
+    end
+  end
+
+  def purge_image
+    attachment = ActiveStorage::Attachment.find(params[:attachment_id])
+    if attachment.record == @meal
+      attachment.purge
+      redirect_to edit_meal_path(@meal), notice: "Image removed successfully."
+    else
+      redirect_to edit_meal_path(@meal), alert: "Unable to remove image."
     end
   end
 
@@ -62,6 +74,6 @@ class MealsController < ApplicationController
   end
 
   def meal_params
-    params.require(:meal).permit(:meal_name, :description, :calories, :fats, :proteins, :carbs)
+    params.require(:meal).permit(:meal_name, :description, :calories, :fats, :proteins, :carbs, :image)
   end
 end
