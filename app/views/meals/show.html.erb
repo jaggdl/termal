@@ -4,6 +4,11 @@
   <%= render partial: "shared/meal_details", locals: { meal: @meal, user_profile: @user_profile } %>
   
   <div class="mt-6 flex justify-end gap-x-4">
-    <button>Add</button>
+    <%= link_to edit_meal_path(@meal) do %>
+      <%= render "shared/aqua_style",
+      text: "Edit meal",
+      variant: "secondary",
+      icon: "pencil" %>
+    <% end %>
   </div>
 </div>
