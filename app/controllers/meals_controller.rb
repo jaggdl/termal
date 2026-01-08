@@ -11,6 +11,9 @@ class MealsController < ApplicationController
 
   def show
     @user_profile = Current.user_profile
+    @consumptions = Current.user_meals
+      .where(meal_id: @meal.id)
+      .order(consumed_at: :desc)
   end
 
   def edit

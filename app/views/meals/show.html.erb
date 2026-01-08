@@ -11,4 +11,35 @@
       icon: "pencil" %>
     <% end %>
   </div>
+
+  <% if @consumptions.any? %>
+    <div class="mt-6">
+      <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-3">Times consumed</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-800">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Time</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-dark-surface divide-y divide-gray-200 dark:divide-gray-700">
+            <% @consumptions.each do |consumption| %>
+              <tr
+                class="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                onclick="Turbo.visit('<%= user_meal_path(consumption) %>')"
+              >
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                  <%= consumption.date_consumed.strftime("%B %d, %Y") %>
+                </td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                  <%= consumption.time_consumed.strftime("%H:%M") %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% end %>
 </div>
