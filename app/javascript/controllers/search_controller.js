@@ -1,17 +1,7 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = [
-    "form",
-    "input",
-    "results",
-    "clearButton",
-    "loader",
-    "searchIcon",
-    "resultsContainer",
-    "suggestions",
-  ];
-  static classes = ["loading"];
+  static targets = ["form", "input", "suggestions"];
 
   connect() {
     this.timeout = null;
@@ -25,21 +15,34 @@ export default class extends Controller {
 
   handleClickOutside(event) {
     if (!this.element.contains(event.target)) {
-      this.resultsContainerTarget.classList.add("hidden");
+      this.setState("idle");
+    }
+  }
+
+  setState(state) {
+    this.element.dataset.state = state;
+  }
+
+  updateHasValue() {
+    if (this.inputTarget.value) {
+      this.element.dataset.hasValue = "";
+    } else {
+      delete this.element.dataset.hasValue;
     }
   }
 
   search() {
     clearTimeout(this.timeout);
+    this.updateHasValue();
 
     if (!this.inputTarget.value.trim()) {
-      this.showSuggestions();
+      if (this.hasSuggestionsTarget) {
+        this.setState("suggestions");
+      }
       return;
     }
 
-    this.hideSuggestions();
-    this.showLoader();
-    this.resultsContainerTarget.classList.remove("hidden");
+    this.setState("loading");
 
     this.timeout = setTimeout(() => {
       this.formTarget.requestSubmit();
@@ -48,76 +51,34 @@ export default class extends Controller {
 
   focus() {
     if (!this.inputTarget.value.trim()) {
-      this.showSuggestions();
+      if (this.hasSuggestionsTarget) {
+        this.setState("suggestions");
+      }
     } else {
-      this.resultsContainerTarget.classList.remove("hidden");
-    }
-  }
-
-  showSuggestions() {
-    if (this.hasSuggestionsTarget) {
-      this.resultsTarget.classList.add("hidden");
-      this.suggestionsTarget.classList.remove("hidden");
-      this.resultsContainerTarget.classList.remove("hidden");
-    }
-  }
-
-  hideSuggestions() {
-    if (this.hasSuggestionsTarget) {
-      this.suggestionsTarget.classList.add("hidden");
-      this.resultsTarget.classList.remove("hidden");
+      this.setState("results");
     }
   }
 
   clear() {
     this.inputTarget.value = "";
-    this.toggleClearButton();
-    this.resultsContainerTarget.classList.add("hidden");
-  }
-
-  clearResults() {
-    this.resultsTarget.innerHTML = "";
-    this.resultsContainerTarget.classList.add("hidden");
-  }
-
-  toggleClearButton() {
-    if (this.inputTarget.value) {
-      this.clearButtonTarget.classList.add("block");
-      this.clearButtonTarget.classList.remove("hidden");
-    } else {
-      this.clearButtonTarget.classList.add("hidden");
-      this.clearButtonTarget.classList.remove("block");
-    }
-  }
-
-  showLoader() {
-    if (this.hasLoaderTarget) {
-      this.loaderTarget.classList.remove("hidden");
-      this.searchIconTarget.classList.add("hidden");
-    }
-  }
-
-  hideLoader() {
-    if (this.hasLoaderTarget) {
-      this.loaderTarget.classList.add("hidden");
-      this.searchIconTarget.classList.remove("hidden");
-    }
+    this.updateHasValue();
+    this.setState("idle");
   }
 
   // Called when turbo:submit-start event is fired
   startSubmit(event) {
-    // If the search input is empty, prevent the form submission and show suggestions instead
     if (!this.inputTarget.value.trim()) {
       event.preventDefault();
-      this.showSuggestions();
+      if (this.hasSuggestionsTarget) {
+        this.setState("suggestions");
+      }
       return;
     }
-
-    this.showLoader();
+    this.setState("loading");
   }
 
   // Called when turbo:submit-end event is fired
   endSubmit() {
-    this.hideLoader();
+    this.setState("results");
   }
 }

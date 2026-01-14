@@ -1,4 +1,4 @@
-<div class="relative mb-4" data-controller="search">
+<div class="relative mb-4 group" data-controller="search" data-state="idle">
   <form
     action="/meals/search"
     method="get"
@@ -16,7 +16,7 @@
         autocomplete="off"
         placeholder="Search meals..."
         data-search-target="input"
-        data-action="input->search#search input->search#toggleClearButton focus->search#focus"
+        data-action="input->search#search input->search#updateHasValue focus->search#focus"
         class="
           col-start-1 row-start-1 block w-full rounded-md bg-white dark:bg-dark-surface
           py-1.5 pl-10 pr-3 text-base text-gray-900 dark:text-dark-text outline outline-1
@@ -32,19 +32,18 @@
       <% end %>
 
       <div
-        data-search-target="searchIcon"
         class="
           pointer-events-none col-start-1 row-start-1 ml-3 size-5 self-center
           text-gray-400 dark:text-gray-500 sm:size-4
+          group-data-[state=loading]:hidden
         "
       >
         <%= heroicon "magnifying-glass", options: { class: "" } %>
       </div>
       <div
-        data-search-target="loader"
         class="
           pointer-events-none col-start-1 row-start-1 ml-3 size-5 self-center
-          text-primary-500 hidden
+          text-primary-500 hidden group-data-[state=loading]:block
         "
       >
         <%= heroicon "arrow-path",
@@ -54,9 +53,11 @@
       </div>
     </div>
     <button
-      class="absolute right-4 top-1.5 hidden flex items-center gap-2"
+      class="
+        absolute right-4 top-1.5 items-center gap-2
+        hidden group-data-[has-value]:flex
+      "
       type="button"
-      data-search-target="clearButton"
       data-action="click->search#clear"
     >
       Clear
@@ -67,18 +68,27 @@
   <div
     class="
       absolute top-10 shadow-lg bg-white/80 dark:bg-dark-surface/80 z-10 md:left-auto
-      -left-5 backdrop-blur-lg w-screen md:w-full hidden right-0 rounded-md border
+      -left-5 backdrop-blur-lg w-screen md:w-full right-0 rounded-md border
       border-sky-300 dark:border-sky-700 transition-colors duration-200
       max-h-[calc(100vh_-_6.5rem_-_var(--nav-b-padding))] md:max-h-max
       overflow-y-scroll md:overflow-y-auto
+      hidden
+      group-data-[state=suggestions]:block
+      group-data-[state=loading]:block
+      group-data-[state=results]:block
     "
-    data-search-target="resultsContainer"
   >
-    <turbo-frame id="search_results" data-search-target="results">
+    <turbo-frame
+      id="search_results"
+      class="hidden group-data-[state=loading]:block group-data-[state=results]:block"
+    >
       <!-- Vector search results will appear here -->
     </turbo-frame>
     <% if local_assigns[:suggestions] %>
-      <div data-search-target="suggestions" class="hidden">
+      <div
+        data-search-target="suggestions"
+        class="hidden group-data-[state=suggestions]:block"
+      >
         <%= render partial: "shared/meal_list", locals: { meals: suggestions, date: params[:date] } %>
       </div>
     <% end %>
