@@ -5,6 +5,7 @@ export default class extends Controller {
 
   connect() {
     this.timeout = null;
+    this.focusedIndex = -1;
     this.handleClickOutside = this.handleClickOutside.bind(this);
     document.addEventListener("click", this.handleClickOutside);
   }
@@ -21,6 +22,7 @@ export default class extends Controller {
 
   setState(state) {
     this.element.dataset.state = state;
+    this.resetFocus();
   }
 
   updateHasValue() {
@@ -66,9 +68,89 @@ export default class extends Controller {
   }
 
   keydown(event) {
-    if (event.key === "Escape") {
-      this.setState("idle");
-      this.inputTarget.blur();
+    switch (event.key) {
+      case "Escape":
+        this.setState("idle");
+        this.inputTarget.blur();
+        break;
+      case "ArrowDown":
+        event.preventDefault();
+        this.focusNext();
+        break;
+      case "ArrowUp":
+        event.preventDefault();
+        this.focusPrevious();
+        break;
+      case "Enter":
+        if (this.focusedIndex >= 0) {
+          event.preventDefault();
+          if (event.metaKey || event.ctrlKey) {
+            this.addFocusedMeal();
+          } else {
+            this.goToFocusedMeal();
+          }
+        }
+        break;
+    }
+  }
+
+  get items() {
+    return this.element.querySelectorAll("[data-search-item]");
+  }
+
+  focusNext() {
+    const items = this.items;
+    if (items.length === 0) return;
+
+    this.clearFocus();
+    this.focusedIndex = Math.min(this.focusedIndex + 1, items.length - 1);
+    this.applyFocus();
+  }
+
+  focusPrevious() {
+    const items = this.items;
+    if (items.length === 0) return;
+
+    this.clearFocus();
+    this.focusedIndex = Math.max(this.focusedIndex - 1, 0);
+    this.applyFocus();
+  }
+
+  clearFocus() {
+    this.items.forEach((item) => delete item.dataset.focused);
+  }
+
+  applyFocus() {
+    const items = this.items;
+    if (this.focusedIndex >= 0 && this.focusedIndex < items.length) {
+      const item = items[this.focusedIndex];
+      item.dataset.focused = "";
+      item.scrollIntoView({ block: "nearest" });
+    }
+  }
+
+  resetFocus() {
+    this.clearFocus();
+    this.focusedIndex = -1;
+  }
+
+  goToFocusedMeal() {
+    const items = this.items;
+    if (this.focusedIndex >= 0 && this.focusedIndex < items.length) {
+      const link = items[this.focusedIndex].querySelector("a");
+      if (link) {
+        link.click();
+      }
+    }
+  }
+
+  addFocusedMeal() {
+    const items = this.items;
+    if (this.focusedIndex >= 0 && this.focusedIndex < items.length) {
+      const form = items[this.focusedIndex].querySelector("form");
+      if (form) {
+        form.requestSubmit();
+      }
     }
   }
 

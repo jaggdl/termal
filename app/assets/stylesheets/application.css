@@ -51,6 +51,22 @@ html {
       #2a2a2a 5px);
 }
 
+[data-focused] {
+  background: repeating-linear-gradient(0deg,
+      #f0f9ff,
+      #f0f9ff 3px,
+      #e0f2fe 1px,
+      #e0f2fe 5px);
+}
+
+:root.dark [data-focused] {
+  background: repeating-linear-gradient(0deg,
+      #0c4a6e,
+      #0c4a6e 3px,
+      #082f49 1px,
+      #082f49 5px);
+}
+
 .animate-fill {
   animation: fill-meter 0.6s ease-in-out forwards;
 }
