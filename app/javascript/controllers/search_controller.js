@@ -15,7 +15,18 @@ export default class extends Controller {
 
   connect() {
     this.timeout = null;
-    this.blurTimeout = null;
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+    document.addEventListener("click", this.handleClickOutside);
+  }
+
+  disconnect() {
+    document.removeEventListener("click", this.handleClickOutside);
+  }
+
+  handleClickOutside(event) {
+    if (!this.element.contains(event.target)) {
+      this.resultsContainerTarget.classList.add("hidden");
+    }
   }
 
   search() {
@@ -36,18 +47,11 @@ export default class extends Controller {
   }
 
   focus() {
-    clearTimeout(this.blurTimeout);
     if (!this.inputTarget.value.trim()) {
       this.showSuggestions();
     } else {
       this.resultsContainerTarget.classList.remove("hidden");
     }
-  }
-
-  blur() {
-    this.blurTimeout = setTimeout(() => {
-      this.resultsContainerTarget.classList.add("hidden");
-    }, 200);
   }
 
   showSuggestions() {
@@ -68,7 +72,7 @@ export default class extends Controller {
   clear() {
     this.inputTarget.value = "";
     this.toggleClearButton();
-    this.showSuggestions();
+    this.resultsContainerTarget.classList.add("hidden");
   }
 
   clearResults() {
