@@ -16,7 +16,7 @@
         autocomplete="off"
         placeholder="Search meals..."
         data-search-target="input"
-        data-action="input->search#search input->search#toggleClearButton"
+        data-action="input->search#search input->search#toggleClearButton focus->search#focus blur->search#blur"
         class="
           col-start-1 row-start-1 block w-full rounded-md bg-white dark:bg-dark-surface
           py-1.5 pl-10 pr-3 text-base text-gray-900 dark:text-dark-text outline outline-1
@@ -77,5 +77,10 @@
     <turbo-frame id="search_results" data-search-target="results">
       <!-- Vector search results will appear here -->
     </turbo-frame>
+    <% if local_assigns[:suggestions] %>
+      <div data-search-target="suggestions" class="hidden">
+        <%= render partial: "shared/meal_list", locals: { meals: suggestions, date: params[:date] } %>
+      </div>
+    <% end %>
   </div>
 </div>

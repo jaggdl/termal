@@ -16,6 +16,7 @@ class UserMealsController < ApplicationController
     @meals = Current.user.user_meals_on_date(@date).order(consumed_at: :desc)
     @meals_by_day = { @date => @meals }
     @total_meals_count = Current.user.meals.count
+    @suggestions = Meal.most_common_meals(user: Current.user, limit: 10)
   end
 
   def new

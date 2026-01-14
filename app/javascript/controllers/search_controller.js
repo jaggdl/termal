@@ -9,23 +9,24 @@ export default class extends Controller {
     "loader",
     "searchIcon",
     "resultsContainer",
+    "suggestions",
   ];
   static classes = ["loading"];
 
   connect() {
     this.timeout = null;
-    this.pendingRequest = null;
+    this.blurTimeout = null;
   }
 
   search() {
     clearTimeout(this.timeout);
 
     if (!this.inputTarget.value.trim()) {
-      this.clearResults();
-      this.hideLoader();
+      this.showSuggestions();
       return;
     }
 
+    this.hideSuggestions();
     this.showLoader();
     this.resultsContainerTarget.classList.remove("hidden");
 
@@ -34,11 +35,40 @@ export default class extends Controller {
     }, 100);
   }
 
+  focus() {
+    clearTimeout(this.blurTimeout);
+    if (!this.inputTarget.value.trim()) {
+      this.showSuggestions();
+    } else {
+      this.resultsContainerTarget.classList.remove("hidden");
+    }
+  }
+
+  blur() {
+    this.blurTimeout = setTimeout(() => {
+      this.resultsContainerTarget.classList.add("hidden");
+    }, 200);
+  }
+
+  showSuggestions() {
+    if (this.hasSuggestionsTarget) {
+      this.resultsTarget.classList.add("hidden");
+      this.suggestionsTarget.classList.remove("hidden");
+      this.resultsContainerTarget.classList.remove("hidden");
+    }
+  }
+
+  hideSuggestions() {
+    if (this.hasSuggestionsTarget) {
+      this.suggestionsTarget.classList.add("hidden");
+      this.resultsTarget.classList.remove("hidden");
+    }
+  }
+
   clear() {
     this.inputTarget.value = "";
     this.toggleClearButton();
-    this.clearResults();
-    this.hideLoader();
+    this.showSuggestions();
   }
 
   clearResults() {
@@ -72,11 +102,10 @@ export default class extends Controller {
 
   // Called when turbo:submit-start event is fired
   startSubmit(event) {
-    // If the search input is empty, prevent the form submission and clear results
+    // If the search input is empty, prevent the form submission and show suggestions instead
     if (!this.inputTarget.value.trim()) {
       event.preventDefault();
-      this.clearResults();
-      this.hideLoader();
+      this.showSuggestions();
       return;
     }
 

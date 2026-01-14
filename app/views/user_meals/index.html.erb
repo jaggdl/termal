@@ -1,6 +1,6 @@
 <%= turbo_stream_from Current.user, "user_meals" %>
 
-<%= render "shared/search_bar" %>
+<%= render "shared/search_bar", suggestions: @suggestions %>
 
 <div class="flex flex-col w-full space-y-6" data-controller="page-refresh">
   <div class="flex w-full flex-col space-y-4">
