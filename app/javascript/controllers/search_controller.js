@@ -79,6 +79,10 @@ export default class extends Controller {
 
   // Called when turbo:submit-end event is fired
   endSubmit() {
-    this.setState("results");
+    if (!this.inputTarget.value.trim() && this.hasSuggestionsTarget) {
+      this.setState("suggestions");
+    } else {
+      this.setState("results");
+    }
   }
 }
