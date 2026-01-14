@@ -45,10 +45,7 @@ export default class extends Controller {
     }
 
     this.setState("loading");
-
-    this.timeout = setTimeout(() => {
-      this.formTarget.requestSubmit();
-    }, 100);
+    this.formTarget.requestSubmit();
   }
 
   focus() {
