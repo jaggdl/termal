@@ -55,13 +55,12 @@
     <button
       class="
         absolute right-4 top-1.5 items-center gap-2
-        hidden group-data-[has-value]:flex
+        flex group-data-[state=idle]:hidden
       "
       type="button"
       data-action="click->search#clear"
     >
-      Clear
-      <%= heroicon "x-mark", options: { class: "size-5 text-gray-600 dark:text-gray-400" } %>
+      <%= heroicon "x-mark", options: { class: "size-6 text-gray-600 dark:text-gray-400" } %>
     </button>
   </form>
 
