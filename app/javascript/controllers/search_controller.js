@@ -65,6 +65,13 @@ export default class extends Controller {
     this.setState("idle");
   }
 
+  keydown(event) {
+    if (event.key === "Escape") {
+      this.setState("idle");
+      this.inputTarget.blur();
+    }
+  }
+
   // Called when turbo:submit-start event is fired
   startSubmit(event) {
     if (!this.inputTarget.value.trim()) {
