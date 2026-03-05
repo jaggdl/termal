@@ -1,7 +1,7 @@
 class LlmConfig
   MODELS = {
     "openai" => %w[o4-mini],
-    "gemini" => %w[gemini-2.5-pro]
+    "gemini" => %w[gemini-2.5-pro gemini-3.1-pro-preview]
   }.freeze
 
   DEFAULT_MODEL = "o4-mini"
