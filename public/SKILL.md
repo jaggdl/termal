@@ -11,14 +11,12 @@ metadata:
 
 Base URL: `/api`
 
-## Authentication
+## Prerequisites
 
-All API endpoints require an API key. Generate your API key from the `/profile` page in the Termal web application.
+Set the `TERMAL_API_TOKEN` environment variable with your API key. Generate your API key from the `/profile` page in the Termal web application.
 
-Include the API key in the `Authorization` header:
-
-```
-Authorization: Bearer YOUR_API_KEY
+```bash
+export TERMAL_API_TOKEN="your_api_key_here"
 ```
 
 ## Endpoints
@@ -35,6 +33,12 @@ Retrieves meals consumed by the current user for a specific date.
 - `meals`: Array of meals consumed, each containing consumption details and meal information (name, calories, proteins, carbs, fats)
 - `totals`: Aggregated nutritional values (calories, proteins, carbs, fats) for all meals on the date
 - `targets`: User's daily nutritional targets from their profile settings
+
+**Example:**
+```bash
+curl -H "Authorization: Bearer $TERMAL_API_TOKEN" \
+  "https://example.com/api/user_meals?date=2026-03-10"
+```
 
 ## Additional Endpoints
 
