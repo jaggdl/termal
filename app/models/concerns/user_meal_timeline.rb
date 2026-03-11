@@ -31,4 +31,21 @@ module UserMealTimeline
   def group_meals_by_date(meals)
     meals.group_by { |um| um.date_consumed }
   end
+
+  def daily_nutrition_summaries(start_date, end_date)
+    meals = user_meals_in_date_range(start_date, end_date)
+    meals_by_date = group_meals_by_date(meals)
+
+    (start_date..end_date).map do |date|
+      date_meals = meals_by_date[date] || []
+
+      {
+        date: date,
+        calories: date_meals.sum { |um| um.meal.calories.to_i },
+        proteins: date_meals.sum { |um| um.meal.proteins.to_f },
+        carbs: date_meals.sum { |um| um.meal.carbs.to_f },
+        fats: date_meals.sum { |um| um.meal.fats.to_f }
+      }
+    end
+  end
 end

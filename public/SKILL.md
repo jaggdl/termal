@@ -40,6 +40,28 @@ curl -H "Authorization: Bearer $TERMAL_API_TOKEN" \
   "https://example.com/api/user_meals?date=2026-03-10"
 ```
 
-## Additional Endpoints
+### GET /api/nutrition_summary
 
-More endpoints will be added to the API in future releases.
+Retrieves daily nutrition summaries for a date range.
+
+**Parameters:**
+- `days` (optional): Number of days to look back. Defaults to 7, maximum 365.
+
+**Returns:**
+- `summaries`: Array of daily nutrition summaries, each containing:
+  - `date`: The date (ISO 8601 format)
+  - `calories`: Total calories consumed
+  - `proteins`: Total protein in grams
+  - `carbs`: Total carbohydrates in grams
+  - `fats`: Total fats in grams
+- `targets`: User's daily nutritional targets for each nutrient
+- `averages`: Average daily consumption with percentage relative to targets:
+  - For each nutrient (calories, proteins, carbs, fats):
+    - `quantity`: Average daily amount
+    - `percentage_of_target`: Percentage of daily target achieved
+
+**Example:**
+```bash
+curl -H "Authorization: Bearer $TERMAL_API_TOKEN" \
+  "https://example.com/api/nutrition_summary?days=7"
+```
