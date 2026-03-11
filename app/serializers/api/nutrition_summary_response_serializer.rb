@@ -41,13 +41,15 @@ module Api
     end
 
     def averages
-      return nil if @daily_summaries.empty?
+      # Only consider days that have meals (non-zero calories)
+      days_with_meals = @daily_summaries.select { |s| s[:calories] > 0 }
+      return nil if days_with_meals.empty?
 
-      total_calories = @daily_summaries.sum { |s| s[:calories] }
-      total_proteins = @daily_summaries.sum { |s| s[:proteins] }
-      total_carbs = @daily_summaries.sum { |s| s[:carbs] }
-      total_fats = @daily_summaries.sum { |s| s[:fats] }
-      count = @daily_summaries.size
+      total_calories = days_with_meals.sum { |s| s[:calories] }
+      total_proteins = days_with_meals.sum { |s| s[:proteins] }
+      total_carbs = days_with_meals.sum { |s| s[:carbs] }
+      total_fats = days_with_meals.sum { |s| s[:fats] }
+      count = days_with_meals.size
 
       daily_targets = @user_profile.daily_targets
 
