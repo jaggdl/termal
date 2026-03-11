@@ -6,7 +6,7 @@ module UserMealTimeline
   def user_meals_on_date(date)
     start_of_day = date.in_time_zone(timezone).beginning_of_day
     end_of_day = date.in_time_zone(timezone).end_of_day
-    user_meals.where(consumed_at: start_of_day..end_of_day)
+    user_meals.where(consumed_at: start_of_day..end_of_day).order(consumed_at: :desc)
   end
 
   def user_today

@@ -1,5 +1,5 @@
 class GlobalSettingsController < ApplicationController
-  include ApiKeyCheck
+  include LlmApiKeyCheck
 
   before_action :check_if_user_is_owner
 

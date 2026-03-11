@@ -1,4 +1,4 @@
-module ApiKeyCheck
+module LlmApiKeyCheck
   extend ActiveSupport::Concern
 
   included do

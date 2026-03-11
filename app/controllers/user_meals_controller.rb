@@ -1,8 +1,5 @@
-require "mini_magick"
-require "tempfile"
-
 class UserMealsController < ApplicationController
-  include ApiKeyCheck
+  include LlmApiKeyCheck
 
   before_action :set_meal, only: [ :show, :update, :destroy ]
   before_action :check_api_key, only: [ :new, :create ]
@@ -13,7 +10,7 @@ class UserMealsController < ApplicationController
 
     @date = params[:date] ? Date.parse(params[:date]) : @today
 
-    @meals = Current.user.user_meals_on_date(@date).order(consumed_at: :desc)
+    @meals = Current.user.user_meals_on_date(@date)
     @meals_by_day = { @date => @meals }
     @total_meals_count = Current.user.meals.count
     @suggestions = Meal.most_common_meals(user: Current.user, limit: 10)

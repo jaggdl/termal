@@ -282,7 +282,7 @@
                   <% end %>
                 </p>
               </div>
-              <%= button_to api_key_path(api_key), method: :delete, class: "text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 ml-4", data: { confirm: "Are you sure? This will permanently delete this API key." } do %>
+              <%= link_to api_key_path(api_key), class: "text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 ml-4", data: { turbo_method: "delete", turbo_confirm: "Are you sure? This will permanently delete this API key." } do %>
                 <%= heroicon "trash", options: { class: "w-5 h-5" } %>
               <% end %>
             </div>
@@ -293,7 +293,7 @@
       <% end %>
 
       <%= form_with model: ApiKey.new, url: api_keys_path, class: "flex gap-2" do |f| %>
-        <%= f.text_field :name, placeholder: "Key name (e.g., 'Mobile App')", class: "flex-1 border border-gray-300 dark:border-gray-700 p-2 rounded-lg focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-700 focus:border-sky-500 dark:focus:border-sky-700 focus:outline-none dark:bg-dark-surface dark:text-dark-text text-sm" %>
+        <%= f.text_field :name, autocomplete: "off", required: "true", placeholder: "Key name (e.g., 'Mobile App')", class: "flex-1 border border-gray-300 dark:border-gray-700 p-2 rounded-lg focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-700 focus:border-sky-500 dark:focus:border-sky-700 focus:outline-none dark:bg-dark-surface dark:text-dark-text text-sm" %>
         <button type="submit">
           <%= render "shared/aqua_style", text: "Create Key" %>
         </button>

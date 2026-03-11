@@ -1,5 +1,5 @@
 class MealsController < ApplicationController
-  include ApiKeyCheck
+  include LlmApiKeyCheck
 
   before_action :set_meal, only: [ :show, :update, :edit, :purge_image ]
 

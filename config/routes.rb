@@ -54,4 +54,9 @@ Rails.application.routes.draw do
 
   # API Keys
   resources :api_keys, only: [ :create, :destroy ]
+
+  # API
+  namespace :api do
+    resources :user_meals, only: [ :index ]
+  end
 end
