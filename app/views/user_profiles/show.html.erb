@@ -253,6 +253,54 @@
     </div>
   <% end %>
 
+  <div class="mt-10 border-t border-gray-300 dark:border-gray-700 pt-6 space-y-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-medium text-sky-700 dark:text-sky-400">API Keys</h2>
+    </div>
+
+    <% if flash[:new_api_key] %>
+      <div class="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4">
+        <p class="text-sm text-green-800 dark:text-green-300 mb-2">New API key created:</p>
+        <code class="block bg-white dark:bg-gray-800 p-2 rounded text-sm font-mono text-gray-800 dark:text-gray-200 break-all"><%= flash[:new_api_key] %></code>
+      </div>
+    <% end %>
+
+    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+      <% if @api_keys.any? %>
+        <div class="space-y-3 mb-4">
+          <% @api_keys.each do |api_key| %>
+            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700 last:border-0">
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-gray-700 dark:text-gray-300"><%= api_key.name %></p>
+                <code class="text-xs text-gray-500 dark:text-gray-400 font-mono break-all"><%= api_key.key %></code>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Created <%= api_key.created_at.strftime("%b %d, %Y") %>
+                  <% if api_key.last_used_at %>
+                    &bull; Last used <%= time_ago_in_words(api_key.last_used_at) %> ago
+                  <% else %>
+                    &bull; Never used
+                  <% end %>
+                </p>
+              </div>
+              <%= button_to api_key_path(api_key), method: :delete, class: "text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 ml-4", data: { confirm: "Are you sure? This will permanently delete this API key." } do %>
+                <%= heroicon "trash", options: { class: "w-5 h-5" } %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">You don't have any API keys yet.</p>
+      <% end %>
+
+      <%= form_with model: ApiKey.new, url: api_keys_path, class: "flex gap-2" do |f| %>
+        <%= f.text_field :name, placeholder: "Key name (e.g., 'Mobile App')", class: "flex-1 border border-gray-300 dark:border-gray-700 p-2 rounded-lg focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-700 focus:border-sky-500 dark:focus:border-sky-700 focus:outline-none dark:bg-dark-surface dark:text-dark-text text-sm" %>
+        <button type="submit">
+          <%= render "shared/aqua_style", text: "Create Key" %>
+        </button>
+      <% end %>
+    </div>
+  </div>
+
   <% if Current.user.is_admin? %>
     <div class="mt-10 border-t border-gray-300 dark:border-gray-700 pt-6 space-y-4">
       <div class="flex items-center justify-between">

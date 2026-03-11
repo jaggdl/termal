@@ -5,6 +5,7 @@ class UserProfilesController < ApplicationController
   def show
     @profile = Current.user_profile || UserProfile.new
     @profile.timezone ||= cookies[:timezone]
+    @api_keys = Current.user.api_keys.order(created_at: :desc)
     @global_settings = GlobalSetting.where(name: %w[openai_api_key anthropic_api_key gemini_api_key]) if Current.user.is_admin?
   end
 

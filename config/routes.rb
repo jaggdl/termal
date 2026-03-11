@@ -51,4 +51,7 @@ Rails.application.routes.draw do
 
   # Push notifications
   resources :push_subscriptions, only: [ :create, :destroy ]
+
+  # API Keys
+  resources :api_keys, only: [ :create, :destroy ]
 end
