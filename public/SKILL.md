@@ -33,6 +33,7 @@ Retrieves meals consumed by the current user for a specific date.
 - `meals`: Array of meals consumed, each containing consumption details and meal information (name, calories, proteins, carbs, fats)
 - `totals`: Aggregated nutritional values (calories, proteins, carbs, fats) for all meals on the date
 - `targets`: User's daily nutritional targets from their profile settings
+- `percentages`: Percentage of daily targets achieved for each nutrient (calories, proteins, carbs, fats)
 
 **Example:**
 ```bash

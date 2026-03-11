@@ -14,7 +14,8 @@ module Api
         "date" => nil,
         "meals" => nil,
         "totals" => nil,
-        "targets" => nil
+        "targets" => nil,
+        "percentages" => nil
       }
     end
 
@@ -51,6 +52,25 @@ module Api
         "carbs" => daily_targets[:carbs],
         "fats" => daily_targets[:fats]
       }
+    end
+
+    def percentages
+      daily_targets = targets
+      daily_totals = totals
+
+      {
+        "calories" => calculate_percentage(daily_totals["calories"], daily_targets["calories"]),
+        "proteins" => calculate_percentage(daily_totals["proteins"], daily_targets["proteins"]),
+        "carbs" => calculate_percentage(daily_totals["carbs"], daily_targets["carbs"]),
+        "fats" => calculate_percentage(daily_totals["fats"], daily_targets["fats"])
+      }
+    end
+
+    private
+
+    def calculate_percentage(value, target)
+      return 0 if target.nil? || target == 0
+      ((value / target.to_f) * 100).round(1)
     end
   end
 end
