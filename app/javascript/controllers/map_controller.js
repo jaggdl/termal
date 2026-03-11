@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
+import L from "leaflet";
 
 export default class extends Controller {
   static targets = ["container"];
@@ -8,7 +9,12 @@ export default class extends Controller {
   };
 
   connect() {
-    this.loadLeaflet();
+    this.initializeMap();
+    this.observer = new MutationObserver(() => this.updateMapTheme());
+    this.observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
   }
 
   disconnect() {
@@ -18,29 +24,6 @@ export default class extends Controller {
     if (this.observer) {
       this.observer.disconnect();
     }
-  }
-
-  async loadLeaflet() {
-    if (!window.L) {
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-      document.head.appendChild(link);
-
-      const script = document.createElement("script");
-      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-      await new Promise((resolve) => {
-        script.onload = resolve;
-        document.head.appendChild(script);
-      });
-    }
-
-    this.initializeMap();
-    this.observer = new MutationObserver(() => this.updateMapTheme());
-    this.observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
   }
 
   initializeMap() {
