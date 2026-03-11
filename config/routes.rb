@@ -60,4 +60,6 @@ Rails.application.routes.draw do
     resources :user_meals, only: [ :index ]
     get "nutrition_summary", to: "nutrition_summaries#index"
   end
+
+  get "/SKILL" => "api/skills#show"
 end

@@ -9,15 +9,15 @@ metadata:
 
 # Termal API
 
-Base URL: `/api`
-
 ## Prerequisites
 
-Set the `TERMAL_API_TOKEN` environment variable with your API key. Generate your API key from the `/profile` page in the Termal web application.
+Set the following environment variables:
 
 ```bash
 export TERMAL_API_TOKEN="your_api_key_here"
 ```
+
+Generate your API key from the [/profile](<%= ENV.fetch('BASE_URL', 'https://your-instance.com/profile') %>) page in the Termal web application.
 
 ## Endpoints
 
@@ -38,7 +38,7 @@ Retrieves meals consumed by the current user for a specific date.
 **Example:**
 ```bash
 curl -H "Authorization: Bearer $TERMAL_API_TOKEN" \
-  "https://example.com/api/user_meals?date=2026-03-10"
+  "<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/api/user_meals?date=2026-03-10"
 ```
 
 ### GET /api/nutrition_summary
@@ -64,5 +64,5 @@ Retrieves daily nutrition summaries for a date range.
 **Example:**
 ```bash
 curl -H "Authorization: Bearer $TERMAL_API_TOKEN" \
-  "https://example.com/api/nutrition_summary?days=7"
+  "<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/api/nutrition_summary?days=7"
 ```
