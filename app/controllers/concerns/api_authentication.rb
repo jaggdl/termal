@@ -3,8 +3,6 @@ module ApiAuthentication
 
   included do
     allow_unauthenticated_access
-    skip_before_action :authenticate_and_redirect
-    skip_before_action :require_profile_completion
     before_action :authenticate_api_key
   end
 
