@@ -66,3 +66,27 @@ Retrieves daily nutrition summaries for a date range.
 curl -H "Authorization: Bearer $TERMAL_API_TOKEN" \
   "<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/api/nutrition_summary?days=7"
 ```
+
+### GET /api/profile
+
+Retrieves the user's profile information including personal details and fitness goals.
+
+**Parameters:**
+- None
+
+**Returns:**
+- `age`: User's age in years
+- `weight`: User's weight in kilograms (kg)
+- `sex`: User's sex
+- `timezone`: User's timezone
+- `height`: User's height in centimeters (cm)
+- `fitness_goals`: Object containing fitness and activity goals:
+  - `physical_activity`: User's physical activity level
+  - `weight_goals`: User's weight goals
+  - `muscle_building`: User's muscle building goals
+
+**Example:**
+```bash
+curl -H "Authorization: Bearer $TERMAL_API_TOKEN" \
+  "<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/api/profile"
+```

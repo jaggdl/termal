@@ -12,7 +12,7 @@ module Api
       daily_summaries = Current.user.daily_nutrition_summaries(start_date, end_date)
       user_profile = Current.user.user_profile
 
-      render json: ::Api::NutritionSummaryResponseSerializer.new(daily_summaries, user_profile, days)
+      render json: NutritionSummaryResponseSerializer.new(daily_summaries, user_profile, days)
     end
   end
 end
