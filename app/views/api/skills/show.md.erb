@@ -90,3 +90,39 @@ Retrieves the user's profile information including personal details and fitness 
 curl -H "Authorization: Bearer $TERMAL_API_TOKEN" \
   "<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/api/profile"
 ```
+
+### PATCH /api/profile
+
+Updates the user's profile information. All parameters are optional - only provided fields will be updated.
+
+**Parameters:**
+- `age` (optional): User's age in years (integer)
+- `weight` (optional): User's weight in kilograms (kg) (float)
+- `sex` (optional): User's sex (`"male"` or `"female"`)
+- `timezone` (optional): User's timezone (e.g., `"America/New_York"`)
+- `height` (optional): User's height in centimeters (cm) (float)
+- `physical_activity` (optional): Physical activity level. Must be one of:
+  - `"sedentary"` - Sedentary (little to no exercise)
+  - `"lightly_active"` - Lightly Active (light exercise 1-3 days/week)
+  - `"moderately_active"` - Moderately Active (moderate exercise 3-5 days/week)
+  - `"very_active"` - Very Active (hard exercise 6-7 days/week)
+  - `"extremely_active"` - Extremely Active (very hard exercise, physical job)
+- `weight_goals` (optional): Weight goals. Must be one of:
+  - `"lose_weight"` - Lose weight
+  - `"maintain"` - Maintain current weight
+  - `"gain_weight"` - Gain weight
+- `muscle_building` (optional): Muscle building goals. Must be one of:
+  - `"build_muscle"` - Build muscle
+  - `"maintain_muscle"` - Maintain muscle
+- `enable_location_tracking` (optional): Enable location tracking (`true` or `false`)
+
+**Returns:**
+- Updated profile object (same format as GET /api/profile)
+
+**Example:**
+```bash
+curl -X PATCH -H "Authorization: Bearer $TERMAL_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"age": 30, "weight": 75.5, "physical_activity": "moderately_active"}' \
+  "<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/api/profile"
+```
