@@ -3,12 +3,12 @@
 module Api
   class UserProfilesController < BaseController
     def show
-      user_profile = Current.user.user_profile
+      user_profile = Current.user_profile
       render json: UserProfileSerializer.new(user_profile)
     end
 
     def update
-      user_profile = Current.user.user_profile
+      user_profile = Current.user_profile
 
       if user_profile
         if user_profile.update(profile_params)
