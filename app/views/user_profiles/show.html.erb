@@ -188,19 +188,15 @@
         <div>
           <p class="font-medium text-gray-700 dark:text-gray-300 mb-2">Physical Activity</p>
           <div class="grid grid-cols-1 gap-2 pl-2">
-            <% ['Sedentary', 'Lightly Active', 'Moderately Active', 'Very Active', 'Extremely Active'].each do |activity| %>
+            <% UserProfile.physical_activity_options.each do |key, label| %>
               <div class="flex items-center">
                 <%= f.radio_button :physical_activity,
-                               activity.downcase.gsub(" ", "_"),
-                               checked:
-                                 (
-                                   @profile.physical_activity ==
-                                     activity.downcase.gsub(" ", "_")
-                                 ),
+                               key,
+                               checked: @profile.physical_activity == key.to_s,
                                class:
                                  "h-4 w-4 text-sky-500 dark:text-sky-600 focus:ring-sky-400 dark:focus:ring-sky-700" %>
-                <%= f.label :"physical_activity_#{activity.downcase.gsub(" ", "_")}",
-                        activity,
+                <%= f.label :"physical_activity_#{key}",
+                        label,
                         class: "ml-2 text-gray-700 dark:text-gray-300" %>
               </div>
             <% end %>
@@ -228,16 +224,15 @@
         <div>
           <p class="font-medium text-gray-700 dark:text-gray-300 mb-2">Muscle Goals</p>
           <div class="grid grid-cols-1 gap-2 pl-2">
-            <% ['Build Muscle', 'Maintain Muscle'].each do |muscle| %>
+            <% UserProfile.muscle_goal_options.each do |key, label| %>
               <div class="flex items-center">
                 <%= f.radio_button :muscle_building,
-                               muscle.downcase.gsub(" ", "_"),
-                               checked:
-                                 (@profile.muscle_building == muscle.downcase.gsub(" ", "_")),
+                               key,
+                               checked: @profile.muscle_building == key.to_s,
                                class:
                                  "h-4 w-4 text-sky-500 dark:text-sky-600 focus:ring-sky-400 dark:focus:ring-sky-700" %>
-                <%= f.label :"muscle_building_#{muscle.downcase.gsub(" ", "_")}",
-                        muscle,
+                <%= f.label :"muscle_building_#{key}",
+                        label,
                         class: "ml-2 text-gray-700 dark:text-gray-300" %>
               </div>
             <% end %>

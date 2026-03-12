@@ -1,7 +1,12 @@
 class UserProfile < ApplicationRecord
+  include FitnessOptions
+
   belongs_to :user
 
   validates :user_id, uniqueness: true
+
+  enum :physical_activity, PHYSICAL_ACTIVITIES.keys.index_with(&:to_s), prefix: true
+  enum :muscle_building, MUSCLE_GOALS.keys.index_with(&:to_s), prefix: true
 
   delegate :daily_targets, to: :nutrition_calculator
 
