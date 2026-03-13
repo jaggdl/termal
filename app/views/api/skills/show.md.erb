@@ -126,3 +126,40 @@ curl -X PATCH -H "Authorization: Bearer $TERMAL_API_TOKEN" \
   -d '{"age": 30, "weight": 75.5, "physical_activity": "moderately_active"}' \
   "<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/api/profile"
 ```
+
+### GET /api/meals/search
+
+Searches meals by nutrient ranges. Returns meals that the user has consumed that match the specified criteria.
+
+**Parameters:**
+- `calories_min` (optional): Minimum calories (integer)
+- `calories_max` (optional): Maximum calories (integer)
+- `proteins_min` (optional): Minimum proteins in grams (float)
+- `proteins_max` (optional): Maximum proteins in grams (float)
+- `carbs_min` (optional): Minimum carbohydrates in grams (float)
+- `carbs_max` (optional): Maximum carbohydrates in grams (float)
+- `fats_min` (optional): Minimum fats in grams (float)
+- `fats_max` (optional): Maximum fats in grams (float)
+- `limit` (optional): Maximum number of results to return (default: 20, max: 100)
+
+**Returns:**
+- `meals`: Array of meals matching the criteria, each containing:
+  - `id`: Meal ID
+  - `name`: Meal name
+  - `description`: Meal description
+  - `calories`: Calories (kcal)
+  - `proteins`: Proteins (g)
+  - `carbs`: Carbohydrates (g)
+  - `fats`: Fats (g)
+  - `created_at`: When the meal was created (ISO 8601 format)
+
+**Example:**
+```bash
+# Search for meals with 300-500 calories and 20-40g of protein
+curl -H "Authorization: Bearer $TERMAL_API_TOKEN" \
+  "<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/api/meals/search?calories_min=300&calories_max=500&proteins_min=20&proteins_max=40"
+
+# Search for low-carb meals (under 20g carbs)
+curl -H "Authorization: Bearer $TERMAL_API_TOKEN" \
+  "<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/api/meals/search?carbs_max=20&limit=50"
+```

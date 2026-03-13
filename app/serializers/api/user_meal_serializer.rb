@@ -45,16 +45,7 @@ module Api
     end
 
     def meal
-      meal = @user_meal.meal
-      {
-        "id" => meal.id,
-        "name" => meal.meal_name,
-        "description" => meal.description,
-        "calories" => meal.calories,
-        "proteins" => meal.proteins,
-        "carbs" => meal.carbs,
-        "fats" => meal.fats
-      }
+      MealSerializer.new(@user_meal.meal).as_json
     end
   end
 end
