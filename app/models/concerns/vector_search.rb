@@ -50,13 +50,13 @@ module VectorSearch
       query_embedding = QueryEmbedding.find_or_create_embedding(query)
       embedding = query_embedding.embedding
 
-      # Get user's unique meal IDs first - fast indexed lookup
-      user_meal_ids = UserMeal.where(user_id: user.id).distinct.pluck(:meal_id)
+      # Get user's meal IDs and their consumption data in one query
+      user_meals_data = UserMeal.where(user_id: user.id).pluck(:meal_id, :consumed_at)
+      user_meal_ids = user_meals_data.map(&:first).uniq
 
       return [] if user_meal_ids.empty?
 
       # First do vector search on all vectors (fast, uses index)
-      # Then filter to user's meals (fast, indexed)
       vector_sql = <<~SQL
         SELECT meal_id, distance
         FROM meal_vectors
@@ -74,31 +74,29 @@ module VectorSearch
 
       return [] if user_meal_ids_from_vector.empty?
 
-      # Now query for full meal data with interaction scores
-      placeholders = user_meal_ids_from_vector.map { "?" }.join(",")
-      sql = <<~SQL
-        SELECT meals.*,
-               #{interaction_score_sql} AS interaction_score
-        FROM meals
-        INNER JOIN user_meals ON meals.id = user_meals.meal_id
-        WHERE user_meals.user_id = ?
-          AND meals.id IN (#{placeholders})
-        GROUP BY meals.id
-      SQL
+      # Fetch meals without complex SQL calculations
+      results = where(id: user_meal_ids_from_vector).to_a
 
-      results = find_by_sql([
-        sql,
-        time_decay_rate,
-        hour_penalty,
-        user.id,
-        *user_meal_ids_from_vector
-      ])
+      # Calculate interaction scores in Ruby (much faster than SQL)
+      now = Time.current
+      now_seconds = now.to_i
+      now_hour = now.hour
 
-      # Calculate combined scores in Ruby
       results.each do |meal|
         vector_result = user_vector_results.find { |vr| vr.meal_id == meal.id }
         distance = vector_result ? vector_result.distance : 1.0
-        interaction_score = meal.attributes["interaction_score"].to_f
+
+        # Get all consumption times for this meal
+        meal_consumptions = user_meals_data.select { |um| um[0] == meal.id }.map(&:last)
+
+        # Calculate interaction score
+        interaction_score = meal_consumptions.sum do |consumed_at|
+          time_decay = (now_seconds - consumed_at.to_i) / 86400.0
+          consumed_hour = consumed_at.hour
+          hour_diff = [ (now_hour - consumed_hour).abs, 24 - (now_hour - consumed_hour).abs ].min
+          Math.exp(-time_decay_rate * time_decay - hour_penalty * hour_diff)
+        end
+
         meal.combined_score = (1.0 / (1.0 + distance)) + interaction_weight * interaction_score
       end
 
