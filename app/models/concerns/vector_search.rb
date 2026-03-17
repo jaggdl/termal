@@ -4,6 +4,7 @@ module VectorSearch
   included do
     has_one :meal_vector, foreign_key: "meal_id"
     after_save :update_vector_embedding
+    attr_accessor :combined_score
   end
 
   def content_for_embedding
@@ -49,21 +50,60 @@ module VectorSearch
       query_embedding = QueryEmbedding.find_or_create_embedding(query)
       embedding = query_embedding.embedding
 
+      # Get user's unique meal IDs first - fast indexed lookup
+      user_meal_ids = UserMeal.where(user_id: user.id).distinct.pluck(:meal_id)
+
+      return [] if user_meal_ids.empty?
+
+      # First do vector search on all vectors (fast, uses index)
+      # Then filter to user's meals (fast, indexed)
+      vector_sql = <<~SQL
+        SELECT meal_id, distance
+        FROM meal_vectors
+        WHERE embedding MATCH ? AND k = ?
+      SQL
+      vector_results = MealVector.find_by_sql([
+        vector_sql,
+        embedding.to_s,
+        [ user_meal_ids.length, limit * 10 ].max
+      ])
+
+      # Filter to user's meals in Ruby (fast, small dataset)
+      user_vector_results = vector_results.select { |vr| user_meal_ids.include?(vr.meal_id) }
+      user_meal_ids_from_vector = user_vector_results.map(&:meal_id)
+
+      return [] if user_meal_ids_from_vector.empty?
+
+      # Now query for full meal data with interaction scores
+      placeholders = user_meal_ids_from_vector.map { "?" }.join(",")
       sql = <<~SQL
         SELECT meals.*,
-               distance,
-               (1.0 / (1.0 + distance)) + ? * #{interaction_score_sql} AS combined_score
+               #{interaction_score_sql} AS interaction_score
         FROM meals
-        INNER JOIN meal_vectors ON meals.id = meal_vectors.meal_id
         INNER JOIN user_meals ON meals.id = user_meals.meal_id
         WHERE user_meals.user_id = ?
-          AND meal_vectors.embedding MATCH ? AND k = ?
-        GROUP BY meals.id, distance
-        ORDER BY combined_score DESC
-        LIMIT ? OFFSET ?
+          AND meals.id IN (#{placeholders})
+        GROUP BY meals.id
       SQL
 
-      find_by_sql([ sql, interaction_weight, time_decay_rate, hour_penalty, user.id, embedding.to_s, limit * 10, limit, offset ])
+      results = find_by_sql([
+        sql,
+        time_decay_rate,
+        hour_penalty,
+        user.id,
+        *user_meal_ids_from_vector
+      ])
+
+      # Calculate combined scores in Ruby
+      results.each do |meal|
+        vector_result = user_vector_results.find { |vr| vr.meal_id == meal.id }
+        distance = vector_result ? vector_result.distance : 1.0
+        interaction_score = meal.attributes["interaction_score"].to_f
+        meal.combined_score = (1.0 / (1.0 + distance)) + interaction_weight * interaction_score
+      end
+
+      # Sort by combined score and apply limit/offset
+      results.sort_by { |m| -m.combined_score }.drop(offset).first(limit)
     end
   end
 end
