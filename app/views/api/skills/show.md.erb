@@ -19,6 +19,49 @@ export TERMAL_API_TOKEN="your_api_key_here"
 
 Generate your API key from the [/profile](<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/profile) page in the Termal web application.
 
+## Available Scripts
+
+- **`scripts/termal-api.sh`** — CLI tool for interacting with the Termal API
+
+## Setup
+
+1. Download the script to your skill's `scripts/` directory:
+
+```bash
+curl -o scripts/termal-api.sh "<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/api/skills/termal-api.sh" && chmod +x scripts/termal-api.sh
+```
+
+2. Set your API token:
+
+```bash
+export TERMAL_API_TOKEN="your_api_key_here"
+```
+
+Generate your API key from the [/profile](<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/profile) page.
+
+## Usage
+
+Run the script using relative paths from the skill directory root:
+
+```bash
+# Get today's meals
+bash scripts/termal-api.sh meals
+
+# Get meals for a specific date
+bash scripts/termal-api.sh meals 2026-03-10
+
+# Get nutrition summary for last 7 days
+bash scripts/termal-api.sh summary
+
+# Get user profile
+bash scripts/termal-api.sh profile
+
+# Search for meals with 300-500 calories and 20-40g protein
+bash scripts/termal-api.sh search --calories-min 300 --calories-max 500 --proteins-min 20 --proteins-max 40
+```
+
+Run `bash scripts/termal-api.sh --help` for full usage information.
+
 ## Endpoints
 
 ### GET /api/user_meals
