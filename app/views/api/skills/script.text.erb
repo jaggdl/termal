@@ -1,0 +1,129 @@
+#!/bin/bash
+
+# Termal API CLI Script
+# This script provides convenient commands for interacting with the Termal API
+
+set -e
+
+BASE_URL="${TERMAL_BASE_URL:-<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>}"
+API_TOKEN="${TERMAL_API_TOKEN:-}"
+
+if [ -z "$API_TOKEN" ]; then
+  echo "Error: TERMAL_API_TOKEN environment variable is required"
+  echo "Set it with: export TERMAL_API_TOKEN='your_api_key_here'"
+  exit 1
+fi
+
+# Helper function for making API requests
+api_call() {
+  local method="$1"
+  local endpoint="$2"
+  local data="${3:-}"
+  
+  if [ -n "$data" ]; then
+    curl -s -X "$method" \
+      -H "Authorization: Bearer $API_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d "$data" \
+      "$BASE_URL$endpoint"
+  else
+    curl -s -X "$method" \
+      -H "Authorization: Bearer $API_TOKEN" \
+      "$BASE_URL$endpoint"
+  fi
+}
+
+# Display usage information
+usage() {
+  cat << EOF
+Usage: termal-api <command> [options]
+
+Commands:
+  meals [date]              Get meals for a specific date (YYYY-MM-DD) or today
+  summary [days]            Get nutrition summary for the last N days (default: 7)
+  profile                   Get user profile information
+  update-profile <json>     Update profile with JSON data
+  search [options]          Search meals by nutrient ranges
+
+Options for search:
+  --calories-min N          Minimum calories
+  --calories-max N          Maximum calories
+  --proteins-min N          Minimum proteins (g)
+  --proteins-max N          Maximum proteins (g)
+  --carbs-min N             Minimum carbs (g)
+  --carbs-max N             Maximum carbs (g)
+  --fats-min N              Minimum fats (g)
+  --fats-max N              Maximum fats (g)
+  --limit N                 Maximum results (default: 20)
+
+Environment Variables:
+  TERMAL_API_TOKEN          Your API authentication token (required)
+  TERMAL_BASE_URL           API base URL (default: <%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>)
+
+Examples:
+  termal-api meals 2026-03-10
+  termal-api summary 7
+  termal-api profile
+  termal-api search --calories-min 300 --calories-max 500 --proteins-min 20
+
+Generate your API key at: $BASE_URL/profile
+EOF
+}
+
+# Main command handler
+case "${1:-}" in
+  meals)
+    date="${2:-$(date +%Y-%m-%d)}"
+    api_call "GET" "/api/user_meals?date=$date" | jq .
+    ;;
+    
+  summary)
+    days="${2:-7}"
+    api_call "GET" "/api/nutrition_summary?days=$days" | jq .
+    ;;
+    
+  profile)
+    api_call "GET" "/api/profile" | jq .
+    ;;
+    
+  update-profile)
+    if [ -z "${2:-}" ]; then
+      echo "Error: JSON data required"
+      echo "Usage: termal-api update-profile '{\"age\": 30, \"weight\": 75.5}'"
+      exit 1
+    fi
+    api_call "PATCH" "/api/profile" "$2" | jq .
+    ;;
+    
+  search)
+    shift  # Remove 'search' command
+    query_params=""
+    while [[ $# -gt 0 ]]; do
+      case "$1" in
+        --calories-min) query_params="$query_params&calories_min=$2"; shift 2 ;;
+        --calories-max) query_params="$query_params&calories_max=$2"; shift 2 ;;
+        --proteins-min) query_params="$query_params&proteins_min=$2"; shift 2 ;;
+        --proteins-max) query_params="$query_params&proteins_max=$2"; shift 2 ;;
+        --carbs-min) query_params="$query_params&carbs_min=$2"; shift 2 ;;
+        --carbs-max) query_params="$query_params&carbs_max=$2"; shift 2 ;;
+        --fats-min) query_params="$query_params&fats_min=$2"; shift 2 ;;
+        --fats-max) query_params="$query_params&fats_max=$2"; shift 2 ;;
+        --limit) query_params="$query_params&limit=$2"; shift 2 ;;
+        *) echo "Unknown option: $1"; exit 1 ;;
+      esac
+    done
+    # Remove leading &
+    query_params="${query_params#&}"
+    api_call "GET" "/api/meals/search?$query_params" | jq .
+    ;;
+    
+  --help|-h|help)
+    usage
+    ;;
+    
+  *)
+    echo "Error: Unknown command '${1:-}'"
+    usage
+    exit 1
+    ;;
+esac

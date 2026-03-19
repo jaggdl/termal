@@ -64,4 +64,5 @@ Rails.application.routes.draw do
   end
 
   get "/SKILL" => "api/skills#show"
+  get "/api/skills/termal-api.sh" => "api/skills#script"
 end
