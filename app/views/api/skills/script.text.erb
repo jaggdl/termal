@@ -74,16 +74,16 @@ EOF
 case "${1:-}" in
   meals)
     date="${2:-$(date +%Y-%m-%d)}"
-    api_call "GET" "/api/user_meals?date=$date" | jq .
+    api_call "GET" "/api/user_meals?date=$date"
     ;;
     
   summary)
     days="${2:-7}"
-    api_call "GET" "/api/nutrition_summary?days=$days" | jq .
+    api_call "GET" "/api/nutrition_summary?days=$days"
     ;;
     
   profile)
-    api_call "GET" "/api/profile" | jq .
+    api_call "GET" "/api/profile"
     ;;
     
   update-profile)
@@ -92,7 +92,7 @@ case "${1:-}" in
       echo "Usage: termal-api update-profile '{\"age\": 30, \"weight\": 75.5}'"
       exit 1
     fi
-    api_call "PATCH" "/api/profile" "$2" | jq .
+    api_call "PATCH" "/api/profile" "$2"
     ;;
     
   search)
@@ -114,7 +114,7 @@ case "${1:-}" in
     done
     # Remove leading &
     query_params="${query_params#&}"
-    api_call "GET" "/api/meals/search?$query_params" | jq .
+    api_call "GET" "/api/meals/search?$query_params"
     ;;
     
   --help|-h|help)
