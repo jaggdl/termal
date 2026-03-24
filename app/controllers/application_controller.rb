@@ -3,10 +3,16 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   # allow_browser versions: :modern
 
+  before_action :set_current_location
   before_action :authenticate_and_redirect
   before_action :require_profile_completion
 
   private
+
+  def set_current_location
+    Current.latitude = cookies[:user_latitude]
+    Current.longitude = cookies[:user_longitude]
+  end
 
   def authenticate_and_redirect
     if !authenticated? && User.count.zero?

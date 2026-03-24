@@ -46,12 +46,17 @@ module VectorSearch
       find_by_sql([ sql, time_decay_rate, hour_penalty, user.id, limit, offset ])
     end
 
-    def vector_search(query:, user:, limit: 5, offset: 0, time_decay_rate: 0.1, interaction_weight: 0.03, hour_penalty: 0.05)
+    def vector_search(query:, user:, limit: 5, offset: 0, time_decay_rate: 0.1, interaction_weight: 0.03, hour_penalty: 0.05, location_weight: 0.02)
       query_embedding = QueryEmbedding.find_or_create_embedding(query)
       embedding = query_embedding.embedding
 
+      latitude = Current.latitude
+      longitude = Current.longitude
+      user_has_location = latitude.present? && longitude.present?
+
       # Get user's meal IDs and their consumption data in one query
-      user_meals_data = UserMeal.where(user_id: user.id).pluck(:meal_id, :consumed_at)
+      # Include location data when available
+      user_meals_data = UserMeal.where(user_id: user.id).pluck(:meal_id, :consumed_at, :latitude, :longitude)
       user_meal_ids = user_meals_data.map(&:first).uniq
 
       return [] if user_meal_ids.empty?
@@ -86,22 +91,53 @@ module VectorSearch
         vector_result = user_vector_results.find { |vr| vr.meal_id == meal.id }
         distance = vector_result ? vector_result.distance : 1.0
 
-        # Get all consumption times for this meal
-        meal_consumptions = user_meals_data.select { |um| um[0] == meal.id }.map(&:last)
+        # Get all consumption data for this meal
+        meal_user_meals = user_meals_data.select { |um| um[0] == meal.id }
 
-        # Calculate interaction score
-        interaction_score = meal_consumptions.sum do |consumed_at|
+        # Calculate interaction score based on time
+        interaction_score = meal_user_meals.sum do |user_meal|
+          consumed_at = user_meal[1]
           time_decay = (now_seconds - consumed_at.to_i) / 86400.0
           consumed_hour = consumed_at.hour
           hour_diff = [ (now_hour - consumed_hour).abs, 24 - (now_hour - consumed_hour).abs ].min
           Math.exp(-time_decay_rate * time_decay - hour_penalty * hour_diff)
         end
 
-        meal.combined_score = (1.0 / (1.0 + distance)) + interaction_weight * interaction_score
+        # Calculate location score if user has location
+        location_score = 0.0
+        if user_has_location
+          user_lat = latitude.to_f
+          user_lon = longitude.to_f
+
+          meal_user_meals.each do |user_meal|
+            meal_lat = user_meal[2]
+            meal_lon = user_meal[3]
+            next if meal_lat.nil? || meal_lon.nil?
+
+            # Calculate distance using Haversine formula (approximation in km)
+            location_score += haversine_distance(user_lat, user_lon, meal_lat.to_f, meal_lon.to_f)
+          end
+        end
+
+        meal.combined_score = (1.0 / (1.0 + distance)) + interaction_weight * interaction_score - location_weight * location_score
       end
 
       # Sort by combined score and apply limit/offset
       results.sort_by { |m| -m.combined_score }.drop(offset).first(limit)
+    end
+
+    def haversine_distance(lat1, lon1, lat2, lon2)
+      # Convert to radians
+      d_lat = to_radians(lat2 - lat1)
+      d_lon = to_radians(lon2 - lon1)
+      a = Math.sin(d_lat / 2) ** 2 +
+          Math.cos(to_radians(lat1)) * Math.cos(to_radians(lat2)) * Math.sin(d_lon / 2) ** 2
+      c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+      6371 * c # Earth radius in km
+    end
+
+    def to_radians(degrees)
+      degrees * Math::PI / 180.0
     end
   end
 end
