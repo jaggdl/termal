@@ -72,9 +72,9 @@ class UserMealsController < ApplicationController
     consumed_at = calculate_consumed_at(params[:date])
     @user_meal = Current.user.user_meals.build(consumed_at: consumed_at)
 
-    if params[:user_meal][:latitude].present? && params[:user_meal][:longitude].present?
-      @user_meal.latitude = params[:user_meal][:latitude]
-      @user_meal.longitude = params[:user_meal][:longitude]
+    if Current.latitude.present? && Current.longitude.present?
+      @user_meal.latitude = Current.latitude
+      @user_meal.longitude = Current.longitude
     end
 
     prompt = params[:user_meal][:prompt]
@@ -142,11 +142,11 @@ class UserMealsController < ApplicationController
   def create_from_meal_id
     meal_id = params[:meal_id]
     consumed_at = calculate_consumed_at(params[:date])
-    @user_meal = Current.user_meals.new(meal_id: meal_id, consumed_at: consumed_at)
+    @user_meal = Current.user.user_meals.new(meal_id: meal_id, consumed_at: consumed_at)
 
-    if params[:latitude].present? && params[:longitude].present?
-      @user_meal.latitude = params[:latitude]
-      @user_meal.longitude = params[:longitude]
+    if Current.latitude.present? && Current.longitude.present?
+      @user_meal.latitude = Current.latitude
+      @user_meal.longitude = Current.longitude
     end
 
     if @user_meal.save

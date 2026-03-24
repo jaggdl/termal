@@ -2,12 +2,10 @@
   <h1 class="text-xl font-semibold text-gray-800 dark:text-dark-text mb-4">Add a New Meal</h1>
 </div>
 
-<%= form_with(model: @user_meal, local: true, class: "space-y-6", data: { controller: "image-preview meal-location" }) do |form| %>
+<%= form_with(model: @user_meal, local: true, class: "space-y-6", data: { controller: "image-preview" }) do |form| %>
   <% if @date.present? %>
     <%= hidden_field_tag :date, @date %>
   <% end %>
-  <%= form.hidden_field :latitude, data: { meal_location_target: "latitude" } %>
-  <%= form.hidden_field :longitude, data: { meal_location_target: "longitude" } %>
   <div class="space-y-2">
     <%= form.label :prompt, "Meal Description", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
     <%= form.text_area :prompt, class: "mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-dark-surface dark:text-dark-text shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:focus:ring-dark-primary dark:focus:border-dark-primary sm:text-sm", placeholder: "Describe your meal (e.g., 'Chicken caesar salad with croutons and parmesan')" %>

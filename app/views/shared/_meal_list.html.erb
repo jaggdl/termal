@@ -4,7 +4,6 @@
       bg-white dark:bg-dark-surface rounded-md overflow-hidden transition-colors
       duration-200
     "
-    data-controller="meal-location"
   >
     <% meals.each do |meal| %>
       <li
@@ -27,12 +26,6 @@
                   method: :post,
                   data: {
                     turbo: true,
-                    action: "click->meal-location#addLocation",
-                  },
-                  form: {
-                    data: {
-                      meal_location_target: "form",
-                    },
                   } do %>
           <%= render "shared/aqua_style", text: "Add" %>
         <% end %>

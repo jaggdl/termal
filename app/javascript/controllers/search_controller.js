@@ -8,27 +8,6 @@ export default class extends Controller {
     this.focusedIndex = -1;
     this.handleClickOutside = this.handleClickOutside.bind(this);
     document.addEventListener("click", this.handleClickOutside);
-    this.getLocation();
-  }
-
-  getLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          this.setCookie("user_latitude", position.coords.latitude);
-          this.setCookie("user_longitude", position.coords.longitude);
-        },
-        () => {
-          // Silently fail if geolocation is not available or denied
-        }
-      );
-    }
-  }
-
-  setCookie(name, value) {
-    const expires = new Date();
-    expires.setHours(expires.getHours() + 1); // 1 hour expiry
-    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
   }
 
   disconnect() {
