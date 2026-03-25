@@ -46,7 +46,7 @@ module VectorSearch
       find_by_sql([ sql, time_decay_rate, hour_penalty, user.id, limit, offset ])
     end
 
-    def vector_search(query:, user:, limit: 5, offset: 0, time_decay_rate: 0.1, interaction_weight: 0.03, hour_penalty: 0.05, location_weight: 0.02)
+    def vector_search(query:, user:, limit: 5, offset: 0, time_decay_rate: 0.1, interaction_weight: 0.03, hour_penalty: 0.05, location_weight: 0.001)
       query_embedding = QueryEmbedding.find_or_create_embedding(query)
       embedding = query_embedding.embedding
 
@@ -103,11 +103,12 @@ module VectorSearch
           Math.exp(-time_decay_rate * time_decay - hour_penalty * hour_diff)
         end
 
-        # Calculate location score if user has location
-        location_score = 0.0
+        # Calculate location boost if user has location (only for meals within 10km radius)
+        location_boost = 0.0
         if user_has_location
           user_lat = latitude.to_f
           user_lon = longitude.to_f
+          max_radius_km = 10.0
 
           meal_user_meals.each do |user_meal|
             meal_lat = user_meal[2]
@@ -115,11 +116,16 @@ module VectorSearch
             next if meal_lat.nil? || meal_lon.nil?
 
             # Calculate distance using Haversine formula (approximation in km)
-            location_score += haversine_distance(user_lat, user_lon, meal_lat.to_f, meal_lon.to_f)
+            dist_km = haversine_distance(user_lat, user_lon, meal_lat.to_f, meal_lon.to_f)
+
+            # Only boost if within radius (closer = higher boost)
+            if dist_km <= max_radius_km
+              location_boost += (max_radius_km - dist_km) / max_radius_km
+            end
           end
         end
 
-        meal.combined_score = (1.0 / (1.0 + distance)) + interaction_weight * interaction_score - location_weight * location_score
+        meal.combined_score = (1.0 / (1.0 + distance)) + interaction_weight * interaction_score + location_weight * location_boost
       end
 
       # Sort by combined score and apply limit/offset
