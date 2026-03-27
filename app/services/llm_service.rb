@@ -34,17 +34,6 @@ class LlmService
     response.content
   end
 
-  def analyze_nutrition(user_profile:, summary_data:, meal_data:)
-    prompt_template = ApplicationController.renderer.render(
-      partial: "templates/nutrition_analysis_prompt",
-      locals: { user_profile:, summary_data:, meal_data: }
-    )
-
-    response = chat.ask prompt_template
-
-    response.content
-  end
-
   private
 
   def chat

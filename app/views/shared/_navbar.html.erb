@@ -10,12 +10,6 @@
     <%= link_to "Summary",
     nutrition_summary_path,
     class: nav_link_classes(current_page?(nutrition_summary_path)) %>
-    <% if Current.user.is_admin? %>
-      <%# Analysis coming soon %>
-      <%# <%= link_to "Analysis",
-      analyses_path,
-      class: nav_link_classes(request.path.start_with?("/analysis")) %>
-    <% end %>
     <div class="w-full flex justify-end items-center space-x-8">
       <% if Current.user.is_admin? %>
         <%= link_to "Family",
@@ -54,13 +48,6 @@
     <% end %>
 
     <% if Current.user.is_admin? %>
-      <%# Analysis coming soon %>
-      <%# <%= link_to analyses_path, class: "flex flex-col items-center" do %>
-      <%#   <%= heroicon "magnifying-glass",
-      <%#   options: {
-      <%#     class: nav_icon_classes(request.path.start_with?("/analysis")),
-      <%#   } %>
-      <%# <% end %>
       <%= link_to family_path, class: "flex flex-col items-center" do %>
         <%= heroicon "user-group",
         options: {

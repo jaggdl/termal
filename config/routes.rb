@@ -29,9 +29,7 @@ Rails.application.routes.draw do
     end
   end
 
-  get "suggest_meals", to: "meal_suggestions#index"
   get "nutrition_summary", to: "nutrition_summary#show", as: :nutrition_summary
-  resources :analyses, path: "analysis", controller: "nutrition_analyses"
 
   get "/global_settings", to: "global_settings#index", as: :global_settings
   patch "/global_settings", to: "global_settings#update", as: :update_global_settings

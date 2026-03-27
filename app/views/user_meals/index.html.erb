@@ -82,52 +82,5 @@
         <p class="dark:text-dark-text">No meals for this day</p>
       </div>
     <% end %>
-
-    <div
-      id="suggest-meals-button"
-      class="mx-auto mt-6 flex justify-center"
-      data-controller="suggest-meals"
-      data-action="turbo:submit-start->suggest-meals#showLoading turbo:submit-end->suggest-meals#hideLoading turbo:fetch-request-error->suggest-meals#handleError"
-    >
-      <% if @total_meals_count >= 5 %>
-        <%= button_to suggest_meals_path(date: @date), method: :get, data: { turbo_stream: true, suggest_meals_target: "button" } do %>
-          <div class="relative cursor-pointer">
-            <span
-              class="
-                aqua-reflection flex items-center text-sm justify-center px-4 py-2 rounded-full
-                bg-gradient-to-b from-sky-300 to-sky-500 hover:from-sky-400 hover:to-sky-600 dark:from-sky-500 dark:to-sky-700 dark:hover:from-sky-600 dark:hover:to-sky-800 text-white shadow-md
-                transition-all duration-200
-              "
-            >
-              <span class="mr-2 hidden" data-suggest-meals-target="loader">
-                <%= heroicon "arrow-path", options: { class: "size-4 animate-spin" } %>
-              </span>
-              <span class="mr-2" data-suggest-meals-target="icon">
-                <%= heroicon "light-bulb", options: { class: "size-4" } %>
-              </span>
-              <span data-suggest-meals-target="buttonText">Suggest Meals</span>
-            </span>
-          </div>
-        <% end %>
-      <% else %>
-        <div class="relative cursor-not-allowed" title="Add at least 5 meals to enable suggestions">
-          <span
-            class="
-              flex items-center text-sm justify-center px-4 py-2 rounded-full
-              bg-gradient-to-b from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 text-gray-500 dark:text-gray-400 shadow-md
-              opacity-60
-            "
-          >
-            <span class="mr-2">
-              <%= heroicon "light-bulb", options: { class: "size-4" } %>
-            </span>
-            <span>Suggest Meals</span>
-          </span>
-        </div>
-      <% end %>
-    </div>
-
-    <div id="meal-suggestions" class="mt-8">
-    </div>
   </div>
 </div>
