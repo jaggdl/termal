@@ -41,6 +41,7 @@ Usage: termal-api <command> [options]
 Commands:
   meals [date]              Get meals for a specific date (YYYY-MM-DD) or today
   user-meal <id>            Get a specific user meal by ID
+  meal <id>                 Get a specific meal by ID
   summary [days]            Get nutrition summary for the last N days (default: 7)
   profile                   Get user profile information
   update-profile <json>     Update profile with JSON data
@@ -64,6 +65,7 @@ Environment Variables:
 Examples:
   termal-api meals 2026-03-10
   termal-api user-meal 123
+  termal-api meal 456
   termal-api summary 7
   termal-api profile
   termal-api search --calories-min 300 --calories-max 500 --proteins-min 20
@@ -86,6 +88,15 @@ case "${1:-}" in
       exit 1
     fi
     api_call "GET" "/api/user_meals/$2"
+    ;;
+
+  meal)
+    if [ -z "${2:-}" ]; then
+      echo "Error: Meal ID required"
+      echo "Usage: termal-api meal <id>"
+      exit 1
+    fi
+    api_call "GET" "/api/meals/$2"
     ;;
     
   summary)
