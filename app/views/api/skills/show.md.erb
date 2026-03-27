@@ -17,7 +17,7 @@ Set the following environment variables:
 export TERMAL_API_TOKEN="your_api_key_here"
 ```
 
-Generate your API key from the [/profile](<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/profile) page in the Termal web application.
+Generate your API key from the [/profile](<%= base_url %>/profile) page in the Termal web application.
 
 ## Available Scripts
 
@@ -28,7 +28,7 @@ Generate your API key from the [/profile](<%= ENV.fetch('BASE_URL', 'https://you
 1. Download the script to your skill's `scripts/` directory:
 
 ```bash
-curl -o scripts/termal-api.sh "<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/api/skills/termal-api.sh" && chmod +x scripts/termal-api.sh
+curl -o scripts/termal-api.sh "<%= base_url %>/api/skills/termal-api.sh" && chmod +x scripts/termal-api.sh
 ```
 
 2. Set your API token:
@@ -37,7 +37,7 @@ curl -o scripts/termal-api.sh "<%= ENV.fetch('BASE_URL', 'https://your-instance.
 export TERMAL_API_TOKEN="your_api_key_here"
 ```
 
-Generate your API key from the [/profile](<%= ENV.fetch('BASE_URL', 'https://your-instance.com') %>/profile) page.
+Generate your API key from the [/profile](<%= base_url %>/profile) page.
 
 ## Usage
 

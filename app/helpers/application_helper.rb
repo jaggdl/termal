@@ -4,6 +4,10 @@ module ApplicationHelper
     medium: "absolute inset-0 w-full h-full object-cover bg-gray-200 dark:bg-gray-700"
   }
 
+  def base_url
+    ENV.fetch("BASE_URL", "https://your-instance.com")
+  end
+
   def meal_image_tag(meal, size: :medium)
     primary_img = meal.primary_image
     if primary_img
