@@ -1,11 +1,12 @@
 class NutritionSummaryService
   NUTRIENTS = [ :calories, :proteins, :fats, :carbs ]
 
-  attr_reader :user, :period, :start_date, :end_date, :timezone
+  attr_reader :user, :period, :start_date, :end_date, :timezone, :query
 
-  def initialize(user, period: 7, offset: 0)
+  def initialize(user, period: 7, offset: 0, query: nil)
     @user = user
     @period = period
+    @query = query
     @timezone = ActiveSupport::TimeZone[user.timezone]
     @end_date = Time.current.in_time_zone(timezone).to_date - offset.days
     @start_date = @end_date - (@period - 1).days
@@ -34,7 +35,44 @@ class NutritionSummaryService
   end
 
   def user_meals
-    @user_meals ||= user.user_meals_in_date_range(start_date, end_date)
+    @user_meals ||= begin
+      meals = user.user_meals_in_date_range(start_date, end_date)
+
+      if query.present?
+        matching_meal_ids = vector_search_meal_ids
+        meals = meals.joins(:meal).where(meals: { id: matching_meal_ids })
+      end
+
+      meals
+    end
+  end
+
+  def vector_search_meal_ids
+    return [] if query.blank?
+
+    query_embedding = QueryEmbedding.find_or_create_embedding(query)
+    embedding = query_embedding.embedding
+
+    user_meal_ids = user.user_meals_in_date_range(start_date, end_date).pluck(:meal_id).uniq
+    return [] if user_meal_ids.empty?
+
+    # Vector search on meal_vectors
+    vector_sql = <<~SQL
+      SELECT meal_id, distance
+      FROM meal_vectors
+      WHERE embedding MATCH ? AND k = ?
+    SQL
+
+    vector_results = MealVector.find_by_sql([
+      vector_sql,
+      embedding.to_s,
+      [ user_meal_ids.length, 100 ].max
+    ])
+
+    # Filter to user's meals and return meal IDs
+    vector_results
+      .select { |vr| user_meal_ids.include?(vr.meal_id) }
+      .map(&:meal_id)
   end
 
   private

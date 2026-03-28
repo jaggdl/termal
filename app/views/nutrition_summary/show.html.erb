@@ -1,3 +1,31 @@
+<div class="mb-6">
+  <%= form_with url: nutrition_summary_path, method: :get, local: true, class: "flex gap-2 items-end" do |f| %>
+    <%= f.hidden_field :period, value: @period %>
+    <%= f.hidden_field :nutrient, value: @selected_nutrient %>
+    
+    <div class="flex-grow">
+      <%= f.label :query, "Filter by meal type (e.g., breakfast, healthy, snacks)", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+      <%= f.text_field :query, 
+                      value: @query, 
+                      placeholder: "Enter a search term...",
+                      class: "w-full bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-dark-primary text-black dark:text-dark-text" %>
+    </div>
+    
+    <%= f.submit "Search", class: "bg-sky-500 hover:bg-sky-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200" %>
+    
+    <% if @query.present? %>
+      <%= link_to "Clear", nutrition_summary_path(period: @period, nutrient: @selected_nutrient), 
+                  class: "bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-md transition-colors duration-200" %>
+    <% end %>
+  <% end %>
+  
+  <% if @query.present? %>
+    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+      Showing nutrition data for meals matching: <strong><%= @query %></strong>
+    </p>
+  <% end %>
+</div>
+
 <%= render partial: 'shared/nutrient_summary_charts', 
             locals: { 
               chart_data: @summary[:chart_data],

@@ -4,6 +4,8 @@ class NutritionSummaryController < ApplicationController
 
     @selected_nutrient = params[:nutrient] || "calories"
 
-    @summary = NutritionSummaryService.new(Current.user, period: @period).summary_data
+    @query = params[:query]
+
+    @summary = NutritionSummaryService.new(Current.user, period: @period, query: @query).summary_data
   end
 end
