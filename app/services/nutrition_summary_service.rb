@@ -70,9 +70,9 @@ class NutritionSummaryService
     ])
 
     # Filter to user's meals with reasonable similarity (lower distance = more similar)
-    # Cosine distance threshold of 0.4 keeps reasonably similar matches
+    # Cosine distance threshold of 0.7 includes more semantically related matches
     vector_results
-      .select { |vr| user_meal_ids.include?(vr.meal_id) && vr.distance <= 0.4 }
+      .select { |vr| user_meal_ids.include?(vr.meal_id) && vr.distance <= 0.7 }
       .map(&:meal_id)
   end
 
