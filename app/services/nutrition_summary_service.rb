@@ -69,9 +69,10 @@ class NutritionSummaryService
       [ user_meal_ids.length, 100 ].max
     ])
 
-    # Filter to user's meals and return meal IDs
+    # Filter to user's meals with reasonable similarity (lower distance = more similar)
+    # Cosine distance threshold of 0.4 keeps reasonably similar matches
     vector_results
-      .select { |vr| user_meal_ids.include?(vr.meal_id) }
+      .select { |vr| user_meal_ids.include?(vr.meal_id) && vr.distance <= 0.4 }
       .map(&:meal_id)
   end
 
