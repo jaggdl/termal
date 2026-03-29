@@ -1,7 +1,6 @@
 <div class="mb-6" data-controller="meal-selection">
   <%= form_with url: nutrition_summary_path, method: :get, local: true, 
-                class: "flex gap-2 items-end",
-                data: { "meal-selection-target": "form" } do |f| %>
+                class: "flex gap-2 items-end" do |f| %>
     <%= f.hidden_field :period, value: @period %>
     <%= f.hidden_field :nutrient, value: @selected_nutrient %>
     
