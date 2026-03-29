@@ -45,13 +45,14 @@
         <%= f.hidden_field :query, value: @query %>
         
         <% @matching_meals.each do |meal| %>
-          <div class="flex items-center gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded">
+          <div class="flex items-center gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded">
             <%= check_box_tag "selected_meal_ids[]", 
                             meal.id, 
                             @selected_meal_ids.include?(meal.id.to_s) || @selected_meal_ids.empty?,
                             id: "meal_#{meal.id}",
                             class: "w-4 h-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500",
                             data: { action: "change->meal-selection#submit" } %>
+            <%= meal_image_tag(meal, size: :small) %>
             <%= label_tag "meal_#{meal.id}", class: "flex-grow cursor-pointer text-sm text-gray-700 dark:text-gray-300" do %>
               <span class="font-medium"><%= meal.meal_name %></span>
               <span class="text-gray-500 dark:text-gray-500">(consumed <%= pluralize(meal.consumption_count, 'time') %>)</span>
