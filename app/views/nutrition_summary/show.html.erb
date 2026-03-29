@@ -1,9 +1,9 @@
 <div class="mb-6" data-controller="meal-selection">
-  <%= form_with url: nutrition_summary_path, method: :get, local: true, 
-                class: "flex gap-2 flex-col" do |f| %>
+  <%= form_with url: nutrition_summary_path, method: :get, local: true,
+                class: "flex gap-2 items-end" do |f| %>
     <%= f.hidden_field :period, value: @period %>
     <%= f.hidden_field :nutrient, value: @selected_nutrient %>
-    
+
     <div class="flex-grow">
       <%= f.label :query, "Filter by meal type (e.g., breakfast, healthy, snacks)", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
       <div class="relative">
