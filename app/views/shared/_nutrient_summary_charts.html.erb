@@ -12,7 +12,11 @@
         <select onchange="window.location=this.value" class="bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-dark-primary text-black dark:text-dark-text">
           <% periods = [7, 14, 28, 60, 90] %>
           <% periods.each do |days| %>
-            <option value="<%= nutrition_summary_path(period: days, nutrient: selected_nutrient) %>" <%= period == days ? 'selected' : '' %>>
+            <% path_params = { period: days, nutrient: selected_nutrient }
+               path_params[:query] = query if query.present?
+               path_params[:selected_meal_ids] = selected_meal_ids if selected_meal_ids.present?
+            %>
+            <option value="<%= nutrition_summary_path(path_params) %>" <%= period == days ? 'selected' : '' %>>
               <%= "#{days} Days" %>
             </option>
           <% end %>

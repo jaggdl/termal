@@ -78,13 +78,15 @@
   <% end %>
 </div>
 
-<%= render partial: 'shared/nutrient_summary_charts', 
-            locals: { 
+<%= render partial: 'shared/nutrient_summary_charts',
+            locals: {
               chart_data: @summary[:chart_data],
               period: @period,
               selected_nutrient: @selected_nutrient,
               averages: @summary[:averages],
               daily_targets: @summary[:daily_targets],
-              show_period_selector: true
+              show_period_selector: true,
+              query: @query,
+              selected_meal_ids: @selected_meal_ids
             } %>
 </div>
