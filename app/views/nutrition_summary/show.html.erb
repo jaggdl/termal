@@ -20,62 +20,6 @@
     <% end %>
   <% end %>
   
-  <% if @query.present? && @matching_meals&.any? %>
-    <div class="mt-4 p-4 bg-white dark:bg-dark-surface rounded-lg border border-gray-200 dark:border-gray-700">
-      <div class="flex justify-between items-center mb-3">
-        <h4 class="font-medium text-gray-900 dark:text-dark-text">Select meals to display:</h4>
-        <div class="flex gap-2">
-          <button type="button" data-action="meal-selection#selectAll" 
-                  class="text-sm text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300">
-            Select All
-          </button>
-          <span class="text-gray-300">|</span>
-          <button type="button" data-action="meal-selection#deselectAll"
-                  class="text-sm text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300">
-            Deselect All
-          </button>
-        </div>
-      </div>
-      
-      <%= form_with url: nutrition_summary_path, method: :get, local: true,
-                    class: "space-y-2 max-h-48 overflow-y-auto",
-                    data: { "meal-selection-target": "form" } do |f| %>
-        <%= f.hidden_field :period, value: @period %>
-        <%= f.hidden_field :nutrient, value: @selected_nutrient %>
-        <%= f.hidden_field :query, value: @query %>
-        
-        <% @matching_meals.each do |meal| %>
-          <div class="flex items-center gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded">
-            <%= check_box_tag "selected_meal_ids[]", 
-                            meal.id, 
-                            @selected_meal_ids.include?(meal.id.to_s) || @selected_meal_ids.empty?,
-                            id: "meal_#{meal.id}",
-                            class: "w-4 h-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500",
-                            data: { action: "change->meal-selection#submit" } %>
-            <%= meal_image_tag(meal, size: :small) %>
-            <%= label_tag "meal_#{meal.id}", class: "flex-grow cursor-pointer text-sm text-gray-700 dark:text-gray-300" do %>
-              <span class="font-medium"><%= meal.meal_name %></span>
-              <span class="text-gray-500 dark:text-gray-500">(consumed <%= pluralize(meal.consumption_count, 'time') %>)</span>
-            <% end %>
-          </div>
-        <% end %>
-      <% end %>
-      
-      <% if @selected_meal_ids.present? %>
-        <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">
-          Showing data for <%= pluralize(@selected_meal_ids.length, 'selected meal') %>
-        </p>
-      <% else %>
-        <p class="mt-3 text-sm text-gray-500 dark:text-gray-500 italic">
-          All matching meals are currently shown. Select specific meals above to filter.
-        </p>
-      <% end %>
-    </div>
-  <% elsif @query.present? %>
-    <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
-      No meals found matching "<strong><%= @query %></strong>" in the selected time period.
-    </p>
-  <% end %>
 </div>
 
 <%= render partial: 'shared/nutrient_summary_charts',
@@ -90,3 +34,61 @@
               selected_meal_ids: @selected_meal_ids
             } %>
 </div>
+
+<% if @query.present? && @matching_meals&.any? %>
+  <div class="mt-4 p-4 bg-white dark:bg-dark-surface rounded-lg border border-gray-200 dark:border-gray-700">
+    <div class="flex justify-between items-center mb-3">
+      <h4 class="font-medium text-gray-900 dark:text-dark-text">Select meals to display:</h4>
+      <div class="flex gap-2">
+        <button type="button" data-action="meal-selection#selectAll" 
+                class="text-sm text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300">
+          Select All
+        </button>
+        <span class="text-gray-300">|</span>
+        <button type="button" data-action="meal-selection#deselectAll"
+                class="text-sm text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300">
+          Deselect All
+        </button>
+      </div>
+    </div>
+    
+    <%= form_with url: nutrition_summary_path, method: :get, local: true,
+                  class: "space-y-2 overflow-y-auto",
+                  data: { "meal-selection-target": "form" } do |f| %>
+      <%= f.hidden_field :period, value: @period %>
+      <%= f.hidden_field :nutrient, value: @selected_nutrient %>
+      <%= f.hidden_field :query, value: @query %>
+      
+      <% @matching_meals.each do |meal| %>
+        <div class="flex items-center gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded">
+          <%= check_box_tag "selected_meal_ids[]", 
+                          meal.id, 
+                          @selected_meal_ids.include?(meal.id.to_s) || @selected_meal_ids.empty?,
+                          id: "meal_#{meal.id}",
+                          class: "w-4 h-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500",
+                          data: { action: "change->meal-selection#submit" } %>
+          <%= meal_image_tag(meal, size: :small) %>
+          <%= label_tag "meal_#{meal.id}", class: "flex-grow cursor-pointer text-sm text-gray-700 dark:text-gray-300" do %>
+            <span class="font-medium"><%= meal.meal_name %></span>
+            <span class="text-gray-500 dark:text-gray-500">(consumed <%= pluralize(meal.consumption_count, 'time') %>)</span>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+    
+    <% if @selected_meal_ids.present? %>
+      <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+        Showing data for <%= pluralize(@selected_meal_ids.length, 'selected meal') %>
+      </p>
+    <% else %>
+      <p class="mt-3 text-sm text-gray-500 dark:text-gray-500 italic">
+        All matching meals are currently shown. Select specific meals above to filter.
+      </p>
+    <% end %>
+  </div>
+<% elsif @query.present? %>
+  <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
+    No meals found matching "<strong><%= @query %></strong>" in the selected time period.
+  </p>
+<% end %>
+
