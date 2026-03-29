@@ -1,12 +1,13 @@
 class NutritionSummaryService
   NUTRIENTS = [ :calories, :proteins, :fats, :carbs ]
 
-  attr_reader :user, :period, :start_date, :end_date, :timezone, :query
+  attr_reader :user, :period, :start_date, :end_date, :timezone, :query, :selected_meal_ids
 
-  def initialize(user, period: 7, offset: 0, query: nil)
+  def initialize(user, period: 7, offset: 0, query: nil, selected_meal_ids: nil)
     @user = user
     @period = period
     @query = query
+    @selected_meal_ids = selected_meal_ids
     @timezone = ActiveSupport::TimeZone[user.timezone]
     @end_date = Time.current.in_time_zone(timezone).to_date - offset.days
     @start_date = @end_date - (@period - 1).days
@@ -40,11 +41,33 @@ class NutritionSummaryService
 
       if query.present?
         matching_meal_ids = vector_search_meal_ids
+
+        # Filter by selected meals if any are selected, otherwise use all matching meals
+        if selected_meal_ids.present?
+          matching_meal_ids = matching_meal_ids & selected_meal_ids.map(&:to_i)
+        end
+
         meals = meals.joins(:meal).where(meals: { id: matching_meal_ids })
       end
 
       meals
     end
+  end
+
+  def matching_meals
+    return [] if query.blank?
+
+    meal_ids = vector_search_meal_ids
+    return [] if meal_ids.empty?
+
+    # Get meals with consumption counts
+    Meal
+      .joins(:user_meals)
+      .where(user_meals: { user_id: user.id, consumed_at: start_date.beginning_of_day..end_date.end_of_day })
+      .where(id: meal_ids)
+      .select("meals.*, COUNT(user_meals.id) as consumption_count")
+      .group("meals.id")
+      .order("consumption_count DESC, meals.meal_name ASC")
   end
 
   def vector_search_meal_ids
