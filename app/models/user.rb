@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   include UserMealTimeline
+  include NutritionSummarizable
 
   has_secure_password
   has_many :sessions, dependent: :destroy

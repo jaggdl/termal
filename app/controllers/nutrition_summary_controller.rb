@@ -8,10 +8,10 @@ class NutritionSummaryController < ApplicationController
 
     @selected_meal_ids = params[:selected_meal_ids] || []
 
-    service = NutritionSummaryService.new(Current.user, period: @period, query: @query, selected_meal_ids: @selected_meal_ids)
+    summary = Current.user.nutrition_summary(period: @period, query: @query, selected_meal_ids: @selected_meal_ids)
 
-    @summary = service.summary_data
+    @summary = summary.data
 
-    @matching_meals = service.matching_meals if @query.present?
+    @matching_meals = summary.matching_meals if @query.present?
   end
 end
