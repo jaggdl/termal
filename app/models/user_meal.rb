@@ -5,14 +5,6 @@ class UserMeal < ApplicationRecord
   belongs_to :meal
 
   validates :consumed_at, presence: true
-
-  scope :in_date_range, ->(start_date, end_date) {
-    where(consumed_at: start_date.beginning_of_day..end_date.end_of_day)
-  }
-
-  scope :for_meals, ->(meal_ids) {
-    joins(:meal).where(meals: { id: meal_ids })
-  }
   validates :latitude, numericality: { greater_than_or_equal_to: -90, less_than_or_equal_to: 90 }, allow_nil: true
   validates :longitude, numericality: { greater_than_or_equal_to: -180, less_than_or_equal_to: 180 }, allow_nil: true
   validate :both_coordinates_present_or_absent

@@ -1,6 +1,5 @@
 class User < ApplicationRecord
   include UserMealTimeline
-  include VectorSearchable
   include NutritionSummarizable
 
   has_secure_password

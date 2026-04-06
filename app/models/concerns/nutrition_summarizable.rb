@@ -47,17 +47,13 @@ module NutritionSummarizable
         meals = user.user_meals_in_date_range(start_date, end_date)
 
         if query.present?
-          matching_meal_ids = user.vector_search_meal_ids(
-            query: query,
-            start_date: start_date,
-            end_date: end_date
-          )
+          matching_meal_ids = vector_search_meal_ids
 
           if selected_meal_ids.present?
             matching_meal_ids = matching_meal_ids & selected_meal_ids.map(&:to_i)
           end
 
-          meals = meals.for_meals(matching_meal_ids)
+          meals = meals.joins(:meal).where(meals: { id: matching_meal_ids })
         end
 
         meals
@@ -65,7 +61,44 @@ module NutritionSummarizable
     end
 
     def matching_meals
-      user.matching_meals_by_query(query: query, start_date: start_date, end_date: end_date)
+      return [] if query.blank?
+
+      meal_ids = vector_search_meal_ids
+      return [] if meal_ids.empty?
+
+      Meal
+        .joins(:user_meals)
+        .where(user_meals: { user_id: user.id, consumed_at: start_date.beginning_of_day..end_date.end_of_day })
+        .where(id: meal_ids)
+        .select("meals.*, COUNT(user_meals.id) as consumption_count")
+        .group("meals.id")
+        .order("consumption_count DESC, meals.meal_name ASC")
+    end
+
+    def vector_search_meal_ids
+      return [] if query.blank?
+
+      query_embedding = QueryEmbedding.find_or_create_embedding(query)
+      embedding = query_embedding.embedding
+
+      user_meal_ids = user.user_meals_in_date_range(start_date, end_date).pluck(:meal_id).uniq
+      return [] if user_meal_ids.empty?
+
+      vector_sql = <<~SQL
+        SELECT meal_id, distance
+        FROM meal_vectors
+        WHERE embedding MATCH ? AND k = ?
+      SQL
+
+      vector_results = MealVector.find_by_sql([
+        vector_sql,
+        embedding.to_s,
+        [ user_meal_ids.length, 100 ].max
+      ])
+
+      vector_results
+        .select { |vr| user_meal_ids.include?(vr.meal_id) && vr.distance <= 0.7 }
+        .map(&:meal_id)
     end
 
     private
