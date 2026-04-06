@@ -45,9 +45,10 @@ Commands:
   summary [days]            Get nutrition summary for the last N days (default: 7)
   profile                   Get user profile information
   update-profile <json>     Update profile with JSON data
-  search [options]          Search meals by nutrient ranges
+  search [options]          Search meals by query and/or nutrient ranges
 
 Options for search:
+  --query TEXT              Search query for semantic/vector search (optional, e.g., "chicken salad")
   --calories-min N          Minimum calories
   --calories-max N          Maximum calories
   --proteins-min N          Minimum proteins (g)
@@ -69,6 +70,8 @@ Examples:
   termal-api summary 7
   termal-api profile
   termal-api search --calories-min 300 --calories-max 500 --proteins-min 20
+  termal-api search --query "chicken salad"
+  termal-api search --query "high protein" --proteins-min 30 --limit 10
 
 Generate your API key at: $BASE_URL/profile
 EOF
@@ -122,6 +125,7 @@ case "${1:-}" in
     query_params=""
     while [[ $# -gt 0 ]]; do
       case "$1" in
+        --query) query_params="$query_params&query=$2"; shift 2 ;;
         --calories-min) query_params="$query_params&calories_min=$2"; shift 2 ;;
         --calories-max) query_params="$query_params&calories_max=$2"; shift 2 ;;
         --proteins-min) query_params="$query_params&proteins_min=$2"; shift 2 ;;

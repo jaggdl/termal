@@ -62,8 +62,14 @@ bash scripts/termal-api.sh summary
 # Get user profile
 bash scripts/termal-api.sh profile
 
-# Search for meals with 300-500 calories and 20-40g protein
+# Search for meals with 300-500 calories and 20-40g protein (nutrient search)
 bash scripts/termal-api.sh search --calories-min 300 --calories-max 500 --proteins-min 20 --proteins-max 40
+
+# Search for meals by query (semantic search - optional)
+bash scripts/termal-api.sh search --query "chicken salad"
+
+# Combine optional query with nutrient filters
+bash scripts/termal-api.sh search --query "protein" --calories-min 200 --proteins-min 25
 ```
 
 Run `bash scripts/termal-api.sh --help` for full usage information.
