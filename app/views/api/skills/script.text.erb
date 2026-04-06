@@ -82,13 +82,27 @@ case "${1:-}" in
     ;;
 
   user-meal)
-    if [ -z "${2:-}" ]; then
-      echo "Error: User meal ID required"
-      echo "Usage: termal-api user-meal <id>"
-      exit 1
-    fi
-    api_call "GET" "/api/user_meals/$2"
-    ;;
+     if [ -z "${2:-}" ]; then
+       echo "Error: User meal ID required"
+       echo "Usage: termal-api user-meal <id>"
+       exit 1
+     fi
+     api_call "GET" "/api/user_meals/$2"
+     ;;
+
+   add-user-meal)
+     if [ -z "${2:-}" ]; then
+       echo "Error: Meal ID required"
+       echo "Usage: termal-api add-user-meal <meal_id> [datetime]"
+       exit 1
+     fi
+     data="{\"meal_id\": $2, \"datetime\": \"${3:-}\"}"
+     # Remove empty datetime if not provided to let server default
+     if [ -z "$3" ]; then
+       data="{\"meal_id\": $2}"
+     fi
+     api_call "POST" "/api/user_meals" "$data"
+     ;;
 
   meal)
     if [ -z "${2:-}" ]; then
