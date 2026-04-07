@@ -3,6 +3,7 @@
 module Api
   class MealSerializer
     include ActiveModel::Serializers::JSON
+    include ApplicationHelper
 
     def initialize(meal)
       @meal = meal
@@ -11,6 +12,7 @@ module Api
     def attributes
       {
         "id" => nil,
+        "url" => nil,
         "name" => nil,
         "description" => nil,
         "calories" => nil,
@@ -19,6 +21,10 @@ module Api
         "fats" => nil,
         "created_at" => nil
       }
+    end
+
+    def url
+      "#{base_url}/meals/#{@meal.id}"
     end
 
     def id
