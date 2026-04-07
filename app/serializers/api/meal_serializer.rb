@@ -3,7 +3,7 @@
 module Api
   class MealSerializer
     include ActiveModel::Serializers::JSON
-    include ApplicationHelper
+    include Rails.application.routes.url_helpers
 
     def initialize(meal)
       @meal = meal
@@ -24,7 +24,7 @@ module Api
     end
 
     def url
-      "#{base_url}/meals/#{@meal.id}"
+      meal_url(@meal)
     end
 
     def id
