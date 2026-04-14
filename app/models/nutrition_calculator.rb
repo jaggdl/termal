@@ -1,24 +1,11 @@
 class NutritionCalculator
   include FitnessOptions
 
-  # Default values for average person (adjusted to more realistic averages)
-  # Calories: 2000-2500 typical; macros based on standard recommendations.
-  DEFAULT_TARGETS = {
-    calories: 2000,
-    proteins: 56,  # RDA 0.8g/kg for 70kg
-    carbs: 275,
-    fats: 67
-  }.freeze
-
-  # Default values to use in calculations if profile data is missing
-  # Weight/height/age averages from general population data.
+  # Default values for an average person
+  DEFAULT_TARGETS = { calories: 2000, proteins: 56, carbs: 275, fats: 67 }.freeze
   DEFAULT_VALUES = {
-    sex: "male",
-    weight: 75, # kg, approximate global average
-    height: 170, # cm
-    age: 30,
-    physical_activity: :moderately_active,
-    weight_goals: "maintain",
+    sex: "male", weight: 75, height: 170, age: 30,
+    physical_activity: :moderately_active, weight_goals: "maintain",
     muscle_building: :maintain_muscle
   }.freeze
 
@@ -33,37 +20,39 @@ class NutritionCalculator
   private
 
   def calculate_daily_targets
-    # Calculate BMR using Mifflin-St Jeor equation, considered most accurate
-    # Source: https://www.jandonline.org/article/S0002-8223(05)00149-5/abstract
     bmr = calculate_bmr
-
-    # Calculate TDEE
     activity = (@user_profile.physical_activity&.to_sym || DEFAULT_VALUES[:physical_activity])
     tdee = bmr * ACTIVITY_FACTORS[activity]
 
-    # Adjust calories based on weight goals (±500 kcal for ~0.5kg/week safe rate)
+    # 1. Calorie Adjustment
+    # Sets the target based on the user's specific goal (loss, gain, or maintenance)
     calories = adjust_calories(tdee)
 
-    # Calculate macronutrients
+    # 2. Protein Calculation (Priority 1)
+    # High protein is essential for body recomposition to protect lean mass
     protein = calculate_protein
     protein_calories = protein * 4
 
-    # Set fats to ~30% of total calories (within AMDR 20-35%)
-    fat_calories = [ calories * 0.3, calories * 0.2 ].max.round
-    fats = (fat_calories / 9).round
+    # 3. Fat Calculation (Priority 2 - Hormonal Health)
+    # Instead of a fixed percentage, we use a weight-based floor (0.9g per kg)
+    # to ensure hormonal stability, which is critical for female health.
+    weight = @user_profile.weight || DEFAULT_VALUES[:weight]
+    fats = (weight * 0.9).round
+    fat_calories = fats * 9
 
-    # Remaining for carbs
+    # 4. Carbohydrate Calculation (The remainder)
+    # Carbs fill the remaining calorie budget to fuel training sessions
     carb_calories = calories - protein_calories - fat_calories
     carbs = (carb_calories / 4).round
 
-    # If carbs negative (rare, high protein low cal), adjust fats down
-    if carb_calories < 0
-      fat_calories += carb_calories
-      fats = (fat_calories / 9).round
-      carbs = 0
+    # Safeguard: If carbs drop too low, we adjust fats to the absolute minimum floor
+    if carbs < 100
+      fats = (weight * 0.7).round # Absolute minimum: 0.7g/kg
+      fat_calories = fats * 9
+      carb_calories = calories - protein_calories - fat_calories
+      carbs = (carb_calories / 4).round
     end
 
-    # Return rounded results
     {
       calories: calories.round,
       proteins: protein.round,
@@ -71,7 +60,6 @@ class NutritionCalculator
       fats: fats.round
     }
   rescue
-    # Return default targets if calculation fails
     DEFAULT_TARGETS
   end
 
@@ -90,15 +78,19 @@ class NutritionCalculator
 
   def adjust_calories(tdee)
     weight_goals = @user_profile.weight_goals || DEFAULT_VALUES[:weight_goals]
-    sex = @user_profile.sex || DEFAULT_VALUES[:sex]
-    min_calories = sex == "male" ? 1500 : 1200  # Safer minimums by sex
+    muscle_building = (@user_profile.muscle_building&.to_sym || DEFAULT_VALUES[:muscle_building])
 
     case weight_goals
     when "lose_weight"
-      [ tdee - 500, min_calories ].max  # Ensure not below safe minimum
+      # For body recomposition (losing fat + gaining muscle),
+      # a conservative deficit (12%) is more effective than an aggressive one.
+      is_recomp = muscle_building != :maintain_muscle
+      deficit = is_recomp ? (tdee * 0.12) : (tdee * 0.20)
+      tdee - deficit
     when "gain_weight"
-      tdee + 500
-    else # "maintain"
+      # A controlled 300kcal surplus minimizes excessive fat gain during a bulk
+      tdee + 300
+    else
       tdee
     end
   end
@@ -106,12 +98,9 @@ class NutritionCalculator
   def calculate_protein
     muscle_building = (@user_profile.muscle_building&.to_sym || DEFAULT_VALUES[:muscle_building])
     weight = @user_profile.weight || DEFAULT_VALUES[:weight]
-    age = @user_profile.age || DEFAULT_VALUES[:age]
 
-    multiplier = PROTEIN_MULTIPLIERS[muscle_building]
-    if muscle_building == :maintain_muscle && age >= 50
-      multiplier = 1.2
-    end
+    # If the user aims to build muscle (recomp), we use 2.2g per kg
+    multiplier = (muscle_building != :maintain_muscle) ? 2.2 : 1.6
     weight * multiplier
   end
 end
