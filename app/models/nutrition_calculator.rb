@@ -34,10 +34,19 @@ class NutritionCalculator
     protein_calories = protein * 4
 
     # 3. Fat Calculation (Priority 2 - Hormonal Health)
-    # Instead of a fixed percentage, we use a weight-based floor (0.9g per kg)
-    # to ensure hormonal stability, which is critical for female health.
+    # Fat intake is personalized based on sex and goals:
+    # - Men: 1.0g/kg base, Women: 1.1g/kg base (higher for hormonal support)
+    # - Extra +0.1g/kg during recomposition to support hormonal health during deficit
     weight = @user_profile.weight || DEFAULT_VALUES[:weight]
-    fats = (weight * 0.9).round
+    sex = @user_profile.sex || DEFAULT_VALUES[:sex]
+    muscle_building = (@user_profile.muscle_building&.to_sym || DEFAULT_VALUES[:muscle_building])
+    weight_goals = @user_profile.weight_goals || DEFAULT_VALUES[:weight_goals]
+
+    base_fat_multiplier = (sex == "female") ? 1.1 : 1.0
+    is_recomp = (weight_goals == "lose_weight") && (muscle_building != :maintain_muscle)
+    fat_multiplier = is_recomp ? (base_fat_multiplier + 0.1) : base_fat_multiplier
+
+    fats = (weight * fat_multiplier).round
     fat_calories = fats * 9
 
     # 4. Carbohydrate Calculation (The remainder)
@@ -47,7 +56,7 @@ class NutritionCalculator
 
     # Safeguard: If carbs drop too low, we adjust fats to the absolute minimum floor
     if carbs < 100
-      fats = (weight * 0.7).round # Absolute minimum: 0.7g/kg
+      fats = (weight * 0.8).round # Absolute minimum: 0.8g/kg
       fat_calories = fats * 9
       carb_calories = calories - protein_calories - fat_calories
       carbs = (carb_calories / 4).round
