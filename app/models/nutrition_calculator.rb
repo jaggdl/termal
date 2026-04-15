@@ -36,7 +36,7 @@ class NutritionCalculator
     # 3. Fat Calculation (Priority 2 - Hormonal Health)
     # Fat intake is personalized based on sex and goals:
     # - Men: 1.0g/kg base, Women: 1.1g/kg base (higher for hormonal support)
-    # - Extra +0.1g/kg during recomposition to support hormonal health during deficit
+    # - During recomposition: use base rate to preserve carbs for training energy
     weight = @user_profile.weight || DEFAULT_VALUES[:weight]
     sex = @user_profile.sex || DEFAULT_VALUES[:sex]
     muscle_building = (@user_profile.muscle_building&.to_sym || DEFAULT_VALUES[:muscle_building])
@@ -44,7 +44,8 @@ class NutritionCalculator
 
     base_fat_multiplier = (sex == "female") ? 1.1 : 1.0
     is_recomp = (weight_goals == "lose_weight") && (muscle_building != :maintain_muscle)
-    fat_multiplier = is_recomp ? (base_fat_multiplier + 0.1) : base_fat_multiplier
+    # During recomp: prioritize carbs for training energy, use base fat rate
+    fat_multiplier = is_recomp ? 1.0 : base_fat_multiplier
 
     fats = (weight * fat_multiplier).round
     fat_calories = fats * 9
