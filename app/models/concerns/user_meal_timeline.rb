@@ -3,6 +3,14 @@ module UserMealTimeline
 
   delegate :timezone, to: :user_profile
 
+  def build_user_meal(meal: nil, meal_id: nil, date: nil, time: nil)
+    consumed_at = parse_consumed_at(date, time)
+    attrs = { consumed_at: consumed_at }
+    attrs[:meal] = meal if meal
+    attrs[:meal_id] = meal_id if meal_id
+    user_meals.build(attrs)
+  end
+
   def user_meals_on_date(date)
     start_of_day = date.in_time_zone(timezone).beginning_of_day
     end_of_day = date.in_time_zone(timezone).end_of_day
@@ -47,5 +55,27 @@ module UserMealTimeline
         fats: date_meals.sum { |um| um.meal.fats.to_f }
       }
     end
+  end
+
+  private
+
+  def parse_consumed_at(date_param, time_param)
+    tz = ActiveSupport::TimeZone[timezone]
+    date = date_param.present? ? Date.parse(date_param) : user_today
+    is_today = date == user_today
+
+    if time_param.present?
+      time_parts = time_param.split(":").map(&:to_i)
+      hour = time_parts[0] || 0
+      minute = time_parts[1] || 0
+      second = time_parts[2] || 0
+      tz.local(date.year, date.month, date.day, hour, minute, second)
+    elsif is_today
+      Time.now
+    else
+      tz.local(date.year, date.month, date.day, 23, 59, 59)
+    end
+  rescue ArgumentError
+    raise ArgumentError, "Invalid date or time format"
   end
 end

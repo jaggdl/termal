@@ -69,8 +69,7 @@ class UserMealsController < ApplicationController
       render_flash_message("Please provide either images or a meal description.") and return
     end
 
-    consumed_at = calculate_consumed_at(params[:date])
-    @user_meal = Current.user.user_meals.build(consumed_at: consumed_at)
+    @user_meal = Current.user.build_user_meal(date: params[:date])
 
     if Current.latitude.present? && Current.longitude.present?
       @user_meal.latitude = Current.latitude
@@ -110,17 +109,6 @@ class UserMealsController < ApplicationController
     params.require(:user_meal).permit(:consumed_at, :latitude, :longitude)
   end
 
-  def calculate_consumed_at(date_param)
-    if date_param.present? && !Current.user.user_date_is_today?(date_param)
-      date = Date.parse(date_param)
-      user_timezone = Current.user_profile.timezone
-      tz = ActiveSupport::TimeZone[user_timezone]
-      tz.local(date.year, date.month, date.day, 23, 59, 59)
-    else
-      Time.now
-    end
-  end
-
   def render_flash_message(message, fallback_action = nil, alert_type = :alert)
     respond_to do |format|
       format.turbo_stream do
@@ -140,9 +128,7 @@ class UserMealsController < ApplicationController
   end
 
   def create_from_meal_id
-    meal_id = params[:meal_id]
-    consumed_at = calculate_consumed_at(params[:date])
-    @user_meal = Current.user.user_meals.new(meal_id: meal_id, consumed_at: consumed_at)
+    @user_meal = Current.user.build_user_meal(meal_id: params[:meal_id], date: params[:date])
 
     if Current.latitude.present? && Current.longitude.present?
       @user_meal.latitude = Current.latitude

@@ -46,6 +46,7 @@ Commands:
   profile                   Get user profile information
   update-profile <json>     Update profile with JSON data
   search [options]          Search meals by query and/or nutrient ranges
+  add <meal-id> [date] [time]  Add a meal to your log by meal ID (date: YYYY-MM-DD, time: HH:MM, defaults to today/now)
 
 Options for search:
   --query TEXT              Search query for semantic/vector search (optional, e.g., "chicken salad")
@@ -72,6 +73,9 @@ Examples:
   termal-api search --calories-min 300 --calories-max 500 --proteins-min 20
   termal-api search --query "chicken salad"
   termal-api search --query "high protein" --proteins-min 30 --limit 10
+  termal-api add 123
+  termal-api add 123 2026-04-22
+  termal-api add 123 2026-04-22 14:30
 
 Generate your API key at: $BASE_URL/profile
 EOF
@@ -142,7 +146,23 @@ case "${1:-}" in
     query_params="${query_params#&}"
     api_call "GET" "/api/meals/search?$query_params"
     ;;
-    
+
+  add)
+    if [ -z "${2:-}" ]; then
+      echo "Error: Meal ID required"
+      echo "Usage: termal-api add <meal-id> [date] [time]"
+      exit 1
+    fi
+    meal_id="$2"
+    date="${3:-$(date +%Y-%m-%d)}"
+    time="${4:-}"
+    if [ -n "$time" ]; then
+      api_call "POST" "/api/user_meals?meal_id=$meal_id&date=$date&time=$time"
+    else
+      api_call "POST" "/api/user_meals?meal_id=$meal_id&date=$date"
+    fi
+    ;;
+
   --help|-h|help)
     usage
     ;;

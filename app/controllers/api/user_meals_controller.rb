@@ -16,5 +16,20 @@ module Api
     rescue ActiveRecord::RecordNotFound
       render json: { error: "User meal not found" }, status: :not_found
     end
+
+    def create
+      meal = Meal.find(params[:meal_id])
+      user_meal = Current.user.build_user_meal(meal: meal, date: params[:date], time: params[:time])
+
+      if user_meal.save
+        render json: UserMealSerializer.new(user_meal), status: :created
+      else
+        render json: { error: user_meal.errors.full_messages.join(", ") }, status: :unprocessable_entity
+      end
+    rescue ActiveRecord::RecordNotFound
+      render json: { error: "Meal not found" }, status: :not_found
+    rescue ArgumentError => e
+      render json: { error: e.message }, status: :bad_request
+    end
   end
 end
