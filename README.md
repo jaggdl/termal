@@ -9,6 +9,7 @@ A self-hosted macronutrient tracker that uses LLM vision models to estimate the 
 - **Smart meal search** — Vector-powered search with time-decay scoring to surface meals you're most likely to eat again
 - **Self-hosted** — Your data stays on your own server
 - **Push notifications** — Get reminders via web push
+- **Personalized macro targets** — Calculates your daily calorie, protein, carb, and fat goals based on your profile (weight, height, age, sex, activity level, and fitness goals) using BMR and TDEE formulas
 - **Multi-user support** — Invite others to use your instance
 
 ## Supported LLM Providers
@@ -74,11 +75,12 @@ docker compose up -d
 
 1. Start the container and visit your `BASE_URL`
 2. Create the first user account — the first registered user becomes the admin
-3. Go to **Global Settings** and add your LLM API key(s):
+3. Fill out your **User Profile** with your weight, height, age, sex, activity level, and fitness goals to get personalized daily macro targets
+4. Go to **Global Settings** and add your LLM API key(s):
    - OpenAI API key (for `o4-mini`)
    - Google Gemini API key (for `gemini-2.5-pro` or `gemini-3.1-pro-preview`)
-4. Select your preferred meal analysis model in the settings
-5. Start logging meals!
+5. Select your preferred meal analysis model in the settings
+6. Start logging meals!
 
 ## Development
 
