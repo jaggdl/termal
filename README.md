@@ -95,4 +95,4 @@ bin/dev
 
 ## License
 
-[MIT](LICENSE)
+[O'Saasy](LICENSE.md)
