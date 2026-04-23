@@ -47,6 +47,7 @@ Commands:
   update-profile <json>     Update profile with JSON data
   search [options]          Search meals by query and/or nutrient ranges
   add <meal-id> [date] [time]  Add a meal to your log by meal ID (date: YYYY-MM-DD, time: HH:MM, defaults to today/now)
+  remove <id>               Remove a user meal from your log by ID
 
 Options for search:
   --query TEXT              Search query for semantic/vector search (optional, e.g., "chicken salad")
@@ -76,6 +77,7 @@ Examples:
   termal-api add 123
   termal-api add 123 2026-04-22
   termal-api add 123 2026-04-22 14:30
+  termal-api remove 456
 
 Generate your API key at: $BASE_URL/profile
 EOF
@@ -161,6 +163,15 @@ case "${1:-}" in
     else
       api_call "POST" "/api/user_meals?meal_id=$meal_id&date=$date"
     fi
+    ;;
+
+  remove)
+    if [ -z "${2:-}" ]; then
+      echo "Error: User meal ID required"
+      echo "Usage: termal-api remove <id>"
+      exit 1
+    fi
+    api_call "DELETE" "/api/user_meals/$2"
     ;;
 
   --help|-h|help)

@@ -31,5 +31,13 @@ module Api
     rescue ArgumentError => e
       render json: { error: e.message }, status: :bad_request
     end
+
+    def destroy
+      user_meal = Current.user.user_meals.find(params[:id])
+      user_meal.destroy
+      head :no_content
+    rescue ActiveRecord::RecordNotFound
+      render json: { error: "User meal not found" }, status: :not_found
+    end
   end
 end
