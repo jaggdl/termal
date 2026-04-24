@@ -53,6 +53,9 @@ bash scripts/termal-api.sh meals 2026-03-10
 # Get a specific user meal by ID
 bash scripts/termal-api.sh user-meal 123
 
+# Update a user meal's consumed_at timestamp
+bash scripts/termal-api.sh update 123 '{"consumed_at": "2026-04-24T14:30:00"}'
+
 # Get a specific meal by ID
 bash scripts/termal-api.sh meal 456
 
@@ -79,6 +82,9 @@ bash scripts/termal-api.sh add 123 2026-04-22
 
 # Add a meal at a specific time (uses your profile timezone)
 bash scripts/termal-api.sh add 123 2026-04-22 14:30
+
+# Update a user meal's consumed_at timestamp
+bash scripts/termal-api.sh update 123 '{"consumed_at": "2026-04-24T14:30:00"}'
 
 # Remove a user meal by ID
 bash scripts/termal-api.sh remove 123

@@ -9,6 +9,17 @@ class UserMeal < ApplicationRecord
   validates :longitude, numericality: { greater_than_or_equal_to: -180, less_than_or_equal_to: 180 }, allow_nil: true
   validate :both_coordinates_present_or_absent
 
+  def consumed_at=(value)
+    if value.is_a?(String) && value.present?
+      tz = ActiveSupport::TimeZone[user.user_profile.timezone]
+      parsed = Time.parse(value)
+      value = tz.local(parsed.year, parsed.month, parsed.day, parsed.hour, parsed.min, parsed.sec)
+    end
+    super(value)
+  rescue ArgumentError
+    raise ArgumentError, "Invalid datetime format. Use ISO 8601 format (e.g., 2026-04-24T14:30:00)"
+  end
+
   def consumed_at_in_timezone
     consumed_at.in_time_zone(user.user_profile.timezone)
   end

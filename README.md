@@ -1,4 +1,4 @@
-# Termal
+# Termal 🔥
 
 A self-hosted macronutrient tracker that uses LLM vision models to estimate the nutritional content of your meals from photos. No more manually logging every ingredient — just snap a picture and get approximate calorie, protein, carbohydrate, and fat estimates.
 
