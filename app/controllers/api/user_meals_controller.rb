@@ -32,12 +32,32 @@ module Api
       render json: { error: e.message }, status: :bad_request
     end
 
+    def update
+      user_meal = Current.user.user_meals.find(params[:id])
+
+      if user_meal.update(user_meal_params)
+        render json: UserMealSerializer.new(user_meal)
+      else
+        render json: { error: user_meal.errors.full_messages.join(", ") }, status: :unprocessable_entity
+      end
+    rescue ActiveRecord::RecordNotFound
+      render json: { error: "User meal not found" }, status: :not_found
+    rescue ArgumentError => e
+      render json: { error: e.message }, status: :bad_request
+    end
+
     def destroy
       user_meal = Current.user.user_meals.find(params[:id])
       user_meal.destroy
       head :no_content
     rescue ActiveRecord::RecordNotFound
       render json: { error: "User meal not found" }, status: :not_found
+    end
+
+    private
+
+    def user_meal_params
+      params.require(:user_meal).permit(:consumed_at, :latitude, :longitude)
     end
   end
 end
