@@ -34,13 +34,8 @@ module Api
 
     def update
       user_meal = Current.user.user_meals.find(params[:id])
-      update_attrs = user_meal_params.to_h
 
-      if update_attrs[:consumed_at].present?
-        update_attrs[:consumed_at] = parse_consumed_at_in_timezone(update_attrs[:consumed_at])
-      end
-
-      if user_meal.update(update_attrs)
+      if user_meal.update(user_meal_params)
         render json: UserMealSerializer.new(user_meal)
       else
         render json: { error: user_meal.errors.full_messages.join(", ") }, status: :unprocessable_entity
@@ -63,14 +58,6 @@ module Api
 
     def user_meal_params
       params.require(:user_meal).permit(:consumed_at, :latitude, :longitude)
-    end
-
-    def parse_consumed_at_in_timezone(datetime_string)
-      tz = ActiveSupport::TimeZone[Current.user.user_profile.timezone]
-      parsed = Time.parse(datetime_string)
-      tz.local(parsed.year, parsed.month, parsed.day, parsed.hour, parsed.min, parsed.sec)
-    rescue ArgumentError
-      raise ArgumentError, "Invalid datetime format. Use ISO 8601 format (e.g., 2026-04-24T14:30:00)"
     end
   end
 end
