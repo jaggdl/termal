@@ -8,15 +8,14 @@ module NutritionSummarizable
   end
 
   class NutritionSummary
-    attr_reader :user, :period, :start_date, :end_date, :timezone, :query, :selected_meal_ids
+    attr_reader :user, :period, :start_date, :end_date, :query, :selected_meal_ids
 
     def initialize(user, period: 7, offset: 0, query: nil, selected_meal_ids: nil)
       @user = user
       @period = period
       @query = query
       @selected_meal_ids = selected_meal_ids
-      @timezone = ActiveSupport::TimeZone[user.timezone]
-      @end_date = Time.current.in_time_zone(timezone).to_date - offset.days
+      @end_date = Time.current.to_date - offset.days
       @start_date = @end_date - (@period - 1).days
     end
 
@@ -120,7 +119,7 @@ module NutritionSummarizable
     end
 
     def calculate_averages(meal_data)
-      today = Time.current.in_time_zone(timezone).to_date
+      today = Time.current.to_date
       valid_days = meal_data.select do |d|
         (d[:date] != today || @period == 1) &&
         NUTRIENTS.any? { |nutrient| d[nutrient] > 0 }

@@ -7,7 +7,7 @@ class Meal < ApplicationRecord
   has_many :users, through: :user_meals
 
   def created_at_in_timezone
-    created_at.in_time_zone(Current.user_profile.timezone)
+    created_at.in_time_zone
   end
 
   def nutrient_with_unit(attr)

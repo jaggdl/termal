@@ -1,10 +1,14 @@
 module UserMealTimeline
   extend ActiveSupport::Concern
 
-  delegate :timezone, to: :user_profile
+  def build_user_meal(meal: nil, meal_id: nil, consumed_at: nil, date: nil)
+    consumed_at ||= if date.present?
+      parsed_date = Date.parse(date)
+      parsed_date == user_today ? Time.current : parsed_date.in_time_zone.end_of_day
+    else
+      Time.current
+    end
 
-  def build_user_meal(meal: nil, meal_id: nil, date: nil, time: nil)
-    consumed_at = parse_consumed_at(date, time)
     attrs = { consumed_at: consumed_at }
     attrs[:meal] = meal if meal
     attrs[:meal_id] = meal_id if meal_id
@@ -12,13 +16,13 @@ module UserMealTimeline
   end
 
   def user_meals_on_date(date)
-    start_of_day = date.in_time_zone(timezone).beginning_of_day
-    end_of_day = date.in_time_zone(timezone).end_of_day
+    start_of_day = date.in_time_zone.beginning_of_day
+    end_of_day = date.in_time_zone.end_of_day
     user_meals.where(consumed_at: start_of_day..end_of_day).order(consumed_at: :desc)
   end
 
   def user_today
-    Time.now.in_time_zone(timezone).to_date
+    Time.current.to_date
   end
 
   def user_date_is_today?(user_date)
@@ -26,9 +30,8 @@ module UserMealTimeline
   end
 
   def user_meals_in_date_range(start_date, end_date)
-    time_zone = ActiveSupport::TimeZone[timezone]
-    start_datetime = time_zone.local(start_date.year, start_date.month, start_date.day, 0, 0, 0)
-    end_datetime = time_zone.local(end_date.year, end_date.month, end_date.day, 23, 59, 59)
+    start_datetime = Time.zone.local(start_date.year, start_date.month, start_date.day, 0, 0, 0)
+    end_datetime = Time.zone.local(end_date.year, end_date.month, end_date.day, 23, 59, 59)
 
     user_meals
       .includes(:meal)
@@ -55,27 +58,5 @@ module UserMealTimeline
         fats: date_meals.sum { |um| um.meal.fats.to_f }
       }
     end
-  end
-
-  private
-
-  def parse_consumed_at(date_param, time_param)
-    tz = ActiveSupport::TimeZone[timezone]
-    date = date_param.present? ? Date.parse(date_param) : user_today
-    is_today = date == user_today
-
-    if time_param.present?
-      time_parts = time_param.split(":").map(&:to_i)
-      hour = time_parts[0] || 0
-      minute = time_parts[1] || 0
-      second = time_parts[2] || 0
-      tz.local(date.year, date.month, date.day, hour, minute, second)
-    elsif is_today
-      Time.now
-    else
-      tz.local(date.year, date.month, date.day, 23, 59, 59)
-    end
-  rescue ArgumentError
-    raise ArgumentError, "Invalid date or time format"
   end
 end

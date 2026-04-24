@@ -10,7 +10,7 @@ class UserMeal < ApplicationRecord
   validate :both_coordinates_present_or_absent
 
   def consumed_at_in_timezone
-    consumed_at.in_time_zone(user.user_profile.timezone)
+    consumed_at.in_time_zone
   end
 
   def date_consumed
@@ -39,26 +39,6 @@ class UserMeal < ApplicationRecord
 
   def has_location?
     latitude.present? && longitude.present?
-  end
-
-  def update_consumed_at(datetime: nil, date: nil, time: nil)
-    tz = ActiveSupport::TimeZone[user.user_profile.timezone]
-
-    new_consumed_at = if datetime.present?
-      tz.parse(datetime)
-    elsif date.present? && time.present?
-      parsed_date = Date.parse(date)
-      time_parts = time.split(":").map(&:to_i)
-      hour = time_parts[0] || 0
-      minute = time_parts[1] || 0
-      second = time_parts[2] || 0
-      tz.local(parsed_date.year, parsed_date.month, parsed_date.day, hour, minute, second)
-    elsif date.present?
-      parsed_date = Date.parse(date)
-      tz.local(parsed_date.year, parsed_date.month, parsed_date.day, 23, 59, 59)
-    end
-
-    update(consumed_at: new_consumed_at) if new_consumed_at
   end
 
   private

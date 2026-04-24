@@ -19,7 +19,7 @@ module Api
 
     def create
       meal = Meal.find(params[:meal_id])
-      user_meal = Current.user.build_user_meal(meal: meal, date: params[:date], time: params[:time])
+      user_meal = Current.user.build_user_meal(meal: meal, consumed_at: params[:consumed_at], date: params[:date])
 
       if user_meal.save
         render json: UserMealSerializer.new(user_meal), status: :created
@@ -28,22 +28,18 @@ module Api
       end
     rescue ActiveRecord::RecordNotFound
       render json: { error: "Meal not found" }, status: :not_found
-    rescue ArgumentError => e
-      render json: { error: e.message }, status: :bad_request
     end
 
     def update
       user_meal = Current.user.user_meals.find(params[:id])
 
-      if user_meal.update_consumed_at(datetime: params[:datetime], date: params[:date], time: params[:time])
+      if user_meal.update(consumed_at: params[:consumed_at])
         render json: UserMealSerializer.new(user_meal)
       else
         render json: { error: user_meal.errors.full_messages.join(", ") }, status: :unprocessable_entity
       end
     rescue ActiveRecord::RecordNotFound
       render json: { error: "User meal not found" }, status: :not_found
-    rescue ArgumentError => e
-      render json: { error: e.message }, status: :bad_request
     end
 
     def destroy

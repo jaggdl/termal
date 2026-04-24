@@ -74,18 +74,17 @@ bash scripts/termal-api.sh search --query "protein" --calories-min 200 --protein
 # Add a meal to today's log by meal ID
 bash scripts/termal-api.sh add 123
 
-# Add a meal to a specific date by meal ID
+# Add a meal to a specific date by meal ID (defaults to end of day, or current time if today)
 bash scripts/termal-api.sh add 123 2026-04-22
 
 # Add a meal at a specific time (uses your profile timezone)
 bash scripts/termal-api.sh add 123 2026-04-22 14:30
 
 # Update the datetime of a user meal by ID (uses your profile timezone)
-bash scripts/termal-api.sh update-datetime 123 2026-04-22 14:30
+bash scripts/termal-api.sh update-datetime 123 2026-04-22T14:30
 
 # Remove a user meal by ID
 bash scripts/termal-api.sh remove 123
 ```
 
 Run `bash scripts/termal-api.sh --help` for full usage information.
-

@@ -19,7 +19,7 @@ api_call() {
   local method="$1"
   local endpoint="$2"
   local data="${3:-}"
-  
+
   if [ -n "$data" ]; then
     curl -s -X "$method" \
       -H "Authorization: Bearer $API_TOKEN" \
@@ -47,7 +47,7 @@ Commands:
   update-profile <json>     Update profile with JSON data
   search [options]          Search meals by query and/or nutrient ranges
   add <meal-id> [date] [time]  Add a meal to your log by meal ID (date: YYYY-MM-DD, time: HH:MM, defaults to today/now)
-  update-datetime <id> [date] [time]  Update a user meal datetime (date: YYYY-MM-DD, time: HH:MM, defaults to today/now)
+  update-datetime <id> <datetime>  Update a user meal datetime (datetime: YYYY-MM-DDTHH:MM, uses your profile timezone)
   remove <id>               Remove a user meal from your log by ID
 
 Options for search:
@@ -78,7 +78,7 @@ Examples:
   termal-api add 123
   termal-api add 123 2026-04-22
   termal-api add 123 2026-04-22 14:30
-  termal-api update-datetime 123 2026-04-22 14:30
+  termal-api update-datetime 123 2026-04-22T14:30
   termal-api remove 456
 
 Generate your API key at: $BASE_URL/profile
@@ -109,16 +109,16 @@ case "${1:-}" in
     fi
     api_call "GET" "/api/meals/$2"
     ;;
-    
+
   summary)
     days="${2:-7}"
     api_call "GET" "/api/nutrition_summary?days=$days"
     ;;
-    
+
   profile)
     api_call "GET" "/api/profile"
     ;;
-    
+
   update-profile)
     if [ -z "${2:-}" ]; then
       echo "Error: JSON data required"
@@ -127,7 +127,7 @@ case "${1:-}" in
     fi
     api_call "PATCH" "/api/profile" "$2"
     ;;
-    
+
   search)
     shift  # Remove 'search' command
     query_params=""
@@ -158,29 +158,25 @@ case "${1:-}" in
       exit 1
     fi
     meal_id="$2"
-    date="${3:-$(date +%Y-%m-%d)}"
+    date="${3:-}"
     time="${4:-}"
-    if [ -n "$time" ]; then
-      api_call "POST" "/api/user_meals?meal_id=$meal_id&date=$date&time=$time"
-    else
+    if [ -n "$time" ] && [ -n "$date" ]; then
+      api_call "POST" "/api/user_meals?meal_id=$meal_id&consumed_at=${date}T${time}"
+    elif [ -n "$date" ]; then
       api_call "POST" "/api/user_meals?meal_id=$meal_id&date=$date"
+    else
+      api_call "POST" "/api/user_meals?meal_id=$meal_id"
     fi
     ;;
 
   update-datetime)
-    if [ -z "${2:-}" ]; then
-      echo "Error: User meal ID required"
-      echo "Usage: termal-api update-datetime <id> [date] [time]"
+    if [ -z "${2:-}" ] || [ -z "${3:-}" ]; then
+      echo "Error: User meal ID and datetime required"
+      echo "Usage: termal-api update-datetime <id> <datetime>"
+      echo "Example: termal-api update-datetime 123 2026-04-22T14:30"
       exit 1
     fi
-    id="$2"
-    date="${3:-$(date +%Y-%m-%d)}"
-    time="${4:-}"
-    if [ -n "$time" ]; then
-      api_call "PATCH" "/api/user_meals/$id" "{\"date\":\"$date\",\"time\":\"$time\"}"
-    else
-      api_call "PATCH" "/api/user_meals/$id" "{\"date\":\"$date\"}"
-    fi
+    api_call "PATCH" "/api/user_meals/$2" "{\"consumed_at\":\"$3\"}"
     ;;
 
   remove)
@@ -195,7 +191,7 @@ case "${1:-}" in
   --help|-h|help)
     usage
     ;;
-    
+
   *)
     echo "Error: Unknown command '${1:-}'"
     usage
