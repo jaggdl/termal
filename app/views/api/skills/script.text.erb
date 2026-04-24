@@ -45,6 +45,7 @@ Commands:
   summary [days]            Get nutrition summary for the last N days (default: 7)
   profile                   Get user profile information
   update-profile <json>     Update profile with JSON data
+  update <id> <json>        Update a user meal by ID with JSON data (e.g., '{"consumed_at":"2026-04-24T14:30:00"}')
   search [options]          Search meals by query and/or nutrient ranges
   add <meal-id> [date] [time]  Add a meal to your log by meal ID (date: YYYY-MM-DD, time: HH:MM, defaults to today/now)
   remove <id>               Remove a user meal from your log by ID
@@ -77,6 +78,7 @@ Examples:
   termal-api add 123
   termal-api add 123 2026-04-22
   termal-api add 123 2026-04-22 14:30
+  termal-api update 456 '{"consumed_at": "2026-04-24T14:30:00"}'
   termal-api remove 456
 
 Generate your API key at: $BASE_URL/profile
@@ -124,6 +126,16 @@ case "${1:-}" in
       exit 1
     fi
     api_call "PATCH" "/api/profile" "$2"
+    ;;
+
+  update)
+    if [ -z "${2:-}" ] || [ -z "${3:-}" ]; then
+      echo "Error: User meal ID and JSON data required"
+      echo "Usage: termal-api update <id> '{\"consumed_at\": \"2026-04-24T14:30:00\"}'"
+      echo "Fields: consumed_at (ISO 8601), latitude, longitude"
+      exit 1
+    fi
+    api_call "PATCH" "/api/user_meals/$2" "{\"user_meal\": $3}"
     ;;
     
   search)
