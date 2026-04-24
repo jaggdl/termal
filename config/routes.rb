@@ -55,7 +55,7 @@ Rails.application.routes.draw do
 
   # API
   namespace :api do
-    resources :user_meals, only: [ :index, :show, :create, :destroy ]
+    resources :user_meals, only: [ :index, :show, :create, :update, :destroy ]
     get "meals/search", to: "meals#search"
     resources :meals, only: [ :show ]
     get "nutrition_summary", to: "nutrition_summaries#index"
