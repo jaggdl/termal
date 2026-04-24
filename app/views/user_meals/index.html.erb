@@ -14,8 +14,7 @@
         <%= link_to user_meals_path(date: (@date - 1).to_s), class: "group relative inline-flex items-center justify-center w-10 h-10 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-dark-primary focus:ring-offset-2 dark:focus:ring-offset-dark-background", title: "Previous day" do %>
           <%= render partial: "shared/arrow_button",
           locals: {
-            direction: "left",
-            disabled: false,
+            direction: "left"
           } %>
         <% end %>
 
@@ -32,26 +31,11 @@
           <%= date_string %>
         </h2>
 
-        <% if @date < @today %>
-          <%= link_to user_meals_path(date: (@date + 1).to_s), class: "group relative inline-flex items-center justify-center w-10 h-10 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-dark-primary focus:ring-offset-2 dark:focus:ring-offset-dark-background", title: "Next day" do %>
-            <%= render partial: "shared/arrow_button",
-            locals: {
-              direction: "right",
-              disabled: false,
-            } %>
-          <% end %>
-        <% else %>
-          <span
-            class="
-              relative inline-flex items-center justify-center w-10 h-10 cursor-not-allowed
-            "
-          >
-            <%= render partial: "shared/arrow_button",
-            locals: {
-              direction: "right",
-              disabled: true,
-            } %>
-          </span>
+        <%= link_to user_meals_path(date: (@date + 1).to_s), class: "group relative inline-flex items-center justify-center w-10 h-10 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-dark-primary focus:ring-offset-2 dark:focus:ring-offset-dark-background", title: "Next day" do %>
+          <%= render partial: "shared/arrow_button",
+          locals: {
+            direction: "right"
+          } %>
         <% end %>
       </div>
       <%= render partial: "shared/nutrient_meters",
