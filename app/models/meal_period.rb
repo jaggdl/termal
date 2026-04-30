@@ -31,7 +31,8 @@ class MealPeriod
     new(label: "Breakfast", icon: "sun", hour_range: 4...11),
     new(label: "Lunch", icon: "clock", hour_range: 11...16),
     new(label: "Dinner", icon: "moon", hour_range: 16...21),
-    new(label: "Snack", icon: "cake", hour_range: nil)
+    new(label: "Snack", icon: "cake", hour_range: 21...24),
+    new(label: "Late Night", icon: "sparkles", hour_range: 0...4)
   ].freeze
 
 end
