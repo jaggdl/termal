@@ -1,5 +1,5 @@
 class MealPeriod
-  attr_reader :label, :icon
+  attr_reader :label, :icon, :hour_range
 
   def initialize(label:, icon:, hour_range:)
     @label = label
@@ -34,7 +34,4 @@ class MealPeriod
     new(label: "Snack", icon: "cake", hour_range: nil)
   ].freeze
 
-  private
-
-  attr_reader :hour_range
 end
