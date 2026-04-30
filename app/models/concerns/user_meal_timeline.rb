@@ -29,6 +29,20 @@ module UserMealTimeline
     user_today == Date.parse(user_date)
   end
 
+  def relative_date_label(date)
+    today = user_today
+    case date
+    when today
+      "Today"
+    when today - 1.day
+      "Yesterday"
+    when today + 1.day
+      "Tomorrow"
+    else
+      date
+    end
+  end
+
   def user_meals_in_date_range(start_date, end_date)
     start_datetime = Time.zone.local(start_date.year, start_date.month, start_date.day, 0, 0, 0)
     end_datetime = Time.zone.local(end_date.year, end_date.month, end_date.day, 23, 59, 59)

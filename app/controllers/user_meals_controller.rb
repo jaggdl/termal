@@ -5,10 +5,7 @@ class UserMealsController < ApplicationController
   before_action :check_api_key, only: [ :new, :create ]
 
   def index
-    @today = Current.user.user_today
-    @yesterday = @today - 1.day
-
-    @date = params[:date] ? Date.parse(params[:date]) : @today
+    @date = params[:date] ? Date.parse(params[:date]) : Current.user.user_today
 
     @meals = Current.user.user_meals_on_date(@date)
     @meals_by_day = { @date => @meals }

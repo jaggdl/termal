@@ -19,16 +19,7 @@
         <% end %>
 
         <h2 class="font-semibold w-32 text-center dark:text-dark-text">
-          <% date_string =
-            case @date
-            when @today
-              "Today"
-            when @yesterday
-              "Yesterday"
-            else
-              @date
-            end %>
-          <%= date_string %>
+          <%= Current.user.relative_date_label(@date) %>
         </h2>
 
         <%= link_to user_meals_path(date: (@date + 1).to_s), class: "group relative inline-flex items-center justify-center w-10 h-10 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-dark-primary focus:ring-offset-2 dark:focus:ring-offset-dark-background", title: "Next day" do %>
