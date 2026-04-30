@@ -1,0 +1,12 @@
+<%# locals: (period:, user_meals:, date:) %>
+<div id="period-section-<%= period.parameterize %>-<%= date.to_s %>">
+  <h3 class="w-full text-center font-semibold dark:text-dark-text border-y border-gray-700 py-2 flex items-center justify-center gap-2">
+    <%= heroicon period.icon, variant: :outline, options: { class: "h-5 w-5 text-gray-500" } %>
+    <%= period.label %>
+  </h3>
+  <ul id="user-meals-<%= period.parameterize %>-<%= date.to_s %>">
+    <% user_meals.each do |user_meal| %>
+      <%= render user_meal %>
+    <% end %>
+  </ul>
+</div>

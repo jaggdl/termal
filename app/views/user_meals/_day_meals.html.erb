@@ -1,0 +1,11 @@
+<%# locals: (date:, meals_by_period:) %>
+<%= turbo_frame_tag "day-meals-#{date.to_s}", class: "w-screen -ml-5 md:w-full md:-ml-0 block" do %>
+  <% MealPeriod.all.reverse.each do |period| %>
+    <% user_meals = meals_by_period[period.label] || [] %>
+    <% next if user_meals.empty? %>
+    <%= render "meal_period", period: period, user_meals: user_meals, date: date %>
+  <% end %>
+  <% unless meals_by_period.values.flatten.any? %>
+    <p id="no-meals-day-<%= date.to_s %>" class="text-center text-gray-500 dark:text-gray-400 my-8">No meals logged for this day</p>
+  <% end %>
+<% end %>

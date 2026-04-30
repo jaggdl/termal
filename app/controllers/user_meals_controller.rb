@@ -135,15 +135,14 @@ class UserMealsController < ApplicationController
 
     if @user_meal.save
       date = @user_meal.date_consumed
-      period = @user_meal.period_label.parameterize
+      meals = Current.user.user_meals_on_date(date)
 
       render turbo_stream: [
-        turbo_stream.prepend(
-          "user-meals-#{period}-#{date}",
-          partial: "user_meals/user_meal",
-          locals: { user_meal: @user_meal }
+        turbo_stream.replace(
+          "day-meals-#{date}",
+          partial: "user_meals/day_meals",
+          locals: { date: date, meals_by_period: Current.user.group_meals_by_period(meals) }
         ),
-        turbo_stream.remove("no-meals-#{period}-#{date}"),
         turbo_stream.replace(
           "flash",
           partial: "shared/flash",
@@ -152,7 +151,7 @@ class UserMealsController < ApplicationController
         turbo_stream.replace(
           "nutrient-meters-#{date}",
           partial: "shared/nutrient_meters",
-          locals: { user_meals: Current.user.user_meals_on_date(date), date: date, user_profile: Current.user_profile }
+          locals: { user_meals: meals, date: date, user_profile: Current.user_profile }
         )
       ]
     else
