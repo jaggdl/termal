@@ -3,7 +3,7 @@
 <%= render "shared/search_bar", suggestions: @suggestions %>
 
 <div class="flex flex-col w-full space-y-6" data-controller="page-refresh">
-  <div class="flex w-full flex-col space-y-4">
+  <div class="flex w-full flex-col space-y-6">
     <div
       class="
         flex md:flex-row flex-col space-x-4 justify-between items-center space-y-4
@@ -36,26 +36,30 @@
         user_profile: Current.user_profile,
       } %>
     </div>
-    <div class="mx-auto mb-6 flex gap-4">
+    <div class="mx-auto flex gap-4 items-center">
       <%= link_to new_user_meal_path(date: @date) do %>
         <%= render "shared/aqua_style", text: "New Meal", icon: "plus" %>
       <% end %>
     </div>
 
     <div class="w-screen -ml-5 md:w-full md:-ml-0">
-      <ul id="user-meals-<%= @date.to_s %>">
-        <% @meals_by_day[@date].each do |user_meal| %>
-          <%= render user_meal %>
-        <% end %>
-      </ul>
+      <% MealPeriod.all.reverse.each do |period| %>
+        <% user_meals = @meals_by_period[period.label] || [] %>
+        <div class="">
+          <h3 class="w-full text-center font-semibold dark:text-dark-text border-y border-gray-700 py-2 flex items-center justify-center gap-2">
+            <%= heroicon period.icon, variant: :outline, options: { class: "h-5 w-5 text-gray-500" } %>
+            <%= period.label %>
+          </h3>
+          <ul id="user-meals-<%= period.parameterize %>-<%= @date.to_s %>">
+            <% user_meals.each do |user_meal| %>
+              <%= render user_meal %>
+            <% end %>
+          </ul>
+          <% if user_meals.empty? %>
+            <p id="no-meals-<%= period.parameterize %>-<%= @date.to_s %>" class="text-sm text-gray-500 dark:text-gray-400 my-4 w-full text-center">No meals logged</p>
+          <% end %>
+        </div>
+      <% end %>
     </div>
-    <% if @meals_by_day[@date].none? %>
-      <div
-        id="no-meals-message"
-        class="w-full flex items-center justify-center pt-12 flex-col gap-6"
-      >
-        <p class="dark:text-dark-text">No meals for this day</p>
-      </div>
-    <% end %>
   </div>
 </div>

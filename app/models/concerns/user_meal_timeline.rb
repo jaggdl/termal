@@ -57,6 +57,10 @@ module UserMealTimeline
     meals.group_by { |um| um.date_consumed }
   end
 
+  def group_meals_by_period(meals)
+    meals.group_by(&:period_label).slice(*MealPeriod.labels).compact
+  end
+
   def daily_nutrition_summaries(start_date, end_date)
     meals = user_meals_in_date_range(start_date, end_date)
     meals_by_date = group_meals_by_date(meals)

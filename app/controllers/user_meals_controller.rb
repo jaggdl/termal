@@ -8,6 +8,7 @@ class UserMealsController < ApplicationController
     @date = params[:date] ? Date.parse(params[:date]) : Current.user.user_today
 
     @meals = Current.user.user_meals_on_date(@date)
+    @meals_by_period = Current.user.group_meals_by_period(@meals)
     @meals_by_day = { @date => @meals }
     @total_meals_count = Current.user.meals.count
     @suggestions = Meal.most_common_meals(user: Current.user, limit: 10)
@@ -134,14 +135,15 @@ class UserMealsController < ApplicationController
 
     if @user_meal.save
       date = @user_meal.date_consumed
+      period = @user_meal.period_label.parameterize
 
       render turbo_stream: [
         turbo_stream.prepend(
-          "user-meals-#{date}",
+          "user-meals-#{period}-#{date}",
           partial: "user_meals/user_meal",
           locals: { user_meal: @user_meal }
         ),
-        turbo_stream.remove("no-meals-message"),
+        turbo_stream.remove("no-meals-#{period}-#{date}"),
         turbo_stream.replace(
           "flash",
           partial: "shared/flash",

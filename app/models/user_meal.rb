@@ -41,6 +41,12 @@ class UserMeal < ApplicationRecord
     latitude.present? && longitude.present?
   end
 
+  def period
+    MealPeriod.for_hour(consumed_at_in_timezone.hour)
+  end
+
+  delegate :label, :icon, to: :period, prefix: true, allow_nil: true
+
   private
 
   def both_coordinates_present_or_absent
