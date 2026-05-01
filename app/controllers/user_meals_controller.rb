@@ -139,7 +139,7 @@ class UserMealsController < ApplicationController
   end
 
   def create_from_meal_id
-    @user_meal = Current.user.build_user_meal(meal_id: params[:meal_id], date: params[:date])
+    @user_meal = Current.user.build_user_meal(meal_id: params[:meal_id], date: params[:date], consumed_at: params[:consumed_at])
 
     if Current.latitude.present? && Current.longitude.present?
       @user_meal.latitude = Current.latitude
