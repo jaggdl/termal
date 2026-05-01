@@ -13,6 +13,10 @@ export default class extends Controller {
     document.body.style.overflow = ""
   }
 
+  disconnect() {
+    document.body.style.overflow = ""
+  }
+
   handleKeydown(event) {
     if (event.key === "Escape") {
       this.close()
