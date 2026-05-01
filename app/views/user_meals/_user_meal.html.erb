@@ -5,27 +5,7 @@
     </div>
     <%= render partial: 'user_meals/meal_info', locals: { user_meal: user_meal } %>
   <% end %>
-  <div data-controller="dropdown" data-action="click@window->dropdown#closeOnClickOutside" class="relative flex-shrink-0">
-    <button data-action="click->dropdown#toggle" class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
-      <%= heroicon "ellipsis-vertical", variant: :outline, options: { class: "h-5 w-5 text-gray-500 dark:text-gray-400" } %>
-    </button>
-    <div data-dropdown-target="menu" class="hidden absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50 min-w-[120px]">
-      <button type="button" data-action="click->time-modal#open" class="w-full text-left px-4 py-2 text-sm dark:text-dark-text hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
-        Edit time
-      </button>
-      <%= button_to user_meals_path(meal_id: user_meal.meal.id, date: user_meal.date_consumed, consumed_at: user_meal.consumed_at),
-          method: :post,
-          form: { data: { turbo: true } },
-          class: "w-full text-left px-4 py-2 text-sm dark:text-dark-text hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md" do %>
-        Duplicate
-      <% end %>
-      <%= button_to user_meal_path(user_meal), method: :delete,
-          form: { data: { turbo: true, turbo_confirm: "Delete this meal?" } },
-          class: "w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md" do %>
-        Delete
-      <% end %>
-    </div>
-  </div>
+  <%= render "user_meals/user_meal_dropdown", user_meal: user_meal %>
   <div data-time-modal-target="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" data-action="click->time-modal#closeOnBackdrop">
     <div class="bg-black/80 backdrop-blur-md rounded-lg shadow-xl p-6 w-full max-w-sm" data-action="click->stopPropagation">
       <%= render "user_meals/time_edit_form", user_meal: user_meal %>
