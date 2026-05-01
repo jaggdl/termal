@@ -12,7 +12,6 @@ module Api
     def attributes
       {
         "id" => nil,
-        "url" => nil,
         "consumed_at" => nil,
         "date_consumed" => nil,
         "time_consumed" => nil,
@@ -20,10 +19,6 @@ module Api
         "error_message" => nil,
         "meal" => nil
       }
-    end
-
-    def url
-      user_meal_url(@user_meal)
     end
 
     def id

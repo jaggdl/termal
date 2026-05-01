@@ -25,10 +25,7 @@
           </thead>
           <tbody class="bg-white dark:bg-dark-surface divide-y divide-gray-200 dark:divide-gray-700">
             <% @consumptions.each do |consumption| %>
-              <tr
-                class="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
-                onclick="Turbo.visit('<%= user_meal_path(consumption) %>')"
-              >
+              <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
                 <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                   <%= consumption.date_consumed.strftime("%B %d, %Y") %>
                 </td>

@@ -10,13 +10,6 @@ module Api
       render json: { error: "Invalid date format" }, status: :bad_request
     end
 
-    def show
-      user_meal = Current.user.user_meals.find(params[:id])
-      render json: UserMealSerializer.new(user_meal)
-    rescue ActiveRecord::RecordNotFound
-      render json: { error: "User meal not found" }, status: :not_found
-    end
-
     def create
       meal = Meal.find(params[:meal_id])
       user_meal = Current.user.build_user_meal(meal: meal, consumed_at: params[:consumed_at], date: params[:date])

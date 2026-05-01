@@ -23,7 +23,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :user_meals do
+  resources :user_meals, only: [ :index, :new, :create, :update, :destroy ] do
     member do
       post :retry_processing
     end
@@ -55,7 +55,7 @@ Rails.application.routes.draw do
 
   # API
   namespace :api do
-    resources :user_meals, only: [ :index, :show, :create, :update, :destroy ]
+    resources :user_meals, only: [ :index, :create, :update, :destroy ]
     get "meals/search", to: "meals#search"
     resources :meals, only: [ :show ]
     get "nutrition_summary", to: "nutrition_summaries#index"

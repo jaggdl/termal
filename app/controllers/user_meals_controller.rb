@@ -1,7 +1,7 @@
 class UserMealsController < ApplicationController
   include LlmApiKeyCheck
 
-  before_action :set_meal, only: [ :show, :update, :destroy ]
+  before_action :set_meal, only: [ :update, :destroy ]
   before_action :check_api_key, only: [ :new, :create ]
 
   def index
@@ -19,15 +19,11 @@ class UserMealsController < ApplicationController
     @date = params[:date]
   end
 
-  def show
-    @user_profile = Current.user_profile
-  end
-
   def update
     if @user_meal.update(user_meal_params)
       redirect_to user_meals_path(date: @user_meal.date_consumed), notice: "Meal updated successfully."
     else
-      render :show, status: :unprocessable_entity
+      redirect_to user_meals_path, alert: "Failed to update meal."
     end
   end
 
@@ -66,7 +62,7 @@ class UserMealsController < ApplicationController
         format.html { redirect_to user_meals_path(date: date), notice: "Meal was successfully removed." }
       end
     else
-      redirect_to user_meal_path(@user_meal), alert: "Failed to remove meal."
+      redirect_to user_meals_path, alert: "Failed to remove meal."
     end
   end
 
