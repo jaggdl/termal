@@ -71,8 +71,8 @@ module MealSearch
     end
 
     def apply_nutrient_range(scope, nutrient, min_value, max_value)
-      scope = scope.where("#{nutrient} >= ?", min_value.to_f) if min_value.present?
-      scope = scope.where("#{nutrient} <= ?", max_value.to_f) if max_value.present?
+      scope = scope.where(arel_table[nutrient].gteq(min_value.to_f)) if min_value.present?
+      scope = scope.where(arel_table[nutrient].lteq(max_value.to_f)) if max_value.present?
       scope
     end
   end
