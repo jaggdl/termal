@@ -16,6 +16,7 @@
     <%= f.datetime_local_field :consumed_at,
         value: user_meal.consumed_at&.in_time_zone&.strftime("%Y-%m-%dT%H:%M"),
         required: true,
+        data: { time_modal_target: "field" },
         class: "border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-dark-text rounded p-2 w-full" %>
     <div class="flex justify-end gap-2 mt-4">
       <button type="button" data-action="time-modal#close" class="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">Cancel</button>
