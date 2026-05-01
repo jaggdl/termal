@@ -122,7 +122,10 @@ module VectorSearch
           end
         end
 
-        meal.combined_score = (1.0 / (1.0 + distance)) + interaction_weight * interaction_score + location_weight * location_boost
+        base_score = 1.0 / (1.0 + distance)
+        consumption_boost = 1.0 + interaction_weight * interaction_score
+        location_boost_mult = 1.0 + location_weight * location_boost
+        meal.combined_score = base_score * consumption_boost * location_boost_mult
       end
 
       meals.sort_by { |m| -m.combined_score }.drop(offset).first(limit)
