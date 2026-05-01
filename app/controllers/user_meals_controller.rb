@@ -11,7 +11,7 @@ class UserMealsController < ApplicationController
     @meals_by_period = Current.user.group_meals_by_period(@meals)
     @meals_by_day = { @date => @meals }
     @total_meals_count = Current.user.meals.count
-    @suggestions = Meal.most_common_meals(user: Current.user, limit: 10)
+    @suggestions = Meal.most_common_meals(user: Current.user, limit: 15)
   end
 
   def new
