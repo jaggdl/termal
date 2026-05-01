@@ -6,7 +6,7 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_one :user_profile, dependent: :destroy
   has_many :user_meals, dependent: :destroy
-  has_many :meals, through: :user_meals
+  has_many :meals, dependent: :destroy
   has_many :invites, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
   has_many :nutrition_analyses, dependent: :destroy

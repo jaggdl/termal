@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_11_020028) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_01_000000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -89,20 +89,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_020028) do
     t.index ["user_id"], name: "index_invites_on_user_id"
   end
 
-  create_table "meal_vectors_chunks", primary_key: "chunk_id", force: :cascade do |t|
-    t.binary "rowids", null: false
-    t.integer "size", null: false
-    t.binary "validity", null: false
-  end
-
-# Could not dump table "meal_vectors_info" because of following StandardError
-#   Unknown type 'ANY' for column 'value'
-
-
-# Could not dump table "meal_vectors_rowids" because of following StandardError
-#   Unknown type '' for column 'id'
-
-
 # Could not dump table "meal_vectors_vector_chunks00" because of following StandardError
 #   Unknown type '' for column 'rowid'
 
@@ -117,6 +103,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_020028) do
     t.string "prompt"
     t.float "proteins"
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_meals_on_user_id"
   end
 
   create_table "nutrition_analyses", force: :cascade do |t|
@@ -140,22 +128,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_020028) do
     t.string "user_agent"
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
-  end
-
-  create_table "query_embeddings_chunks", primary_key: "chunk_id", force: :cascade do |t|
-    t.binary "rowids", null: false
-    t.integer "size", null: false
-    t.binary "validity", null: false
-  end
-
-# Could not dump table "query_embeddings_info" because of following StandardError
-#   Unknown type 'ANY' for column 'value'
-
-
-  create_table "query_embeddings_rowids", primary_key: "rowid", force: :cascade do |t|
-    t.integer "chunk_id"
-    t.integer "chunk_offset"
-    t.text "id", null: false
   end
 
 # Could not dump table "query_embeddings_vector_chunks00" because of following StandardError
@@ -224,6 +196,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_020028) do
   add_foreign_key "api_keys", "users"
   add_foreign_key "chat_messages", "chats"
   add_foreign_key "invites", "users"
+  add_foreign_key "meals", "users"
   add_foreign_key "nutrition_analyses", "users"
   add_foreign_key "push_subscriptions", "users"
   add_foreign_key "sessions", "users"

@@ -3,8 +3,8 @@ class Meal < ApplicationRecord
   include MealImage
   include MealSearch
 
+  belongs_to :user
   has_many :user_meals, dependent: :destroy
-  has_many :users, through: :user_meals
 
   def created_at_in_timezone
     created_at.in_time_zone

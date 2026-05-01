@@ -76,6 +76,7 @@ class UserMealsController < ApplicationController
 
     prompt = params[:user_meal][:prompt]
     @meal = @user_meal.build_meal(prompt: prompt)
+    @meal.user = Current.user
 
     images_files = params[:user_meal][:files]
 
