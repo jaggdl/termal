@@ -54,7 +54,19 @@ class UserMealsController < ApplicationController
   def destroy
     date = @user_meal.date_consumed
     if @user_meal.destroy
-      redirect_to user_meals_path(date: date), notice: "Meal was successfully removed."
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.remove("user-meal-item-#{@user_meal.id}"),
+            turbo_stream.replace(
+              "nutrient-meters-#{date}",
+              partial: "shared/nutrient_meters",
+              locals: { user_meals: Current.user.user_meals_on_date(date), date: date, user_profile: Current.user_profile }
+            )
+          ]
+        end
+        format.html { redirect_to user_meals_path(date: date), notice: "Meal was successfully removed." }
+      end
     else
       redirect_to user_meal_path(@user_meal), alert: "Failed to remove meal."
     end
