@@ -1,6 +1,6 @@
 <%# locals: (user_meal:) %>
-<turbo-frame id="time-edit-form-<%= user_meal.id %>">
-  <%= form_with model: user_meal, url: user_meal_path(user_meal), method: :patch, data: { turbo: true } do |f| %>
+<div id="time-edit-form-<%= user_meal.id %>">
+  <%= form_with model: user_meal, url: user_meal_path(user_meal), method: :patch, local: true do |f| %>
     <% if user_meal.errors.any? %>
       <p class="text-red-600 dark:text-red-400 text-sm mb-3"><%= user_meal.errors.full_messages.to_sentence %></p>
     <% end %>
@@ -25,4 +25,4 @@
       </button>
     </div>
   <% end %>
-</turbo-frame>
+</div>

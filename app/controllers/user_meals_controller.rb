@@ -25,28 +25,9 @@ class UserMealsController < ApplicationController
 
   def update
     if @user_meal.update(user_meal_params)
-      respond_to do |format|
-        format.turbo_stream do
-          date = @user_meal.date_consumed
-          meals = Current.user.user_meals_on_date(date)
-          render turbo_stream: [
-            turbo_stream.replace("day-meals-#{date}", partial: "user_meals/day_meals", locals: { date: date, meals_by_period: Current.user.group_meals_by_period(meals) }),
-            turbo_stream.replace("nutrient-meters-#{date}", partial: "shared/nutrient_meters", locals: { user_meals: meals, date: date, user_profile: Current.user_profile })
-          ]
-        end
-        format.html { redirect_to user_meals_path(date: @user_meal.date_consumed), notice: "Meal updated successfully." }
-      end
+      redirect_to user_meals_path(date: @user_meal.date_consumed), notice: "Meal updated successfully."
     else
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            "time-edit-form-#{@user_meal.id}",
-            partial: "user_meals/time_edit_form",
-            locals: { user_meal: @user_meal }
-          ), status: :unprocessable_entity
-        end
-        format.html { render :show, status: :unprocessable_entity }
-      end
+      render :show, status: :unprocessable_entity
     end
   end
 
