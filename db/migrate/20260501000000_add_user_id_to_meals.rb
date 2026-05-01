@@ -4,11 +4,12 @@ class AddUserIdToMeals < ActiveRecord::Migration[8.1]
 
     execute <<-SQL
       UPDATE meals
-      SET user_id = (
-        SELECT user_meals.user_id
-        FROM user_meals
-        WHERE user_meals.meal_id = meals.id
-        LIMIT 1
+      SET user_id = COALESCE(
+        (SELECT user_meals.user_id
+         FROM user_meals
+         WHERE user_meals.meal_id = meals.id
+         LIMIT 1),
+        1
       )
     SQL
 
