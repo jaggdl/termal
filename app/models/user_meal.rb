@@ -45,6 +45,22 @@ class UserMeal < ApplicationRecord
     MealPeriod.for_hour(consumed_at_in_timezone.hour)
   end
 
+  def self.create_from_params(user:, date:, prompt:, files:, latitude: nil, longitude: nil)
+    user_meal = user.build_user_meal(date: date)
+    user_meal.latitude = latitude if latitude.present?
+    user_meal.longitude = longitude if longitude.present?
+
+    meal = user_meal.build_meal(prompt: prompt)
+    meal.user = user
+    meal.images.attach(files) if files.present?
+
+    user_meal.tap do |um|
+      if um.save
+        um.process_meal_image_later
+      end
+    end
+  end
+
   def retry_processing!
     update!(error: nil)
     process_meal_image_later

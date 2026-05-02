@@ -71,34 +71,19 @@ class UserMealsController < ApplicationController
       render_flash_message("Please provide either images or a meal description.") and return
     end
 
-    @user_meal = Current.user.build_user_meal(date: params[:date])
+    @user_meal = UserMeal.create_from_params(
+      user: Current.user,
+      date: params[:date],
+      prompt: params[:user_meal][:prompt],
+      files: params[:user_meal][:files],
+      latitude: Current.latitude,
+      longitude: Current.longitude
+    )
 
-    if Current.latitude.present? && Current.longitude.present?
-      @user_meal.latitude = Current.latitude
-      @user_meal.longitude = Current.longitude
-    end
-
-    prompt = params[:user_meal][:prompt]
-    @meal = @user_meal.build_meal(prompt: prompt)
-    @meal.user = Current.user
-
-    images_files = params[:user_meal][:files]
-
-    if images_files.present?
-      @meal.images.attach(images_files)
-    end
-
-    begin
-      if @user_meal.save
-        @user_meal.process_meal_image_later
-        redirect_to user_meals_path(date: @user_meal.date_consumed), notice: "Meal was successfully created."
-      else
-        render :new, alert: "Something went wrong :( ..."
-      end
-    rescue => e
-      Rails.logger.error("Error in MealsController#create: #{e.message}")
-      Rails.logger.error(e.backtrace.join("\n"))
-      render_flash_message("An unexpected error occurred. Please try again.", :new)
+    if @user_meal.persisted?
+      redirect_to user_meals_path(date: @user_meal.date_consumed), notice: "Meal was successfully created."
+    else
+      render :new, alert: "Something went wrong :( ..."
     end
   end
 
