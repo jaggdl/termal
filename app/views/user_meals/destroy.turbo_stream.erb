@@ -1,0 +1,7 @@
+<%= turbo_stream.remove "user-meal-item-#{@user_meal.id}" %>
+<%= turbo_stream.replace "nutrient-meters-#{@date}" do %>
+  <%= render partial: "shared/nutrient_meters", locals: { user_meals: @meals, date: @date, user_profile: @user_profile } %>
+<% end %>
+<%= turbo_stream.replace "day-meals-#{@date}" do %>
+  <%= render partial: "user_meals/day_meals", locals: { date: @date, meals_by_period: @meals_by_period } %>
+<% end %>

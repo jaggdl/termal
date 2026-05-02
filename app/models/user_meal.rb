@@ -22,14 +22,14 @@ class UserMeal < ApplicationRecord
   end
 
   def broadcast_user_meal
-    broadcast_replace_to(
+    Turbo::StreamsChannel.broadcast_replace_to(
       [ user, "user_meals" ],
       target: "user-meal-#{id}",
       partial: "user_meals/meal_info",
       locals: { user_meal: self }
     )
 
-    broadcast_replace_to(
+    Turbo::StreamsChannel.broadcast_replace_to(
       [ user, "user_meals" ],
       target: "nutrient-meters-#{date_consumed}",
       partial: "shared/nutrient_meters",
@@ -70,9 +70,36 @@ class UserMeal < ApplicationRecord
     ProcessMealImageJob.perform_later(id)
   end
 
+  after_create_commit :broadcast_day_refresh
+  after_destroy_commit :broadcast_removal_and_refresh
+
   delegate :label, :icon, to: :period, prefix: true, allow_nil: true
 
   private
+
+  def broadcast_day_refresh
+    date = date_consumed
+    meals = user.user_meals_on_date(date)
+
+    Turbo::StreamsChannel.broadcast_replace_to(
+      [ user, "user_meals" ],
+      target: "day-meals-#{date}",
+      partial: "user_meals/day_meals",
+      locals: { date: date, meals_by_period: user.group_meals_by_period(meals) }
+    )
+
+    Turbo::StreamsChannel.broadcast_replace_to(
+      [ user, "user_meals" ],
+      target: "nutrient-meters-#{date}",
+      partial: "shared/nutrient_meters",
+      locals: { user_meals: meals, date: date, user_profile: user.user_profile }
+    )
+  end
+
+  def broadcast_removal_and_refresh
+    Turbo::StreamsChannel.broadcast_remove_to [ user, "user_meals" ], target: "user-meal-item-#{id}"
+    broadcast_day_refresh
+  end
 
   def both_coordinates_present_or_absent
     if latitude.present? ^ longitude.present?

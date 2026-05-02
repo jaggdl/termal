@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "user-meal-#{@user_meal.id}" do %>
+  <%= render partial: "user_meals/meal_info", locals: { user_meal: @user_meal } %>
+<% end %>

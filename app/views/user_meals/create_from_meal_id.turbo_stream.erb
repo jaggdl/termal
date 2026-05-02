@@ -1,0 +1,9 @@
+<%= turbo_stream.replace "day-meals-#{@date}" do %>
+  <%= render partial: "user_meals/day_meals", locals: { date: @date, meals_by_period: @meals_by_period } %>
+<% end %>
+<%= turbo_stream.replace "flash" do %>
+  <%= render partial: "shared/flash", locals: { flash: { notice: "Meal successfully added" } } %>
+<% end %>
+<%= turbo_stream.replace "nutrient-meters-#{@date}" do %>
+  <%= render partial: "shared/nutrient_meters", locals: { user_meals: @meals, date: @date, user_profile: Current.user_profile } %>
+<% end %>

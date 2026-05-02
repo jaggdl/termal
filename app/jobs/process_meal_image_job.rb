@@ -38,7 +38,7 @@ class ProcessMealImageJob < ApplicationJob
 
     error_message = UserMeal.error_message_for(error_code)
 
-    user_meal.broadcast_replace_to(
+    Turbo::StreamsChannel.broadcast_replace_to(
       [ user_meal.user, "user_meals" ],
       target: "flash",
       partial: "shared/flash",
