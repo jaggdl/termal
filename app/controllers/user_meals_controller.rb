@@ -29,9 +29,7 @@ class UserMealsController < ApplicationController
 
   def retry_processing
     @user_meal = Current.user_meals.find(params[:id])
-    @user_meal.update(error: nil)
-
-    ProcessMealImageJob.perform_later(@user_meal.id)
+    @user_meal.retry_processing!
 
     respond_to do |format|
       format.turbo_stream do
@@ -92,7 +90,7 @@ class UserMealsController < ApplicationController
 
     begin
       if @user_meal.save
-        ProcessMealImageJob.perform_later(@user_meal.id)
+        @user_meal.process_meal_image_later
         redirect_to user_meals_path(date: @user_meal.date_consumed), notice: "Meal was successfully created."
       else
         render :new, alert: "Something went wrong :( ..."

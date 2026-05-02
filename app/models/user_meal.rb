@@ -45,6 +45,15 @@ class UserMeal < ApplicationRecord
     MealPeriod.for_hour(consumed_at_in_timezone.hour)
   end
 
+  def retry_processing!
+    update!(error: nil)
+    process_meal_image_later
+  end
+
+  def process_meal_image_later
+    ProcessMealImageJob.perform_later(id)
+  end
+
   delegate :label, :icon, to: :period, prefix: true, allow_nil: true
 
   private
