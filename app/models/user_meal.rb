@@ -9,6 +9,29 @@ class UserMeal < ApplicationRecord
   validates :longitude, numericality: { greater_than_or_equal_to: -180, less_than_or_equal_to: 180 }, allow_nil: true
   validate :both_coordinates_present_or_absent
 
+  after_create_commit :broadcast_day_refresh
+  after_destroy_commit :broadcast_removal_and_refresh
+
+  delegate :label, :icon, to: :period, prefix: true, allow_nil: true
+
+  class << self
+    def create_from_params(user:, date:, prompt:, files:, latitude: nil, longitude: nil)
+      user_meal = user.build_user_meal(date: date)
+      user_meal.latitude = latitude if latitude.present?
+      user_meal.longitude = longitude if longitude.present?
+
+      meal = user_meal.build_meal(prompt: prompt)
+      meal.user = user
+      meal.images.attach(files) if files.present?
+
+      user_meal.tap do |um|
+        if um.save
+          um.process_meal_image_later
+        end
+      end
+    end
+  end
+
   def consumed_at_in_timezone
     consumed_at.in_time_zone
   end
@@ -45,22 +68,6 @@ class UserMeal < ApplicationRecord
     MealPeriod.for_hour(consumed_at_in_timezone.hour)
   end
 
-  def self.create_from_params(user:, date:, prompt:, files:, latitude: nil, longitude: nil)
-    user_meal = user.build_user_meal(date: date)
-    user_meal.latitude = latitude if latitude.present?
-    user_meal.longitude = longitude if longitude.present?
-
-    meal = user_meal.build_meal(prompt: prompt)
-    meal.user = user
-    meal.images.attach(files) if files.present?
-
-    user_meal.tap do |um|
-      if um.save
-        um.process_meal_image_later
-      end
-    end
-  end
-
   def retry_processing!
     update!(error: nil)
     process_meal_image_later
@@ -69,11 +76,6 @@ class UserMeal < ApplicationRecord
   def process_meal_image_later
     ProcessMealImageJob.perform_later(id)
   end
-
-  after_create_commit :broadcast_day_refresh
-  after_destroy_commit :broadcast_removal_and_refresh
-
-  delegate :label, :icon, to: :period, prefix: true, allow_nil: true
 
   private
 
